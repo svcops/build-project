@@ -23,31 +23,28 @@ command_exists() {
 
 log "gradle build" ">>> start <<<"
 
-# 构建的缓存
 cache=""
-# 构建的镜像
 image=""
-# 构建的命令
 build=""
 
 function tips() {
-  log "tips" "-c cache"
-  log "tips" "-i image"
-  log "tips" "-x execute"
+  log "tips" "-c user docker volume's to cache the build process"
+  log "tips" "-i gradle's docker image"
+  log "tips" "-x gradle's build command"
 }
 
 while getopts ":c:i:x:" opt; do
   case ${opt} in
   c)
-    log "getopts" "构建的缓存 docker's volume 为: $OPTARG"
+    log "getopts" "process's cache; docker's volume is: $OPTARG"
     cache=$OPTARG
     ;;
   i)
-    log "getopts" "构建的镜像 docker's image 为: $OPTARG"
+    log "getopts" "process's image; docker's image is: $OPTARG"
     image=$OPTARG
     ;;
   x)
-    log "getopts" "构建的命令 gradle's command 为: $OPTARG"
+    log "getopts" "process's command; gradle's command is: $OPTARG"
     build=$OPTARG
     ;;
   \?)
@@ -69,12 +66,12 @@ function validate_param() {
   local key=$1
   local value=$2
   if [ -z "$value" ]; then
-    log "validate_param" "构建的参数 $key 为空, 退出"
+    log "validate_param" "parameter $key is empty, then exit"
     tips
     log "gradle build" ">>> end <<<"
     exit 1
   else
-    log "validate_param" "构建的参数 $key : $value"
+    log "validate_param" "parameter $key : $value"
   fi
 }
 
@@ -83,14 +80,14 @@ validate_param "image" "$image"
 validate_param "build" "$build"
 
 if command_exists docker; then
-  log "command_exists" "docker 命令存在"
+  log "command_exists" "docker command exists"
 else
-  log "command_exists" "docker 命令不存在"
+  log "command_exists" "docker command does not exist"
   log "gradle build" ">>> end <<<"
   exit 1
 fi
 
-log "build" "========== gradle =========="
+log "build" "========== build gradle's project in docker =========="
 
 docker run --rm -u root \
   --network=host \
