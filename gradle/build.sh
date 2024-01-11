@@ -84,7 +84,6 @@ validate_param "build" "$build"
 
 if command_exists docker; then
   log "command_exists" "docker 命令存在"
-  exit
 else
   log "command_exists" "docker 命令不存在"
   log "gradle build" ">>> end <<<"
