@@ -15,6 +15,15 @@ function log() {
   echo -e "$current_time - [ $log_remark ] $log_message"
 }
 
-log "gradle build" ">>> start <<<"
+command_exists() {
+  # this should return the exit status of 'command -v'
+  command -v "$1" >/dev/null 2>&1
+}
 
-log "gradle build" ">>> end <<<"
+if command_exists docker; then
+  log "command_exists" "docker 命令存在"
+  exit
+else
+  log "command_exists" "docker 命令不存在"
+  exit 1
+fi

@@ -15,6 +15,3 @@ function log() {
   echo -e "$current_time - [ $log_remark ] $log_message"
 }
 
-log "gradle build" ">>> start <<<"
-
-log "gradle build" ">>> end <<<"
