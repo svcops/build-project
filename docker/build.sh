@@ -24,6 +24,9 @@ command_exists() {
 }
 
 log "docker build" ">>> docker build start <<<"
+function end() {
+  log "docker build" ">>> docker build end <<<"
+}
 
 registry=""
 image_name=""
@@ -58,13 +61,13 @@ while getopts ":m:i:v:r:" opt; do
   \?)
     log "getopts" "Invalid option: -$OPTARG"
     tips
-    log "gradle build" ">>> end <<<"
+    end
     exit 1
     ;;
   :)
     log "getopts" "Invalid option: -$OPTARG requires an argument"
     tips
-    log "gradle build" ">>> end <<<"
+    end
     exit 1
     ;;
   esac
@@ -76,7 +79,7 @@ function validate_param() {
   if [ -z "$value" ]; then
     log "validate_param" "parameter $key is empty, then exit"
     tips
-    log "gradle build" ">>> end <<<"
+    end
     exit 1
   else
     log "validate_param" "parameter $key : $value"
@@ -110,12 +113,21 @@ function build_push() {
   # 判断 Dockerfile是否存在
   if [ ! -f "Dockerfile" ]; then
     log "build_push" "Dockerfile does not exist exit"
+    end
     exit 1
   fi
   docker build -f Dockerfile -t "$registry/$image_name:$image_tag" .
   log "build_push" "docker push $registry/$image_name:$image_tag"
   docker push "$registry/$image_name:$image_tag"
 }
+
+if command_exists docker; then
+  log "command_exists" "docker command exists"
+else
+  log "command_exists" "docker command does not exist"
+  end
+  exit 1
+fi
 
 if [ "$re_tag_flag" == "true" ]; then
   log "docker tag" "need re tag"
@@ -126,12 +138,4 @@ else
   build_push
 fi
 
-if command_exists docker; then
-  log "command_exists" "docker command exists"
-else
-  log "command_exists" "docker command does not exist"
-  log "docker build" ">>> docker build end <<<"
-  exit 1
-fi
-
-log "docker build" ">>> docker build end <<<"
+end

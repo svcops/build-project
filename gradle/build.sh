@@ -22,6 +22,9 @@ command_exists() {
 }
 
 log "gradle build" ">>> start <<<"
+function end() {
+  log "gradle build" ">>> end <<<"
+}
 
 cache=""
 image=""
@@ -50,13 +53,13 @@ while getopts ":c:i:x:" opt; do
   \?)
     log "getopts" "Invalid option: -$OPTARG"
     tips
-    log "gradle build" ">>> end <<<"
+    end
     exit 1
     ;;
   :)
     log "getopts" "Invalid option: -$OPTARG requires an argument"
     tips
-    log "gradle build" ">>> end <<<"
+    end
     exit 1
     ;;
   esac
@@ -68,7 +71,7 @@ function validate_param() {
   if [ -z "$value" ]; then
     log "validate_param" "parameter $key is empty, then exit"
     tips
-    log "gradle build" ">>> end <<<"
+    end
     exit 1
   else
     log "validate_param" "parameter $key : $value"
@@ -83,7 +86,7 @@ if command_exists docker; then
   log "command_exists" "docker command exists"
 else
   log "command_exists" "docker command does not exist"
-  log "gradle build" ">>> end <<<"
+  end
   exit 1
 fi
 
@@ -97,4 +100,4 @@ docker run --rm -u root \
   "$image" \
   $build
 
-log "gradle build" ">>> end <<<"
+end
