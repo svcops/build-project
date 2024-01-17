@@ -22,7 +22,6 @@ command_exists() {
 
 if command_exists docker; then
   log "command_exists" "docker 命令存在"
-  exit
 else
   log "command_exists" "docker 命令不存在"
   exit 1
