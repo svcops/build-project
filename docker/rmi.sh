@@ -93,7 +93,7 @@ fi
 
 if [ "$strategy" == "contain_latest" ]; then
 
-  con=$(docker docker image ls $image_name | grep -v $title_reg | grep -v "latest" | wc -l)
+  con=$(docker image ls $image_name | grep -v $title_reg | grep -v "latest" | wc -l)
 
   if [ $con -eq 0 ]; then
     log "contain_latest" "image doesn't exit ,then exit"
@@ -101,22 +101,22 @@ if [ "$strategy" == "contain_latest" ]; then
     exit
   fi
 
-  docker image rm -f $(docker docker image ls $image_name | grep -v $title_reg | grep -v "latest" | awk '{print $3}')
+  docker image rm -f $(docker image ls $image_name | grep -v $title_reg | grep -v "latest" | awk '{print $3}')
 
 elif [ "$strategy" == "remove_none" ]; then
 
-  con=$(docker docker image ls $image_name | grep -v $title_reg | grep "<none>" | wc -l)
+  con=$(docker image ls $image_name | grep -v $title_reg | grep "<none>" | wc -l)
   if [ $con -eq 0 ]; then
     log "remove_none" "image doesn't exit ,then exit"
     end
     exit
   fi
 
-  docker image rm -f $(docker docker image ls $image_name | grep -v $title_reg | grep "<none>" | awk '{print $3}')
+  docker image rm -f $(docker image ls $image_name | grep -v $title_reg | grep "<none>" | awk '{print $3}')
 
 elif [ "$strategy" == "all" ]; then
 
-  con=$(docker docker image ls $image_name | grep -v $title_reg | wc -l)
+  con=$(docker image ls $image_name | grep -v $title_reg | wc -l)
 
   if [ $con -eq 0 ]; then
     log "all" "image doesn't exit ,then exit"
@@ -124,7 +124,7 @@ elif [ "$strategy" == "all" ]; then
     exit
   fi
 
-  docker image rm -f $(docker docker image ls $image_name | grep -v $title_reg | awk '{print $3}')
+  docker image rm -f $(docker image ls $image_name | grep -v $title_reg | awk '{print $3}')
 
 fi
 
