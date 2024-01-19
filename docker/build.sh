@@ -28,24 +28,22 @@ function end() {
   log "docker build" ">>> docker build end <<<"
 }
 
-registry=""
 image_name=""
 image_tag=""
 re_tag_flag=""
+new_tag=""
+push_flag=""
 
 function tips() {
-  log "tips" "-m docker registry"
-  log "tips" "-i docker image"
-  log "tips" "-v docker tag"
-  log "tips" "-r re tag flag"
+  log "tips" "-i docker's image"
+  log "tips" "-v docker's tag"
+  log "tips" "-r re tag flag default tag version is "
+  log "tips" "-t docker's new tag"
+  log "tips" "-p push flag"
 }
 
-while getopts ":m:i:v:r:" opt; do
+while getopts ":i:v:r:t:p:" opt; do
   case ${opt} in
-  m)
-    log "getopts" "registry is: $OPTARG"
-    registry=$OPTARG
-    ;;
   i)
     log "getopts" "image name is : $OPTARG"
     image_name=$OPTARG
@@ -57,6 +55,14 @@ while getopts ":m:i:v:r:" opt; do
   r)
     log "getopts" "re tag flag is: $OPTARG"
     re_tag_flag=$OPTARG
+    ;;
+  t)
+    log "getopts" "new tag is: $OPTARG"
+    new_tag=$OPTARG
+    ;;
+  p)
+    log "getopts" "push flag is: $OPTARG"
+    push_flag=$OPTARG
     ;;
   \?)
     log "getopts" "Invalid option: -$OPTARG"
@@ -86,7 +92,6 @@ function validate_param() {
   fi
 }
 
-validate_param "registry" "$registry"
 validate_param "image_name" "$image_name"
 validate_param "image_tag" "$image_tag"
 
@@ -95,30 +100,68 @@ if [ "$re_tag_flag" == "" ]; then
   log "re tag" "need re tag"
 fi
 
+function validate_new_tag() {
+  log "validate_new_tag" "validate_new_tag"
+  if [ "$re_tag_flag" == "true" ]; then
+    # 验证不为空
+    validate_param "new_tag" "$new_tag"
+    if [ "$new_tag" == "$image_tag" ]; then
+      log "validate_new_tag" "validate failed , because new_tag == image_tag "
+      end
+      exit 1
+    else
+      # new tag
+      local image_exist=$(docker image ls $image_name | grep $new_tag | wc -l)
+      if [ $image_exist -eq 1 ]; then
+        log "validate_new_tag" "$image_name:$new_tag has existed,then use timestamp_tag"
+        local timestamp_tag=$(date '+%Y-%m-%d_%H-%M-%S')
+        new_tag=$timestamp_tag
+      fi
+    fi
+  fi
+
+}
+
+validate_new_tag
+
+if [ "$push_flag" == "" ]; then
+  push_flag="false"
+  log "push flag" "push flag default is false"
+fi
+
 function re_tag_push() {
-  local image_exist=$(docker image ls $registry/$image_name | grep $image_tag | wc -l)
+  local image_exist=$(docker image ls $image_name | grep $image_tag | wc -l)
+
   if [ $image_exist -eq 1 ]; then
-    log "re_tag_push" "image exists: $registry/$image_name:$image_tag"
-    timestamp_tag=$(date '+%Y-%m-%d_%H-%M-%S')
-    docker tag "$registry/$image_name:$image_tag" "$registry/$image_name:$timestamp_tag"
-    log "re_tag_push" "re tag,then push: docker push $registry/$image_name:$timestamp_tag"
-    docker push "$registry/$image_name:$timestamp_tag"
+    log "re_tag_push" "image exists: $image_name:$image_tag"
+    docker tag "$image_name:$image_tag" "$image_name:$new_tag"
+
+    if [ "$push_flag" == "true" ]; then
+      log "re_tag_push" "re tag,then push: docker push $image_name:$new_tag"
+      docker push "$image_name:$new_tag"
+    fi
+
   else
-    log "re_tag_push" "image does not exist: $registry/$image_name:$image_tag"
+    log "re_tag_push" "image does not exist: $image_name:$image_tag"
   fi
 }
 
 function build_push() {
-  log "build_push" "docker build -f Dockerfile -t $registry/$image_name:$image_tag ."
+
+  log "build_push" "docker build -f Dockerfile -t $image_name:$image_tag ."
   # 判断 Dockerfile是否存在
   if [ ! -f "Dockerfile" ]; then
     log "build_push" "Dockerfile does not exist exit"
     end
     exit 1
   fi
-  docker build -f Dockerfile -t "$registry/$image_name:$image_tag" .
-  log "build_push" "docker push $registry/$image_name:$image_tag"
-  docker push "$registry/$image_name:$image_tag"
+
+  docker build -f Dockerfile -t "$image_name:$image_tag" .
+  log "build_push" "docker push $image_name:$image_tag"
+
+  if [ "$push_flag" == "true" ]; then
+    docker push "$image_name:$image_tag"
+  fi
 }
 
 if command_exists docker; then
@@ -129,12 +172,14 @@ else
   exit 1
 fi
 
+# docker pull $image_name:$image_tag
+
 if [ "$re_tag_flag" == "true" ]; then
-  log "docker tag" "need re tag"
+  log "docker tag" "do re_tag_push and build_push"
   re_tag_push
   build_push
 else
-  log "docker tag" "do need re tag"
+  log "docker tag" "do build_push"
   build_push
 fi
 
