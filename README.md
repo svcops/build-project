@@ -18,7 +18,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 
 ## build golang project
 
-> build gradle project by docker
+> build golang project by docker
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang/build.sh) \
