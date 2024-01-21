@@ -93,13 +93,13 @@ fi
 
 log "build" "========== build golang's project in docker =========="
 
-docker run --rm -v "$PWD":/usr/src/myapp \
+docker run --rm -v "$PWD:/usr/src/myapp" \
   --network=host \
   -w /usr/src/myapp \
-  -e "CGO_ENABLED=0 " \
-  -e "GOPROXY=https://goproxy.cn,direct" \
-  -e "GOPATH=/opt/go" \
-  -v "$cache:/opt/go" \
+  -e CGO_ENABLED=0 \
+  -e GOPROXY=https://goproxy.cn,direct \
+  -e GOPATH=/opt/go \
+  -v $cache:/opt/go \
   "$image" \
   $build
 
