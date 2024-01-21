@@ -2,6 +2,7 @@
 # shellcheck disable=SC2086
 # shellcheck disable=SC2046
 # shellcheck disable=SC2126
+# shellcheck disable=SC2155
 
 function log() {
   local log_remark="$1"
@@ -13,8 +14,7 @@ function log() {
   if [ -z "$log_message" ]; then
     log_message="default message"
   fi
-  local current_time
-  current_time=$(date +"%Y-%m-%d %H:%M:%S")
+  local current_time=$(date +"%Y-%m-%d %H:%M:%S")
   echo -e "$current_time - [ $log_remark ] $log_message"
 }
 
