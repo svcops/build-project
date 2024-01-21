@@ -16,6 +16,22 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 - `-x`: gradle的命令
     - e.g. : `gradle clean build -x test`
 
+## build golang project
+
+> build gradle project by docker
+
+```shell
+bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang/build.sh) \
+-c <cache_volume> \
+-i <gradle_image> \
+-x <gradle_command>
+```
+
+- `-c`: golang缓存: 使用`docker volume`挂载
+- `-i`: golang的镜像
+- `-x`: golang的命令
+    - e.g. : `go build -v -o application`
+
 ## build docker's image (and push)
 
 > by Dockerfile
@@ -41,6 +57,6 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 
 - `-i`: 镜像的名称
 - `-s`: 删除的策略：默认策略 `contain_latest`
-  - `contain_latest` 保留 `latest` 镜像，删除其他镜像
-  - `remove_none` 删除 `none` 的镜像
-  - `all`: 删除所有镜像
+    - `contain_latest` 保留 `latest` 镜像，删除其他镜像
+    - `remove_none` 删除 `none` 的镜像
+    - `all`: 删除所有镜像
