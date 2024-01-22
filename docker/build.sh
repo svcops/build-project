@@ -1,7 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2086
-# shellcheck disable=SC2155
-# shellcheck disable=SC2126
+# shellcheck disable=SC2086 disable=SC2155 disable=SC2126
 
 function log() {
   local log_remark="$1"
@@ -44,33 +42,33 @@ function tips() {
 while getopts ":i:v:r:t:p:" opt; do
   case ${opt} in
   i)
-    log "getopts" "image name is : $OPTARG"
+    log "get opts" "image name is : $OPTARG"
     image_name=$OPTARG
     ;;
   v)
-    log "getopts" "image tag is : $OPTARG"
+    log "get opts" "image tag is : $OPTARG"
     image_tag=$OPTARG
     ;;
   r)
-    log "getopts" "re tag flag is: $OPTARG"
+    log "get opts" "re tag flag is: $OPTARG"
     re_tag_flag=$OPTARG
     ;;
   t)
-    log "getopts" "new tag is: $OPTARG"
+    log "get opts" "new tag is: $OPTARG"
     new_tag=$OPTARG
     ;;
   p)
-    log "getopts" "push flag is: $OPTARG"
+    log "get opts" "push flag is: $OPTARG"
     push_flag=$OPTARG
     ;;
   \?)
-    log "getopts" "Invalid option: -$OPTARG"
+    log "get opts" "Invalid option: -$OPTARG"
     tips
     end
     exit 1
     ;;
   :)
-    log "getopts" "Invalid option: -$OPTARG requires an argument"
+    log "get opts" "Invalid option: -$OPTARG requires an argument"
     tips
     end
     exit 1
@@ -146,7 +144,6 @@ function re_tag_push() {
 }
 
 function build_push() {
-
   log "build_push" "docker build -f Dockerfile -t $image_name:$image_tag ."
   # 判断 Dockerfile是否存在
   if [ ! -f "Dockerfile" ]; then

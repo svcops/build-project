@@ -1,8 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2086
-# shellcheck disable=SC2046
-# shellcheck disable=SC2126
-# shellcheck disable=SC2155
+# shellcheck disable=SC2086 disable=SC2046 disable=SC2126 disable=SC2155
 
 function log() {
   local log_remark="$1"
@@ -41,21 +38,21 @@ strategy=""
 while getopts ":i:s:" opt; do
   case ${opt} in
   i)
-    log "getopts" "image name is : $OPTARG"
+    log "get opts" "image name is : $OPTARG"
     image_name=$OPTARG
     ;;
   s)
-    log "getopts" "remove strategy is : $OPTARG"
+    log "get opts" "remove strategy is : $OPTARG"
     strategy=$OPTARG
     ;;
   \?)
-    log "getopts" "Invalid option: -$OPTARG"
+    log "get opts" "Invalid option: -$OPTARG"
     tips
     end
     exit 1
     ;;
   :)
-    log "getopts" "Invalid option: -$OPTARG requires an argument"
+    log "get opts" "Invalid option: -$OPTARG requires an argument"
     tips
     end
     exit 1

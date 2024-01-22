@@ -7,7 +7,6 @@ function log() {
   if [ -z "$log_remark" ]; then
     log_remark="default remark"
   fi
-
   if [ -z "$log_message" ]; then
     log_message="default message"
   fi

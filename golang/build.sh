@@ -1,7 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2086
-# shellcheck disable=SC2155
-# shellcheck disable=SC2126
+# shellcheck disable=SC2086 disable=SC2155 disable=SC2126
 
 function log() {
   local log_remark="$1"
@@ -9,7 +7,6 @@ function log() {
   if [ -z "$log_remark" ]; then
     log_remark="default remark"
   fi
-
   if [ -z "$log_message" ]; then
     log_message="default message"
   fi
@@ -40,25 +37,25 @@ function tips() {
 while getopts ":c:i:x:" opt; do
   case ${opt} in
   c)
-    log "getopts" "process's cache; docker's volume is: $OPTARG"
+    log "get opts" "process's cache; docker's volume is: $OPTARG"
     cache=$OPTARG
     ;;
   i)
-    log "getopts" "process's image; docker's image is: $OPTARG"
+    log "get opts" "process's image; docker's image is: $OPTARG"
     image=$OPTARG
     ;;
   x)
-    log "getopts" "process's command; golang's command is: $OPTARG"
+    log "get opts" "process's command; golang's command is: $OPTARG"
     build=$OPTARG
     ;;
   \?)
-    log "getopts" "Invalid option: -$OPTARG"
+    log "get opts" "Invalid option: -$OPTARG"
     tips
     end
     exit 1
     ;;
   :)
-    log "getopts" "Invalid option: -$OPTARG requires an argument"
+    log "get opts" "Invalid option: -$OPTARG requires an argument"
     tips
     end
     exit 1
