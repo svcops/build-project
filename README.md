@@ -1,5 +1,13 @@
 # build project
 
+## source log
+
+```shell
+source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+
+log "hello" "world"
+```
+
 ## build gradle project
 
 > build gradle project by docker
