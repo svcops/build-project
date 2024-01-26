@@ -14,15 +14,15 @@ log "hello" "world"
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
--c <cache_volume> \
--i <gradle_image> \
--x <gradle_command>
+  -c <cache_volume> \
+  -i <gradle_image> \
+  -x <gradle_command>
 ```
 
 - `-c`: gradle缓存: 使用`docker volume`挂载
 - `-i`: gradle的镜像
 - `-x`: gradle的命令
-    - e.g. : `gradle clean build -x test`
+  - e.g. : `gradle clean build -x test`
 
 ## build golang project
 
@@ -30,15 +30,15 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang/build.sh) \
--c <cache_volume> \
--i <gradle_image> \
--x <gradle_command>
+  -c <cache_volume> \
+  -i <gradle_image> \
+  -x <gradle_command>
 ```
 
 - `-c`: golang缓存: 使用`docker volume`挂载
 - `-i`: golang的镜像
 - `-x`: golang的命令
-    - e.g. : `go build -v -o application`
+  - e.g. : `go build -v -o application`
 
 ## build docker's image (and push)
 
@@ -46,11 +46,11 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
--i <image_name> \
--v <image_tag> \
--r <re_tag_false> \
--t <new_tag> \
--p <push_flag>
+  -i <image_name> \
+  -v <image_tag> \
+  -r <re_tag_false> \
+  -t <new_tag> \
+  -p <push_flag>
 ```
 
 - `-i`: 构建的镜像名称
@@ -65,6 +65,6 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 
 - `-i`: 镜像的名称
 - `-s`: 删除的策略：默认策略 `contain_latest`
-    - `contain_latest` 保留 `latest` 镜像，删除其他镜像
-    - `remove_none` 删除 `none` 的镜像
-    - `all`: 删除所有镜像
+  - `contain_latest` 保留 `latest` 镜像，删除其他镜像
+  - `remove_none` 删除 `none` 的镜像
+  - `all`: 删除所有镜像
