@@ -1,13 +1,13 @@
 # shellcheck disable=SC2155
 function log() {
-  local log_remark="$1"
-  local log_message="$2"
-  if [ -z "$log_remark" ]; then
-    log_remark="unknown remark"
+  local remark="$1"
+  local msg="$2"
+  if [ -z "$remark" ]; then
+    remark="unknown remark"
   fi
-  if [ -z "$log_message" ]; then
-    log_message="unknown message"
+  if [ -z "$msg" ]; then
+    msg="unknown message"
   fi
-  local current_time=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "$current_time - [ $log_remark ] $log_message"
+  local now=$(date +"%Y-%m-%d %H:%M:%S")
+  echo -e "$now - [ $remark ] $msg"
 }
