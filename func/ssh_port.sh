@@ -16,3 +16,5 @@ else
 fi
 
 echo "$ssh_port"
+
+# use $?
