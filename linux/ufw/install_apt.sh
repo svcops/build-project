@@ -6,8 +6,7 @@ source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/
 log "command_exists" "ufw"
 
 function detect_ssh_port() {
-  bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh)
-  ssh_port=$?
+  ssh_port=$(bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh))
   log "ssh_port" "ssh port is $ssh_port"
 }
 
