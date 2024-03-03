@@ -68,3 +68,11 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
   - `contain_latest` 保留 `latest` 镜像，删除其他镜像
   - `remove_none` 删除 `none` 的镜像
   - `all`: 删除所有镜像
+
+## docker install
+
+debian系 安装 docker
+
+```shell
+bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) OS SRC
+```
