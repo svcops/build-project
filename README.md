@@ -8,9 +8,9 @@ source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/
 log "hello" "world"
 ```
 
-## build gradle project
+## build gradle's project
 
-> build gradle project by docker
+build gradle's project by docker
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
@@ -24,9 +24,9 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 - `-x`: gradle的命令
   - e.g. : `gradle clean build -x test`
 
-## build golang project
+## build golang's project
 
-> build golang project by docker
+build golang's project by docker
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang/build.sh) \
@@ -75,4 +75,12 @@ debian系 安装 docker
 
 ```shell
 bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) OS SRC
+````
+
+## maven config
+
+config `settings.xml`
+
+```shell
+bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/maven/config.sh)
 ```
