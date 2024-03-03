@@ -12,25 +12,29 @@ function tips() {
 }
 
 if [ "$OS" == "debian" ]; then
+
   if [ "$SRC" == "docker" ]; then
     log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
-    # todo
+    bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install.sh)
   elif [ "$SRC" == "tsinghua" ]; then
     log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
-    # todo
+    bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install_cn.sh)
   else
     tips
   fi
+
 elif [ "$OS" == "ubuntu" ]; then
+
   if [ "$SRC" == "docker" ]; then
     log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
-    # todo
+    bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install.sh)
   elif [ "$SRC" == "tsinghua" ]; then
     log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
-    # todo
+    bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install_cn.sh)
   else
     tips
   fi
+
 else
   tips
 fi
