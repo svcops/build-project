@@ -11,6 +11,8 @@ function detect_ssh_port() {
   log "ssh_port" "ssh port is $ssh_port"
 }
 
+detect_ssh_port
+
 if command_exists ufw; then
   echo "ufw is installed."
   # todo
