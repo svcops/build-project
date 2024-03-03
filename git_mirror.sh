@@ -1,5 +1,5 @@
 #!/bin/bash
-git remote set-url origin https://gitlab.com/iprt/build-project
+git remote set-url origin https://gitlab.com/iprt/build-project.git
 git remote -vv
 git push -u origin HEAD
 
