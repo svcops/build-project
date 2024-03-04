@@ -13,7 +13,7 @@ function detect_ssh_port() {
 detect_ssh_port
 
 function install_ufw() {
-  apt install -y ufw
+  apt-get install -y ufw
 }
 
 function enable_ufw() {
