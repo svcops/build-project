@@ -19,7 +19,7 @@ function install_ufw() {
 function enable_ufw() {
   log "ufw" "enable_ufw"
   systemctl enable ufw
-  ufw enable
+  echo -e "y\n" | ufw enable
   ufw status
 }
 
