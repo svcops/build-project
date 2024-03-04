@@ -10,4 +10,4 @@ log "system os" "os is $(bash <(curl -sSL https://code.kubectl.net/devops/build-
 apt update -y
 apt upgrade -y
 
-apt install -y sudo vim git wget net-tools
+apt install -y sudo vim git wget net-tools jq
