@@ -34,26 +34,45 @@ function ufw_allow_ssh() {
   ufw status
 }
 
+function ufw_allow_80_443() {
+  log "ufw" "ufw_allow_ssh"
+  ufw allow 80
+  ufw allow 443
+  ufw reload
+  ufw status
+}
+
 function tips() {
   log "tips" "install strategy: oi (only install and do not config), oics (install and config ssh)"
   log "tips" "e.g.: bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/linux/ufw/install_apt.sh) oi"
   log "tips" "e.g.: bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/linux/ufw/install_apt.sh) oics"
 }
 
-if command_exists ufw; then
-  echo "ufw is installed."
-else
-  echo "ufw is NOT installed."
-fi
-
 strategy=$1
 
-if [ "$strategy" == "oi" ]; then
-  install_ufw
-elif [ "$strategy" == "oics" ]; then
-  install_ufw
-  enable_ufw
-  ufw_allow_ssh
+if command_exists ufw; then
+
+  echo "ufw is installed."
+  if [ "$strategy" == "oics" ]; then
+    enable_ufw
+    ufw_allow_ssh
+    ufw_allow_80_443
+  else
+    tips
+  fi
+
 else
-  tips
+
+  echo "ufw is NOT installed."
+  if [ "$strategy" == "oi" ]; then
+    install_ufw
+  elif [ "$strategy" == "oics" ]; then
+    install_ufw
+    enable_ufw
+    ufw_allow_ssh
+    ufw_allow_80_443
+  else
+    tips
+  fi
+
 fi
