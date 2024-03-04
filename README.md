@@ -1,11 +1,30 @@
 # build project
 
-## source log
+## functions
+
+### log func
 
 ```shell
 source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
 
 log "hello" "world"
+```
+
+### command_exists func
+
+```shell
+source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+
+if command_exists docker ; then
+    echo "command docker exists"
+fi
+```
+
+### detect ssh port
+
+```shell
+ssh_port="$(bash <(https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh)"
+echo "ssh port is $ssh_port"
 ```
 
 ## build gradle's project
