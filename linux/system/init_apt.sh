@@ -7,6 +7,7 @@ log "system os" "os is $(bash <(curl -sSL https://code.kubectl.net/devops/build-
 
 apt-get update -y
 
+# WARNING: apt does not have a stable CLI interface. Use with caution in scripts
 export DEBIAN_FRONTEND=noninteractive
 apt-get-o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y --allow-downgrades --allow-remove-essential --allow-change-held-packages
 
