@@ -1,6 +1,7 @@
 # build project
 
 <!-- TOC -->
+
 * [build project](#build-project)
   * [functions](#functions)
     * [log func](#log-func)
@@ -14,6 +15,7 @@
     * [install docker](#install-docker)
   * [develop](#develop)
     * [config maven](#config-maven)
+
 <!-- TOC -->
 
 ## functions
@@ -108,11 +110,14 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 
 ### install docker
 
-debian系 安装 docker
+**debian系** 安装 docker
 
 ```shell
 bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) OS SRC
 ````
+
+- OS: 操作系统类型 (`debian` / `ubuntu`)
+- SRC: 源 (`docker` 官方源 / `tsinghua` 清华源)
 
 ## develop
 
