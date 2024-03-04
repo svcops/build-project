@@ -39,10 +39,10 @@ function ufw_allow_ssh() {
 
 function ufw_allow_80_443() {
   log "ufw" "ufw_allow_ssh"
-  ufw allow 80
-  ufw allow 443
-  ufw reload
-  ufw status
+#  ufw allow 80
+#  ufw allow 443
+#  ufw reload
+#  ufw status
 }
 
 function tips() {
