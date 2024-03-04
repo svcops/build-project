@@ -1,5 +1,21 @@
 # build project
 
+<!-- TOC -->
+* [build project](#build-project)
+  * [functions](#functions)
+    * [log func](#log-func)
+    * [command_exists func](#command_exists-func)
+    * [detect ssh port](#detect-ssh-port)
+  * [build gradle's project](#build-gradles-project)
+  * [build golang's project](#build-golangs-project)
+  * [docker](#docker)
+    * [build docker's image (and push)](#build-dockers-image-and-push)
+    * [remove docker's image](#remove-dockers-image)
+    * [install docker](#install-docker)
+  * [develop](#develop)
+    * [config maven](#config-maven)
+<!-- TOC -->
+
 ## functions
 
 ### log func
@@ -59,7 +75,9 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang
 - `-x`: golang的命令
   - e.g. : `go build -v -o application`
 
-## build docker's image (and push)
+## docker
+
+### build docker's image (and push)
 
 > by Dockerfile
 
@@ -78,7 +96,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 - `-t`: 对于存在的镜像，重新tag的版本
 - `-p`: 是否push到仓库中
 
-## docker image rm -f
+### remove docker's image
 
 参考 [for.sh](test/for.sh)
 
@@ -88,7 +106,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
   - `remove_none` 删除 `none` 的镜像
   - `all`: 删除所有镜像
 
-## docker install
+### install docker
 
 debian系 安装 docker
 
@@ -96,9 +114,11 @@ debian系 安装 docker
 bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) OS SRC
 ````
 
-## maven config
+## develop
 
-config `settings.xml`
+### config maven
+
+config maven `settings.xml`
 
 ```shell
 bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/maven/config.sh)
