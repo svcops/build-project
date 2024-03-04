@@ -14,6 +14,10 @@ detect_ssh_port
 
 function install_ufw() {
   apt-get install -y ufw
+  log "ufw_config" "IPV6=no"
+  if [ -f "/etc/default/ufw" ]; then
+    sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
+  fi
 }
 
 function enable_ufw() {
