@@ -15,6 +15,9 @@ detect_ssh_port
 function install_ufw() {
   apt-get install -y ufw
   log "ufw_config" "IPV6=no"
+}
+
+function config_ufw() {
   if [ -f "/etc/default/ufw" ]; then
     sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
   fi
@@ -55,6 +58,7 @@ if command_exists ufw; then
   echo "ufw is installed."
   if [ "$strategy" == "oics" ]; then
     enable_ufw
+    config_ufw
     ufw_allow_ssh
     ufw_allow_80_443
   else
@@ -69,6 +73,7 @@ else
   elif [ "$strategy" == "oics" ]; then
     install_ufw
     enable_ufw
+    config_ufw
     ufw_allow_ssh
     ufw_allow_80_443
   else
