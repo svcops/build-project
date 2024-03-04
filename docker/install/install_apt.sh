@@ -39,3 +39,11 @@ elif [ "$OS" == "ubuntu" ]; then
 else
   tips
 fi
+
+function config_docker() {
+  log "config docker" "systemctl enable docker"
+  systemctl enable docker
+  log "config docker" "systemctl is-enabled docker is $(systemctl is-enabled docker)"
+}
+
+config_docker
