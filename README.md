@@ -113,11 +113,10 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 **debian系** 安装 docker
 
 ```shell
-bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) OS SRC
+bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) SRC
 ````
 
-- OS: 操作系统类型 (`debian` / `ubuntu`)
-- SRC: 源 (`docker` 官方源 / `tsinghua` 清华源)
+- SRC: 源 (`docker` 官方源 / `tsinghua` 清华源 / `aliyun` 阿里云)
 
 ## develop
 
