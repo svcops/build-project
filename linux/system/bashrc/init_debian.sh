@@ -6,7 +6,7 @@ log "bashrc" "init bashrc"
 
 log "bashrc" "try delete"
 
-sed '/^#9d5049f5-3f12-4004-9ac8-196956e91184/,/#58efd70b-e5be-4d58-856a-5807ed05b29d/d' /etc/sysctl.conf
+sed '/^#9d5049f5-3f12-4004-9ac8-196956e91184/,/#58efd70b-e5be-4d58-856a-5807ed05b29d/d' /root/.bashrc
 
 log "bashrc" "then append"
 cat <<EOF >>/root/.bashrc
