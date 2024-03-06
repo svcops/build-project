@@ -1,11 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2155  disable=SC1090
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-
-command_exists() {
-  # this should return the exit status of 'command -v'
-  command -v "$1" >/dev/null 2>&1
-}
+source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
 
 log "gradle build" ">>> start <<<"
 function end() {

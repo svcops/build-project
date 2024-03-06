@@ -1,16 +1,11 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2046 disable=SC2126 disable=SC2155 disable=SC1090
-
 source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
 
 log "docker rmi" ">>> docker rmi start <<<"
 function end() {
   log "docker rmi" ">>> docker rmi end <<<"
-}
-
-command_exists() {
-  # this should return the exit status of 'command -v'
-  command -v "$1" >/dev/null 2>&1
 }
 
 function tips() {
