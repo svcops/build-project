@@ -31,15 +31,15 @@ detect_os
 # 判断docker命令是否存在
 function docker_exists() {
   if command_exists docker; then
-    log "do_install" "Warning: the \"docker\" command appears to already exist on this system"
-    log "do_install" "    "
-    log "do_install" "If you already have Docker installed, this script can cause trouble, which is"
-    log "do_install" "why we're displaying this warning and provide the opportunity to cancel the"
-    log "do_install" "installation."
-    log "do_install" "    "
-    log "do_install" "If you installed the current Docker package using this script and are using it"
-    log "do_install" "again to update Docker, you can safely ignore this message."
-    log "do_install" "    "
+    log "prepare" "Warning: the \"docker\" command appears to already exist on this system"
+    log "prepare" "    "
+    log "prepare" "If you already have Docker installed, this script can cause trouble, which is"
+    log "prepare" "why we're displaying this warning and provide the opportunity to cancel the"
+    log "prepare" "installation."
+    log "prepare" "    "
+    log "prepare" "If you installed the current Docker package using this script and are using it"
+    log "prepare" "again to update Docker, you can safely ignore this message."
+    log "prepare" "    "
     exit
   fi
 }
