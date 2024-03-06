@@ -1,6 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2155  disable=SC1090
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
 
 command_exists() {
   # this should return the exit status of 'command -v'
@@ -67,6 +67,14 @@ function validate_param() {
 validate_param "cache" "$cache"
 validate_param "image" "$image"
 validate_param "build" "$build"
+
+if [[ $cache =~ ^[a-zA-Z0-9_.-]+$ ]]; then
+  log "cache_str_validate" "cache str validate success"
+else
+  log "cache_str_validate" "cache str contains only English characters, digits, underscores, dots, and hyphens."
+  log "cache_str_validate" "cache str validate failed"
+  exit 1
+fi
 
 if command_exists docker; then
   log "command_exists" "docker command exists"
