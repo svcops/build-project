@@ -16,6 +16,6 @@ sudo rm -rf /var/lib/docker
 log "uninstall" "rm -rf /var/lib/containerd"
 sudo rm -rf /var/lib/containerd
 
-log "prepare" "Run the following command to uninstall all conflicting packages"
+log "uninstall" "Run the following command to uninstall all conflicting packages"
 
 for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
