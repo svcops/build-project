@@ -13,6 +13,8 @@
     * [build docker's image (and push)](#build-dockers-image-and-push)
     * [remove docker's image](#remove-dockers-image)
     * [install docker](#install-docker)
+  * [linux](#linux)
+    * [bashrc](#bashrc)
   * [develop](#develop)
     * [config maven](#config-maven)
 
@@ -117,6 +119,16 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/do
 ````
 
 - SRC: 源 (`docker` 官方源 / `tsinghua` 清华源 / `aliyun` 阿里云)
+
+## linux
+
+### bashrc
+
+debian
+
+```shell
+bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/linux/system/bashrc/init_debian.sh)
+```
 
 ## develop
 
