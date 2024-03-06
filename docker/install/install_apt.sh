@@ -1,8 +1,8 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2155
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
 
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
 
 # Debian or Ubuntu
 OS=""
