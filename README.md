@@ -8,6 +8,7 @@
     * [command_exists func](#command_exists-func)
     * [detect ssh port](#detect-ssh-port)
   * [build gradle's project](#build-gradles-project)
+  * [build maven's project](#build-mavens-project)
   * [build golang's project](#build-golangs-project)
   * [docker](#docker)
     * [build docker's image (and push)](#build-dockers-image-and-push)
@@ -62,6 +63,24 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 - `-i`: gradle的镜像
 - `-x`: gradle的命令
   - e.g. : `gradle clean build -x test`
+
+## build maven's project
+
+build maven's project by docker
+
+```shell
+bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
+  -c <cache_volume> \
+  -i <maven_image> \
+  -s <path/to/settings.xml> \
+  -x <maven_command>
+```
+
+- `-c`: maven缓存
+- `-i`: maven镜像
+- `-s`: maven `settings.xml` 在本地的路径
+- `-x`: maven执行的命令
+  - e.g. : `mvn clean install -Dmaven.test.skip=true`
 
 ## build golang's project
 
