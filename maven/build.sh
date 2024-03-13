@@ -102,3 +102,5 @@ docker run -i --rm -u root \
   -v "$settings":/usr/share/maven/ref/settings.xml \
   "$image" \
   "$build"
+
+end
