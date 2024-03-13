@@ -3,22 +3,24 @@
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
 
-log "gradle build" ">>> start <<<"
+log "maven build" ">>> start <<<"
 function end() {
-  log "gradle build" ">>> end <<<"
+  log "maven build" ">>> end <<<"
 }
 
 cache=""
 image=""
 build=""
+settings=""
 
 function tips() {
   log "tips" "-c user docker volume's to cache the build process"
-  log "tips" "-i gradle's docker image"
-  log "tips" "-x gradle's build command"
+  log "tips" "-i maven's docker image"
+  log "tips" "-x maven's build command"
+  log "tips" "-x maven's settings.xml path"
 }
 
-while getopts ":c:i:x:" opt; do
+while getopts ":c:i:x:s:" opt; do
   case ${opt} in
   c)
     log "get opts" "process's cache; docker's volume is: $OPTARG"
@@ -29,8 +31,12 @@ while getopts ":c:i:x:" opt; do
     image=$OPTARG
     ;;
   x)
-    log "get opts" "process's command; gradle's command is: $OPTARG"
+    log "get opts" "process's command; maven's command is: $OPTARG"
     build=$OPTARG
+    ;;
+  s)
+    log "get opts" "process's settings; maven's settings.xml is: $OPTARG"
+    settings=$OPTARG
     ;;
   \?)
     log "get opts" "Invalid option: -$OPTARG"
@@ -63,12 +69,18 @@ function validate_param() {
 validate_param "cache" "$cache"
 validate_param "image" "$image"
 validate_param "build" "$build"
+validate_param "settings" "$settings"
 
 if [[ $cache =~ ^[a-zA-Z0-9_.-]+$ ]]; then
   log "cache_str_validate" "cache str validate success"
 else
   log "cache_str_validate" "cache str contains only English characters, digits, underscores, dots, and hyphens."
   log "cache_str_validate" "cache str validate failed"
+  exit 1
+fi
+
+if [ ! -f $settings ]; then
+  log "settings.xml" "settings.xml path error"
   exit 1
 fi
 
@@ -80,14 +92,13 @@ else
   exit 1
 fi
 
-log "build" "========== build gradle's project in docker =========="
+log "build" "========== build maven's project in docker =========="
 
-docker run --rm -u root \
+docker run -i --rm -u root \
   --network=host \
-  -v "$PWD":/home/gradle/project \
-  -w /home/gradle/project \
-  -v "$cache:/home/gradle/.gradle" \
+  -v "$(pwd)":/usr/src/app \
+  -w /usr/src/app \
+  -v "$cache":/root/.m2 \
+  -v "$settings":/usr/share/maven/ref/settings.xml \
   "$image" \
-  $build
-
-end
+  "$build"
