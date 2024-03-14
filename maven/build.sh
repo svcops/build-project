@@ -17,7 +17,7 @@ function tips() {
   log "tips" "-c user docker volume's to cache the build process"
   log "tips" "-i maven's docker image"
   log "tips" "-x maven's build command"
-  log "tips" "-x maven's settings.xml path"
+  log "tips" "-s maven's settings.xml path"
 }
 
 while getopts ":c:i:x:s:" opt; do
@@ -98,7 +98,7 @@ docker run -i --rm -u root \
   --network=host \
   -v "$(pwd)":/usr/src/app \
   -w /usr/src/app \
-  -v "$cache":/root/.m2 \
+  -v "$cache":/root/.m2/repository \
   -v "$settings":/usr/share/maven/ref/settings.xml \
   "$image" \
   $build
