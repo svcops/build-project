@@ -56,31 +56,32 @@ function tips() {
 SRC=$1
 
 function do_install() {
-  if [ "$OS" == "Debian" ]; then
 
+  if [ "$OS" == "Debian" ]; then
+    # install docker on Debian
     if [ "$SRC" == "docker" ]; then
-      log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
+      log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
       bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install.sh)
     elif [ "$SRC" == "tsinghua" ]; then
-      log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
+      log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
       bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install_tsinghua.sh)
     elif [ "$SRC" == "aliyun" ]; then
-      log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
+      log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
       bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install_aliyun.sh)
     else
       tips
     fi
 
   elif [ "$OS" == "Ubuntu" ]; then
-
+    # install docker on Ubuntu
     if [ "$SRC" == "docker" ]; then
-      log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
+      log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
       bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install.sh)
     elif [ "$SRC" == "tsinghua" ]; then
-      log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
+      log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
       bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install_tsinghua.sh)
     elif [ "$SRC" == "aliyun" ]; then
-      log "install" "当前的操作系统为 $OS, 当前的源为 $SRC"
+      log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
       bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install_aliyun.sh)
     else
       tips
