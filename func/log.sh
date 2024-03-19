@@ -1,4 +1,3 @@
-# shellcheck disable=SC2155
 function log() {
   local remark="$1"
   local msg="$2"
@@ -8,6 +7,7 @@ function log() {
   if [ -z "$msg" ]; then
     msg="unknown message"
   fi
+  # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
   echo -e "$now - [ $remark ] $msg"
 }
