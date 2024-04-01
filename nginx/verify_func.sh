@@ -1,14 +1,19 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2164
+# shellcheck disable=SC1090 disable=SC2164 disable=SC2126
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
 
 function verify_nginx_configuration() {
   log "nginx" "Verify the nginx configuration file that docker-compose starts"
 
+  local docker_in_docker="false"
   if ! command_exists docker; then
     log "nginx" "docker command does not exits"
     return 1
+  elif docker compose 2>&1 | grep -q "^docker: 'compose' is not a docker command."; then
+    log "nginx" "docker: 'compose' is not a docker command."
+    log "nginx" "use docker in docker"
+    docker_in_docker="true"
   fi
 
   local compose_file=$2
@@ -47,11 +52,11 @@ function verify_nginx_configuration() {
     log "nginx" "docker-compose -f $compose_file run --rm -it $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
     # 2>&1 重定向到标准输出
     output=$(docker-compose -f "$compose_file" run --rm -it "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:')
-  elif [ -S "/var/run/docker.sock" ]; then
+  elif [ "true" == "$docker_in_docker" ]; then
     log "nginx" "use docker compose plugin (docker in docker)"
 
     log "nginx" "$(
-      docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock \
+      docker run --rm -it -v "/var/run/docker.sock:/var/run/docker.sock" \
         -v "$COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER" \
         --privileged \
         docker \
@@ -61,9 +66,9 @@ function verify_nginx_configuration() {
     log "nginx" "\n  docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER --privileged docker $compose_command"
 
     output=$(
-      docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock \
+      docker run --rm -it --privileged \
+        -v "/var/run/docker.sock:/var/run/docker.sock" \
         -v "$COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER" \
-        --privileged \
         docker \
         docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -it "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:'
     )
