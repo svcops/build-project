@@ -17,11 +17,11 @@ push_flag=""
 
 function tips() {
   log "tips" "-f path/to/dockerfile, optional"
-  log "tips" "-i docker's image"
-  log "tips" "-v docker's tag"
-  log "tips" "-r re tag flag default tag version is timestamp_tag"
-  log "tips" "-t docker's new tag"
-  log "tips" "-p push flag, default false"
+  log "tips" "-i the name of the image to be built"
+  log "tips" "-v the tag of the image to be built"
+  log "tips" "-r re tag flag, default <true>"
+  log "tips" "-t the new_tag of the image to be built"
+  log "tips" "-p push flag, default <false>"
 }
 
 while getopts ":f:i:v:r:t:p:" opt; do
@@ -138,9 +138,8 @@ function re_tag_push() {
 }
 
 # ---
-if [ -z "$path_to_dockerfile" ]; then
+if [ -z "$path_to_dockerfile" ]; then # path_to_dockerfile is empty
   log "dockerfile" "path_to_dockerfile is empty, try use default (DOCKERFILE or Dockerfile or dockerfile)"
-  # -f 参数为空
   if [ -f "DOCKERFILE" ]; then
     path_to_dockerfile="DOCKERFILE"
   elif [ -f "Dockerfile" ]; then
@@ -152,8 +151,7 @@ if [ -z "$path_to_dockerfile" ]; then
     end
     exit 1
   fi
-elif [ ! -f "$path_to_dockerfile" ]; then
-  # -f 参数不为空
+elif [ ! -f "$path_to_dockerfile" ]; then # path_to_dockerfile is not empty
   log "build_push" "Dockerfile does not exist exit"
   end
   exit 1
