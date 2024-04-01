@@ -19,7 +19,7 @@ function verify_nginx_configuration() {
       return 1
     fi
   elif [ ! -f "$compose_file" ]; then
-    log "nginx" "compose file does not exits"
+    log "nginx" "compose file does not exits, [compose_file=$compose_file,service_name=$service_name] then return 1"
     return 1
   fi
 
