@@ -25,6 +25,7 @@ function verify_nginx_configuration() {
     log "nginx" "output is empty. Unknown Configuration"
     return 1
   fi
+
   # template
 
   #nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
