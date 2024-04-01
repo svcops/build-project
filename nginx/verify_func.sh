@@ -40,7 +40,7 @@ function verify_nginx_configuration() {
   fi
 
   if [ -z "$output" ]; then
-    log "nginx" "output is empty. Unknown Configuration"
+    log "nginx" "output is empty. Unknown Configuration. return 1"
     return 1
   fi
 
