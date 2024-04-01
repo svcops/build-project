@@ -107,6 +107,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
+  -f [path\to\Dockerfile] \
   -i <image_name> \
   -v <image_tag> \
   -r <re_tag_false> \
@@ -114,6 +115,8 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
   -p <push_flag>
 ```
 
+- `-f`: `Dockefile` 的路径, 默认的构建基础路径在Dockerfile的路径下
+    - 可选的参数, 如果没有, 会寻找执行脚本路径下的 `DOCKERFILE` 或 `Dockerfile` 或 `dockerfile`
 - `-i`: 构建的镜像名称
 - `-v`: 构建的镜像版本
 - `-r`: 对于存在的镜像是否重新tag `true | false`
