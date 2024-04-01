@@ -18,6 +18,7 @@
         * [bashrc](#bashrc)
     * [develop](#develop)
         * [config maven](#config-maven)
+        * [verify nginx configuration](#verify-nginx-configuration)
 
 <!-- TOC -->
 
@@ -157,4 +158,17 @@ config maven `settings.xml`
 
 ```shell
 bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/maven/config.sh)
+```
+
+### verify nginx configuration
+
+验证基于`docker-compose`启动的nginx的配置文件
+
+```shell
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/nginx/verify_func.sh)
+if verify_nginx_configuration nginx; then
+  log "verify" "verify success, then start"
+else
+  log "verify" "verify failed, then edit again"
+fi
 ```
