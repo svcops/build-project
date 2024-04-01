@@ -47,6 +47,8 @@ function verify_nginx_configuration() {
   if [ -z "$output" ]; then
     log "nginx" "output is empty. Unknown Configuration, [compose_file=$compose_file,service_name=$service_name] then return 1"
     return 1
+  else
+    log "nginx" "output is \n$output"
   fi
 
   # template
