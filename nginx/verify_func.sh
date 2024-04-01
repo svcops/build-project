@@ -5,7 +5,8 @@ source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main
 
 function verify_nginx_configuration() {
   log "nginx" "Verify the nginx configuration file that docker-compose starts"
-  local service_name=$1
+  local compose_file=$1
+  local service_name=$2
 
   if [ -z "$service_name" ]; then
     log "nginx" "service_name is empty, then exit"
@@ -15,10 +16,10 @@ function verify_nginx_configuration() {
   local output
   if command_exists docker-compose; then
     log "nginx" "use docker-compose"
-    output=$(docker-compose run -it --rm "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
+    output=$(docker-compose run -it -f "$compose_file" --rm "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
   else
     log "nginx" "use docker compose plugin"
-    output=$(docker compose run -it --rm "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
+    output=$(docker compose run -it --rm "$compose_file" "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
   fi
 
   if [ -z "$output" ]; then
