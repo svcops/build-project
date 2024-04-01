@@ -22,8 +22,7 @@ function verify_nginx_configuration() {
 
   local COMPOSE_FILE_FOLDER
   COMPOSE_FILE_FOLDER=$(cd "$(dirname "$compose_file")" && pwd)
-  cd "$COMPOSE_FILE_FOLDER"
-  log "nginx" "current dir is $(pwd)"
+  log "nginx" "compose file dir is $COMPOSE_FILE_FOLDER"
 
   if [ -z "$service_name" ]; then
     log "nginx" "service_name is empty, then return"
@@ -33,10 +32,10 @@ function verify_nginx_configuration() {
   local output
   if command_exists docker-compose; then
     log "nginx" "use docker-compose"
-    output=$(docker-compose -f "$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
+    output=$(docker-compose -f "$COMPOSE_FILE_FOLDER/$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
   else
     log "nginx" "use docker compose plugin"
-    output=$(docker compose -f "$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
+    output=$(docker compose -f "$COMPOSE_FILE_FOLDER/$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
   fi
 
   if [ -z "$output" ]; then
