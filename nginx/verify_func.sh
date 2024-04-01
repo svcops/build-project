@@ -66,7 +66,7 @@ function verify_nginx_configuration() {
     log "nginx" "$reason"
     return 1
   else
-    log "nginx" "Unknown Configuration"
+    log "nginx" "Unknown Configuration, [compose_file=$compose_file,service_name=$service_name] then return 1"
     return 1
   fi
 
