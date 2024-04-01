@@ -52,7 +52,7 @@ function verify_nginx_configuration() {
         docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -it "$service_name" nginx -v 2>&1 | tail -n 1
     )"
     local compose_command="docker compose -f $COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME run --rm -it $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
-    log "nginx" "docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER --privileged docker $compose_command"
+    log "nginx" "\n docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER --privileged docker \\\n $compose_command"
 
     output=$(
       docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock \
