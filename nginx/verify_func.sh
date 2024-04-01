@@ -3,9 +3,8 @@
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
 
-log "nginx" "Verify the nginx configuration file that docker-compose starts"
-
 function verify_nginx_configuration() {
+  log "nginx" "Verify the nginx configuration file that docker-compose starts"
   local service_name=$1
 
   if [ -z "$service_name" ]; then
