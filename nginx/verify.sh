@@ -18,7 +18,7 @@ if [ -z "$compose_file" ]; then
     exit 1
   fi
 elif [ ! -f "$compose_file" ]; then
-  log "nginx" "compose file does not exits"
+  log "nginx" "compose file does not exits, [compose_file=$compose_file,service_name=$service_name] then exit 1"
   exit 1
 fi
 
