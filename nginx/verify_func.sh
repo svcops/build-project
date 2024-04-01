@@ -28,7 +28,7 @@ function verify_nginx_configuration() {
   log "nginx" "compose file dir is $COMPOSE_FILE_FOLDER"
 
   if [ -z "$service_name" ]; then
-    log "nginx" "service_name is empty,[compose_file=$compose_file,service_name=$service_name] then return"
+    log "nginx" "service_name is empty,[compose_file=$compose_file,service_name=$service_name] then return 1"
     return 1
   fi
 
@@ -42,7 +42,7 @@ function verify_nginx_configuration() {
   fi
 
   if [ -z "$output" ]; then
-    log "nginx" "output is empty. Unknown Configuration. return 1"
+    log "nginx" "output is empty. Unknown Configuration, [compose_file=$compose_file,service_name=$service_name] then return 1"
     return 1
   fi
 
