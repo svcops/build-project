@@ -18,6 +18,9 @@ function verify_nginx_configuration() {
       log "nginx" "cannot find docker-compose.yml or docker-compose.yaml in current directory"
       return 1
     fi
+  elif [ ! -f "$compose_file" ]; then
+    log "nginx" "compose file does not exits"
+    return 0
   fi
 
   local COMPOSE_FILE_FOLDER
@@ -32,10 +35,10 @@ function verify_nginx_configuration() {
   local output
   if command_exists docker-compose; then
     log "nginx" "use docker-compose"
-    output=$(docker-compose -f "$COMPOSE_FILE_FOLDER/$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
+    output=$(docker-compose -f "$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
   else
     log "nginx" "use docker compose plugin"
-    output=$(docker compose -f "$COMPOSE_FILE_FOLDER/$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
+    output=$(docker compose -f "$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
   fi
 
   if [ -z "$output" ]; then
