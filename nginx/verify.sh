@@ -56,7 +56,6 @@ status=$(echo "$output" | sed -n '2p')
 
 if echo "$status" | grep -q "successful"; then
   log "nginx" "$status"
-  return 0
 elif echo "$status" | grep -q "failed"; then
   log "nginx" "$reason"
   exit 1
