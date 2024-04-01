@@ -26,6 +26,8 @@ function verify_nginx_configuration() {
   local COMPOSE_FILE_FOLDER
   COMPOSE_FILE_FOLDER=$(cd "$(dirname "$compose_file")" && pwd)
   log "nginx" "compose file dir is $COMPOSE_FILE_FOLDER"
+  local COMPOSE_FILE_NAME
+  COMPOSE_FILE_NAME=$(basename "$compose_file")
 
   if [ -z "$service_name" ]; then
     log "nginx" "service_name is empty,[compose_file=$compose_file,service_name=$service_name] then return 1"
@@ -39,6 +41,31 @@ function verify_nginx_configuration() {
     log "nginx" "docker-compose -f $compose_file run --rm -it $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
     # 2>&1 重定向到标准输出
     output=$(docker-compose -f "$compose_file" run --rm -it "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:')
+  elif [ -S "/var/run/docker.sock" ]; then
+    log "nginx" "use docker compose plugin (docker in docker)"
+
+    log "nginx" "$(
+      docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock \
+        -v "$COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER" \
+        --privileged \
+        docker \
+        docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -it "$service_name" nginx -v 2>&1 | tail -n 1
+    )"
+
+    log "nginx" "docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock \
+        -v $COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER \
+        --privileged \
+        docker \
+        docker compose -f $COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME run --rm -it $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
+
+    output=$(
+      docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock \
+        -v "$COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER" \
+        --privileged \
+        docker \
+        docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -it "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:'
+    )
+
   else
     log "nginx" "use docker compose plugin"
     log "nginx" "$(docker compose -f "$compose_file" run --rm -it "$service_name" nginx -v 2>&1 | tail -n 1)"
