@@ -166,17 +166,21 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/ma
 
 ```shell
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/nginx/verify_func.sh)
-if verify_nginx_configuration nginx; then
+if verify_nginx_configuration nginx path/to/docker-compose.yml; then
   log "verify" "verify success, then start"
 else
   log "verify" "verify failed, then edit again"
 fi
 ```
 
+- 方法参数一: service_name
+- 方法参数二: compose文件位置，可传递，默认寻找执行脚本目录下的 `docker-compose.yml` 或者 `docker-comopose.yaml`
+
 快速验证
 
 ```shell
-bash <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/nginx/verify.sh) nginx
+bash <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/nginx/verify.sh) nginx path\to\docker-compose.yml
 ```
 
 - `nginx` 是 `docker-compose.yaml`中定义的`service`
+- 第二个参数 `docker-comopse.yml`的路径，默认会在执行脚本的当前路径下寻找 `docker-compose.yml` 或者 `docker-compose.yaml` 
