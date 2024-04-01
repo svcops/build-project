@@ -16,10 +16,10 @@ function verify_nginx_configuration() {
   local output
   if command_exists docker-compose; then
     log "nginx" "use docker-compose"
-    output=$(docker-compose run -it -f "$compose_file" --rm "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
+    output=$(docker-compose -f "$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
   else
     log "nginx" "use docker compose plugin"
-    output=$(docker compose run -it --rm "$compose_file" "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
+    output=$(docker compose -f "$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
   fi
 
   if [ -z "$output" ]; then
