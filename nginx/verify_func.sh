@@ -20,7 +20,7 @@ function verify_nginx_configuration() {
     fi
   elif [ ! -f "$compose_file" ]; then
     log "nginx" "compose file does not exits"
-    return 0
+    return 1
   fi
 
   local COMPOSE_FILE_FOLDER
