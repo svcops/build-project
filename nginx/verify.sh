@@ -32,9 +32,11 @@ fi
 
 if command_exists docker-compose; then
   log "nginx" "use docker-compose"
+  log "nginx" "docker-compose -f $compose_file run --rm -it $service_name nginx -t | tail -n 2 | grep 'nginx:'"
   output=$(docker-compose -f "$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
 else
   log "nginx" "use docker compose plugin"
+  log "nginx" "docker compose -f $compose_file run --rm -it $service_name nginx -t | tail -n 2 | grep 'nginx:'"
   output=$(docker compose -f "$compose_file" run --rm -it "$service_name" nginx -t | tail -n 2 | grep 'nginx:')
 fi
 
