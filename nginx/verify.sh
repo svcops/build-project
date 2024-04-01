@@ -2,4 +2,8 @@
 # shellcheck disable=SC1090
 source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/nginx/verify_func.sh)
 
-verify_nginx_configuration "$1" "$2"
+function verify() {
+  verify_nginx_configuration "$1" "$2"
+}
+
+verify "$1" "$2"
