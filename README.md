@@ -172,3 +172,11 @@ else
   log "verify" "verify failed, then edit again"
 fi
 ```
+
+快速验证
+
+```shell
+bash <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/nginx/verify.sh) nginx
+```
+
+- `nginx` 是 `docker-compose.yaml`中定义的`service`
