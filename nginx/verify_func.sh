@@ -5,6 +5,12 @@ source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main
 
 function verify_nginx_configuration() {
   log "nginx" "Verify the nginx configuration file that docker-compose starts"
+
+  if ! command_exists docker; then
+    log "nginx" "docker command does not exits"
+    return 1
+  fi
+
   local compose_file=$2
   local service_name=$1
 
