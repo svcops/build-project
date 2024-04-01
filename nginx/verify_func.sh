@@ -28,7 +28,7 @@ function verify_nginx_configuration() {
   log "nginx" "compose file dir is $COMPOSE_FILE_FOLDER"
 
   if [ -z "$service_name" ]; then
-    log "nginx" "service_name is empty, then return"
+    log "nginx" "service_name is empty,[compose_file=$compose_file,service_name=$service_name] then return"
     return 1
   fi
 
