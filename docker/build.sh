@@ -20,7 +20,7 @@ function tips() {
   log "tips" "-i the name of the image to be built"
   log "tips" "-v the tag of the image to be built"
   log "tips" "-r re tag flag, default <true>"
-  log "tips" "-t the new_tag of the image to be built"
+  log "tips" "-t the new_tag of the image to be built. if empty, use timestamp_tag"
   log "tips" "-p push flag, default <false>"
 }
 
