@@ -9,7 +9,7 @@ function verify_nginx_configuration() {
   local service_name=$1
 
   if [ -z "$compose_file" ]; then
-    log "nginx" "compose file is empty.try use default"
+    log "nginx" "compose file is empty, try use docker-compose.yml or docker-compose.yaml"
     if [ -f "docker-compose.yml" ]; then
       compose_file="docker-compose.yml"
     elif [ -f "docker-compose.yaml" ]; then
