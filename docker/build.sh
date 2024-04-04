@@ -130,7 +130,7 @@ function validate_new_tag() {
     # 需要 re_tag 的时候, 传入的 new_tag 为空, 默认使用 timestamp_tag
     log "validate_new_tag" "new tag is empty ,will use timestamp_tag"
     new_tag=$timestamp_tag
-  elif validate_docker_tag "$new_tag"; then
+  elif ! validate_docker_tag "$new_tag"; then
     # 传入的 new_tag 不符合docker tag 规范
     log "validate_new_tag" "new tag is Invalid"
     exit 1
