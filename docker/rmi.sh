@@ -86,6 +86,7 @@ if [ "$strategy" == "contain_latest" ]; then
 elif [ "$strategy" == "remove_none" ]; then
 
   con=$(docker image ls $image_name | grep -v $title_reg | grep "<none>" | wc -l)
+
   if [ $con -eq 0 ]; then
     log "remove_none" "image doesn't exit ,then exit"
     end

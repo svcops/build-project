@@ -1,7 +1,7 @@
 #!/bin/bash
-# shellcheck disable=SC2086 disable=SC2155 disable=SC2126 disable=SC1090 disable=SC2164
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+# shellcheck disable=SC1090
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
 
 log "docker build" ">>> docker build start <<<"
 function end() {
@@ -20,7 +20,7 @@ function tips() {
   log "tips" "-i the name of the image to be built"
   log "tips" "-v the tag of the image to be built"
   log "tips" "-r re tag flag, default <true>"
-  log "tips" "-t the new_tag of the image to be built. if empty, use timestamp_tag"
+  log "tips" "-t the new_tag of the image to be built. if empty, use timestamp_tag."
   log "tips" "-p push flag, default <false>"
 }
 
@@ -78,34 +78,43 @@ function validate_param() {
   fi
 }
 
-validate_param "image_name" "$image_name"
-validate_param "image_tag" "$image_tag"
+function prepare_validate() {
+  validate_param "image_name" "$image_name"
+  validate_param "image_tag" "$image_tag"
+}
 
-# ---
+# 准备验证
+prepare_validate
 
-if [ "$re_tag_flag" == "" ]; then
+# --- 处理是否需要重新打标签
+
+if [ "$re_tag_flag" == "true" ]; then
   re_tag_flag="true"
   log "re tag" "need re tag"
+else
+  re_tag_flag="false"
+  log "re tag" "do not need re tag"
 fi
 
+# 如果需要重新tag,验证新的tag
 function validate_new_tag() {
   log "validate_new_tag" "validate_new_tag"
-  # 验证不为空
-  validate_param "new_tag" "$new_tag"
-  if [ "$new_tag" == "$image_tag" ]; then
+
+  if [ -z "$new_tag" ]; then
+    # 需要 re_tag 的时候, 传入的 new_tag 为空, 默认使用 timestamp_tag
+    log "validate_new_tag" "new tag is empty ,will use timestamp_tag"
+    new_tag=$(date '+%Y-%m-%d_%H-%M-%S')
+  elif [ "$new_tag" == "$image_tag" ]; then
+    # 新的标签的docker build 的标签相同，验证不通过，exit
     log "validate_new_tag" "validate failed , because new_tag == image_tag "
     end
     exit 1
-  elif [ -z "$new_tag" ]; then
-    log "validate_new_tag" "new tag is empty use timestamp_tag"
-    new_tag=$timestamp_tag
   else
     # new tag
-    local image_exist=$(docker image ls $image_name | grep $new_tag | wc -l)
-    if [ $image_exist -eq 1 ]; then
+    # 新的tag的镜像在 docker image ls 中存在，使用 timestamp_tag
+    if docker image ls "$image_name" | grep -q "$new_tag"; then
       log "validate_new_tag" "$image_name:$new_tag has existed,then use timestamp_tag"
-      local timestamp_tag=$(date '+%Y-%m-%d_%H-%M-%S')
-      new_tag=$timestamp_tag
+      new_tag=$(date '+%Y-%m-%d_%H-%M-%S')
     fi
   fi
 }
@@ -115,15 +124,17 @@ if [ "$re_tag_flag" == "true" ]; then
 fi
 
 # ---
-if [ "$push_flag" == "" ]; then
+if [ "$push_flag" == "true" ]; then
+  push_flag="true"
+  log "push flag" "push_flag is true"
+else
   push_flag="false"
-  log "push flag" "Default push flag is false"
+  log "push flag" "push_flag is false"
 fi
 
 function re_tag_push() {
-  local image_exist=$(docker image ls $image_name | grep $image_tag | wc -l)
 
-  if [ $image_exist -eq 1 ]; then
+  if docker image ls "$image_name" | grep -q "$image_tag"; then
     log "re_tag" "image exists: $image_name:$image_tag"
     docker tag "$image_name:$image_tag" "$image_name:$new_tag"
 
