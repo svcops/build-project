@@ -113,7 +113,7 @@ function validate_new_tag() {
   else
     # new tag
     # 新的tag的镜像在 docker image ls 中存在，使用 timestamp_tag
-    if docker image ls "$image_name" | grep -q "$new_tag"; then
+    if docker image ls "$image_name" | grep -q -E "\b$new_tag\b"; then
       log "validate_new_tag" "$image_name:$new_tag has existed,then use timestamp_tag"
       new_tag=$timestamp_tag
     fi
@@ -135,7 +135,7 @@ fi
 
 function re_tag_push() {
 
-  if docker image ls "$image_name" | grep -q "$image_tag"; then
+  if docker image ls "$image_name" | grep -q -E "\b$image_tag\b"; then
     log "re_tag" "image exists: $image_name:$image_tag"
     docker tag "$image_name:$image_tag" "$image_name:$new_tag"
 
