@@ -97,13 +97,14 @@ else
 fi
 
 # 如果需要重新tag,验证新的tag
+timestamp_tag=$(date '+%Y-%m-%d_%H-%M-%S')
 function validate_new_tag() {
   log "validate_new_tag" "validate_new_tag"
 
   if [ -z "$new_tag" ]; then
     # 需要 re_tag 的时候, 传入的 new_tag 为空, 默认使用 timestamp_tag
     log "validate_new_tag" "new tag is empty ,will use timestamp_tag"
-    new_tag=$(date '+%Y-%m-%d_%H-%M-%S')
+    new_tag=$timestamp_tag
   elif [ "$new_tag" == "$image_tag" ]; then
     # 新的标签的docker build 的标签相同，验证不通过，exit
     log "validate_new_tag" "validate failed , because new_tag == image_tag "
@@ -114,7 +115,7 @@ function validate_new_tag() {
     # 新的tag的镜像在 docker image ls 中存在，使用 timestamp_tag
     if docker image ls "$image_name" | grep -q "$new_tag"; then
       log "validate_new_tag" "$image_name:$new_tag has existed,then use timestamp_tag"
-      new_tag=$(date '+%Y-%m-%d_%H-%M-%S')
+      new_tag=$timestamp_tag
     fi
   fi
 }
