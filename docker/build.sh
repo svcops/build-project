@@ -65,6 +65,16 @@ while getopts ":f:i:v:r:t:p:" opt; do
   esac
 done
 
+function print_param() {
+  log "print" "path_to_dockerfile: $path_to_dockerfile"
+  log "print" "image_name: $image_name"
+  log "print" "image_tag: $image_tag"
+  log "print" "re_tag_flag: $re_tag_flag"
+  log "print" "new_tag: $new_tag"
+  log "print" "push_flag: $push_flag"
+}
+print_param
+
 function validate_param() {
   local key=$1
   local value=$2
