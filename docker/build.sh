@@ -78,9 +78,24 @@ function validate_param() {
   fi
 }
 
+function validate_docker_tag() {
+  if echo "$1" | grep -Eq "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"; then
+    # echo "Valid"
+    log "validate_docker_tag" "$1 is Valid"
+    return 0
+  else
+    # echo "Invalid"
+    log "validate_docker_tag" "$1 is Invalid"
+    return 1
+  fi
+}
+
 function prepare_validate() {
   validate_param "image_name" "$image_name"
   validate_param "image_tag" "$image_tag"
+  if ! validate_docker_tag "$image_tag"; then
+    exit
+  fi
 }
 
 # 准备验证
@@ -105,6 +120,10 @@ function validate_new_tag() {
     # 需要 re_tag 的时候, 传入的 new_tag 为空, 默认使用 timestamp_tag
     log "validate_new_tag" "new tag is empty ,will use timestamp_tag"
     new_tag=$timestamp_tag
+  elif validate_docker_tag "$new_tag"; then
+    # 传入的 new_tag 不符合docker tag 规范
+    log "validate_new_tag" "new tag is Invalid"
+    exit 1
   elif [ "$new_tag" == "$image_tag" ]; then
     # 新的标签的docker build 的标签相同，验证不通过，exit
     log "validate_new_tag" "validate failed , because new_tag == image_tag "
