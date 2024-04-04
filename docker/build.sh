@@ -91,11 +91,11 @@ function validate_param() {
 function validate_docker_tag() {
   if echo "$1" | grep -Eq "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"; then
     # echo "Valid"
-    log "validate_docker_tag" "$1 is Valid"
+    # log "validate_docker_tag" "$1 is Valid"
     return 0
   else
     # echo "Invalid"
-    log "validate_docker_tag" "$1 is Invalid"
+    # log "validate_docker_tag" "$1 is Invalid"
     return 1
   fi
 }
@@ -132,7 +132,7 @@ function validate_new_tag() {
     new_tag=$timestamp_tag
   elif ! validate_docker_tag "$new_tag"; then
     # 传入的 new_tag 不符合docker tag 规范
-    log "validate_new_tag" "new tag is Invalid"
+    log "validate_new_tag" "new tag [$new_tag] is Invalid"
     exit 1
   elif [ "$new_tag" == "$image_tag" ]; then
     # 新的标签的docker build 的标签相同，验证不通过，exit
