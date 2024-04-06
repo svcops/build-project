@@ -125,7 +125,11 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 
 ### remove docker's image
 
-参考 [for.sh](.example/for.sh)
+```shell
+bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/rmi.sh) \
+ -i image_name \
+ -s strategy
+```
 
 - `-i`: 镜像的名称
 - `-s`: 删除的策略：默认策略 `contain_latest`
