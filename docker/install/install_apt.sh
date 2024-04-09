@@ -70,6 +70,7 @@ function do_install() {
       bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install_aliyun.sh)
     else
       tips
+      exit 1
     fi
 
   elif [ "$OS" == "Ubuntu" ]; then
@@ -85,10 +86,12 @@ function do_install() {
       bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install_aliyun.sh)
     else
       tips
+      exit 1
     fi
 
   else
     tips
+    exit 1
   fi
 }
 
