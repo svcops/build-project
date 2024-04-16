@@ -107,7 +107,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
-  -f [path\to\Dockerfile] \
+  -f [path/to/Dockerfile] \
   -i <image_name> \
   -v <image_tag> \
   -r <re_tag_false> \
