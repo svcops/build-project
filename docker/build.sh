@@ -208,6 +208,13 @@ function build_push() {
 
   log "docker_build" "docker build -f $path_to_dockerfile -t $image_name:$image_tag $DOCKERFILE_FOLDER"
   docker build -f "$path_to_dockerfile" -t "$image_name:$image_tag" "$DOCKERFILE_FOLDER"
+  local build_status=$?
+  if [ $build_status -eq 0 ]; then
+    log "docker_build" "Docker build succeeded"
+  else
+    log "docker_build" "Docker build failed"
+    exit 1
+  fi
 
   if [ "$push_flag" == "true" ]; then
     log "build_push" "docker push $image_name:$image_tag"
