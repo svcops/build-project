@@ -83,6 +83,15 @@ if [ -d "$build_dir/output" ]; then
   rm -rf output
 fi
 
+
+if command_exists docker; then
+  log "command_exists" "docker command exists"
+else
+  log "command_exists" "docker command does not exist"
+  end
+  exit 1
+fi
+
 docker run --rm \
   -v "$build_dir:/opt/sources" \
   -e INSTANCE="Writerside/$instance" \
