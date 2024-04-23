@@ -11,17 +11,23 @@ function end() {
 cache=""
 image=""
 build=""
+build_dir=""
 settings=""
 
 function tips() {
+  log "tips" "-d maven's build directory"
   log "tips" "-c user docker volume's to cache the build process"
   log "tips" "-i maven's docker image"
   log "tips" "-x maven's build command"
   log "tips" "-s maven's settings.xml path"
 }
 
-while getopts ":c:i:x:s:" opt; do
+while getopts ":c:i:x:s:d:" opt; do
   case ${opt} in
+  d)
+    log "get opts" "process's build_dir; build_dir is: $OPTARG"
+    build_dir=$OPTARG
+    ;;
   c)
     log "get opts" "process's cache; docker's volume is: $OPTARG"
     cache=$OPTARG
@@ -71,6 +77,11 @@ validate_param "image" "$image"
 validate_param "build" "$build"
 validate_param "settings" "$settings"
 
+if [ -z "$build_dir" ]; then
+  log "build_dir" "build_dir is empty then use current directory"
+  build_dir="$(pwd)"
+fi
+
 if [[ $cache =~ ^[a-zA-Z0-9_.-]+$ ]]; then
   log "cache_str_validate" "cache str validate success"
 else
@@ -96,7 +107,7 @@ log "build" "========== build maven's project in docker =========="
 
 docker run -i --rm -u root \
   --network=host \
-  -v "$(pwd)":/usr/src/app \
+  -v "$build_dir":/usr/src/app \
   -w /usr/src/app \
   -v "$cache":/root/.m2/repository \
   -v "$settings":/usr/share/maven/ref/settings.xml \

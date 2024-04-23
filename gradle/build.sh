@@ -11,15 +11,21 @@ function end() {
 cache=""
 image=""
 build=""
+build_dir=""
 
 function tips() {
+  log "tips" "-d gradle's build directory"
   log "tips" "-c user docker volume's to cache the build process"
   log "tips" "-i gradle's docker image"
   log "tips" "-x gradle's build command"
 }
 
-while getopts ":c:i:x:" opt; do
+while getopts ":c:i:x:d:" opt; do
   case ${opt} in
+  d)
+    log "get opts" "process's build_dir; build_dir is: $OPTARG"
+    build_dir=$OPTARG
+    ;;
   c)
     log "get opts" "process's cache; docker's volume is: $OPTARG"
     cache=$OPTARG
@@ -64,6 +70,11 @@ validate_param "cache" "$cache"
 validate_param "image" "$image"
 validate_param "build" "$build"
 
+if [ -z "$build_dir" ]; then
+  log "build_dir" "build_dir is empty then use current directory"
+  build_dir="$(pwd)"
+fi
+
 if [[ $cache =~ ^[a-zA-Z0-9_.-]+$ ]]; then
   log "cache_str_validate" "cache str validate success"
 else
@@ -84,7 +95,7 @@ log "build" "========== build gradle's project in docker =========="
 
 docker run --rm -u root \
   --network=host \
-  -v "$PWD":/home/gradle/project \
+  -v "$build_dir":/home/gradle/project \
   -w /home/gradle/project \
   -v "$cache:/home/gradle/.gradle" \
   "$image" \

@@ -11,15 +11,21 @@ function end() {
 cache=""
 image=""
 build=""
+build_dir=""
 
 function tips() {
+  log "tips" "-d golang's build directory"
   log "tips" "-c user docker volume's to cache the build process"
   log "tips" "-i golang's docker image"
   log "tips" "-x golang's build command"
 }
 
-while getopts ":c:i:x:" opt; do
+while getopts ":c:i:x:d:" opt; do
   case ${opt} in
+  d)
+    log "get opts" "process's build_dir; build_dir is: $OPTARG"
+    build_dir=$OPTARG
+    ;;
   c)
     log "get opts" "process's cache; docker's volume is: $OPTARG"
     cache=$OPTARG
@@ -64,6 +70,11 @@ validate_param "cache" "$cache"
 validate_param "image" "$image"
 validate_param "build" "$build"
 
+if [ -z "$build_dir" ]; then
+  log "build_dir" "build_dir is empty then use current directory"
+  build_dir="$(pwd)"
+fi
+
 if [[ $cache =~ ^[a-zA-Z0-9_.-]+$ ]]; then
   log "cache_str_validate" "cache str validate success"
 else
@@ -82,9 +93,10 @@ fi
 
 log "build" "========== build golang's project in docker =========="
 
-docker run --rm -v "$PWD:/usr/src/myapp" \
-  --network=host \
+docker run --rm \
+  -v "$build_dir:/usr/src/myapp" \
   -w /usr/src/myapp \
+  --network=host \
   -e CGO_ENABLED=0 \
   -e GOPROXY=https://goproxy.cn,direct \
   -e GOPATH=/opt/go \

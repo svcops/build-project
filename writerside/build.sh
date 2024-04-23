@@ -57,8 +57,12 @@ function validate_param() {
   fi
 }
 
-validate_param "build_dir" "$build_dir"
 validate_param "instance" "$instance"
+
+if [ -z "$build_dir" ]; then
+  log "build_dir" "build_dir is empty then use current directory"
+  build_dir="$(pwd)"
+fi
 
 if [ ! -d "$build_dir" ]; then
   log "build_dir" "$build_dir does not exist,exit"
