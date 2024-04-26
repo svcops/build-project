@@ -130,8 +130,8 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
   -f [path/to/Dockerfile] \
   -i <image_name> \
   -v <image_tag> \
-  -r <re_tag_false> \
-  -t <new_tag> \
+  -r <re_tag_flag> \
+  -t [new_tag] \
   -p <push_flag>
 ```
 
