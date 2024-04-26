@@ -171,10 +171,10 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/do
 
 ### bashrc
 
-debian
+`debian` 系列
 
 ```shell
-bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/linux/system/bashrc/init_debian.sh)
+bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/linux/system/bashrc/init_apt.sh)
 ```
 
 ## develop
