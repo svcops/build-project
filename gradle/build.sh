@@ -73,6 +73,9 @@ validate_param "build" "$build"
 if [ -z "$build_dir" ]; then
   log "build_dir" "build_dir is empty then use current directory"
   build_dir="$(pwd)"
+elif [ ! -d "$build_dir" ]; then
+  log "build_dir" "build_dir is not a valid paths"
+  exit 1
 fi
 
 if [[ $cache =~ ^[a-zA-Z0-9_.-]+$ ]]; then

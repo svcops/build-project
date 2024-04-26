@@ -127,6 +127,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/writer
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
+  -d [build_dir] \
   -f [path/to/Dockerfile] \
   -i <image_name> \
   -v <image_tag> \
@@ -135,6 +136,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
   -p <push_flag>
 ```
 
+- `-d`: `docker build` 最后指定的路径，如果为空，默认使用 Dockerfile所在的文件路径
 - `-f`: `Dockefile` 的路径, 默认的构建基础路径在Dockerfile的路径下
   - 可选的参数, 如果没有, 会寻找执行脚本路径下的 `DOCKERFILE` 或 `Dockerfile` 或 `dockerfile`
 - `-i`: 构建的镜像名称
@@ -142,6 +144,8 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 - `-r`: 对于存在的镜像是否重新tag `true | false`
 - `-t`: 对于存在的镜像，重新tag的版本
 - `-p`: 是否push到仓库中
+
+[example (build goland' project and push)](https://github.com/iprt/ifconfig/blob/main/build.sh)
 
 ### remove docker's image
 

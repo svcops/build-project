@@ -9,6 +9,7 @@ function end() {
 }
 
 path_to_dockerfile=""
+build_dir=""
 image_name=""
 image_tag=""
 re_tag_flag=""
@@ -16,6 +17,7 @@ new_tag=""
 push_flag=""
 
 function tips() {
+  log "tips" "-d build directory, optional if empty,use Dockerfile's directory"
   log "tips" "-f path/to/dockerfile, optional"
   log "tips" "-i the name of the image to be built"
   log "tips" "-v the tag of the image to be built"
@@ -24,8 +26,12 @@ function tips() {
   log "tips" "-p push flag, default <false>"
 }
 
-while getopts ":f:i:v:r:t:p:" opt; do
+while getopts ":f:d:i:v:r:t:p:" opt; do
   case ${opt} in
+  d)
+    log "get opts" "build_dir is : $OPTARG"
+    build_dir=$OPTARG
+    ;;
   f)
     log "get opts" "path_to_dockerfile is : $OPTARG"
     path_to_dockerfile=$OPTARG
@@ -204,10 +210,19 @@ DOCKERFILE_NAME=$(basename $path_to_dockerfile)
 
 log "dockerfile" "DOCKERFILE_FOLDER : $DOCKERFILE_FOLDER; DOCKERFILE_NAME : $DOCKERFILE_NAME"
 
+if [ -z "$build_dir" ]; then
+  log "build_dir" "build_dir is empty then use DOCKERFILE_FOLDER"
+  build_dir="$DOCKERFILE_FOLDER"
+elif [ ! -d "$build_dir" ]; then
+  log "build_dir" "build_dir is not a valid paths"
+  exit 1
+fi
+
 function build_push() {
 
-  log "docker_build" "docker build -f $path_to_dockerfile -t $image_name:$image_tag $DOCKERFILE_FOLDER"
-  docker build -f "$path_to_dockerfile" -t "$image_name:$image_tag" "$DOCKERFILE_FOLDER"
+  log "docker_build" "docker build -f $path_to_dockerfile -t $image_name:$image_tag $build_dir"
+  docker build -f "$path_to_dockerfile" -t "$image_name:$image_tag" "$build_dir"
+
   local build_status=$?
   if [ $build_status -eq 0 ]; then
     log "docker_build" "Docker build succeeded"
