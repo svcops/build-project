@@ -4,11 +4,12 @@ source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/
 
 log "bashrc" "init bashrc"
 
-log "bashrc" "try delete"
+if [ -f "/root/.bashrc" ]; then
+  log "bashrc" "try delete"
+  sed -i '/^#9d5049f5-3f12-4004-9ac8-196956e91184/,/#58efd70b-e5be-4d58-856a-5807ed05b29d/d' /root/.bashrc
+fi
 
-sed -i '/^#9d5049f5-3f12-4004-9ac8-196956e91184/,/#58efd70b-e5be-4d58-856a-5807ed05b29d/d' /root/.bashrc
-
-log "bashrc" "then append"
+log "bashrc" "append bashrc"
 
 cat <<EOF >>/root/.bashrc
 #9d5049f5-3f12-4004-9ac8-196956e91184
@@ -16,10 +17,10 @@ cat <<EOF >>/root/.bashrc
 # You may uncomment the following lines if you want \`ls' to be colorized:
 export LS_OPTIONS='--color=auto'
 eval "\$(dircolors)"
-alias ls='ls \$LS_OPTIONS'
-alias ll='ls \$LS_OPTIONS -lh'
-alias ll='ls \$LS_OPTIONS -lh'
-alias l='ls \$LS_OPTIONS -lA'
+alias lla='ls -ahlF --group-directories-first -X'
+alias ll='ls -hlF --group-directories-first -X'
+alias la='ls -A --group-directories-first -X'
+alias l='ls -CF --group-directories-first -X'
 #
 # Some more alias to avoid making mistakes:
 alias rm='rm -i'
