@@ -81,6 +81,8 @@ fi
 
 log "build" "========== build node's project in docker =========="
 
+log "build" "docker run --rm -u root --network=host -v $build_dir:/opt/app/node  -w /opt/app/node $image $build"
+
 docker run --rm -u root \
   --network=host \
   -v "$build_dir":/opt/app/node \
