@@ -3,7 +3,10 @@
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
 
+os_base_name=""
+os_base_version=""
 os_name=""
+os_full_name=""
 
 if [ ! -f "/etc/os-release" ]; then
   echo "cannot detect os"
