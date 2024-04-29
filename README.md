@@ -10,6 +10,7 @@
   * [build gradle's project](#build-gradles-project)
   * [build maven's project](#build-mavens-project)
   * [build golang's project](#build-golangs-project)
+  * [build node's project](#build-nodes-project)
   * [build writerside's project](#build-writersides-project)
   * [docker](#docker)
     * [build docker's image (and push)](#build-dockers-image-and-push)
@@ -105,6 +106,21 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang
 - `-i`: golang的镜像
 - `-x`: golang的命令
   - e.g. : `go build -v -o application`
+
+## build node's project
+
+```shell
+bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/node/build.sh) \
+  -d [build_dir] \
+  -i <gradle_image> \
+  -x <gradle_command>
+```
+
+- `-d`: node 构建的目录 可为空，默认执行脚本的目录
+- `-i`: node 的镜像
+- `-x`: node 的命令
+  - e.g. : `npm install --registry=https://registry.npmmirror.com`
+  - e.g. : `npm run build`
 
 ## build writerside's project
 
