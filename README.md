@@ -7,6 +7,8 @@
     * [log func](#log-func)
     * [command_exists func](#command_exists-func)
     * [detect ssh port](#detect-ssh-port)
+    * [detect os](#detect-os)
+    * [date format](#date-format)
   * [build gradle's project](#build-gradles-project)
   * [build maven's project](#build-mavens-project)
   * [build golang's project](#build-golangs-project)
@@ -47,8 +49,24 @@ fi
 ### detect ssh port
 
 ```shell
-ssh_port="$(bash <(https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh)"
+ssh_port="$(bash <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh)"
 echo "ssh port is $ssh_port"
+```
+
+### detect os
+
+```shell
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh)
+
+echo "$os_name"
+```
+
+### date format
+
+```shell
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/date.sh)
+
+echo "$datetime_version"
 ```
 
 ## build gradle's project
