@@ -20,21 +20,24 @@ if ! command_exists sudo; then
   exit
 fi
 
-case $ID in
-debian | ubuntu | devuan)
-  sudo apt-get install lsb-release -y
-  ;;
-centos | fedora | rhel)
-  yumdnf="yum"
-  if test "$(echo "$VERSION_ID >= 22" | bc)" -ne 0; then
-    yumdnf="dnf"
-  fi
-  sudo $yumdnf install -y redhat-lsb-core -y
-  ;;
-*)
-  exit 1
-  ;;
-esac
+if ! command_exists lsb_release; then
+  log "detect_os" "try install  lsb-release"
+  case $ID in
+  debian | ubuntu | devuan)
+    sudo apt-get install lsb-release -y
+    ;;
+  centos | fedora | rhel)
+    yumdnf="yum"
+    if test "$(echo "$VERSION_ID >= 22" | bc)" -ne 0; then
+      yumdnf="dnf"
+    fi
+    sudo $yumdnf install -y redhat-lsb-core -y
+    ;;
+  *)
+    exit 1
+    ;;
+  esac
+fi
 
 if ! command_exists lsb_release; then
   log "command_exists" "command lsb_release does not exists"
