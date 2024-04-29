@@ -38,7 +38,7 @@ if ! command_exists lsb_release; then
   exit
 fi
 
+os_base_name="$(lsb_release --id --short)"
 os_name="$(lsb_release --id --short)$(lsb_release -rs | cut -f1 -d.)"
-
-log "detect_os" "os is $os_name"
-
+log "detect_os" "os_base_name = $os_base_name"
+log "detect_os" "os_name = $os_name"
