@@ -39,6 +39,11 @@ if ! command_exists lsb_release; then
 fi
 
 os_base_name="$(lsb_release --id --short)"
+os_base_version="$(lsb_release -rs | cut -f1 -d.)"
 os_name="$(lsb_release --id --short)$(lsb_release -rs | cut -f1 -d.)"
+os_full_name="$(lsb_release --id --short)$(lsb_release -rs)"
+
 log "detect_os" "os_base_name = $os_base_name"
+log "detect_os" "os_base_version = $os_base_version"
 log "detect_os" "os_name = $os_name"
+log "detect_os" "os_full_name = $os_full_name"
