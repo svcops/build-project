@@ -4,6 +4,7 @@ source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/date.sh)
 config_path="/etc/docker/daemon.json"
 function write_docker_config() {
+  log "config" "write docker config"
   cat >"$config_path" <<EOF
 {
   "insecure-registries": [],
@@ -24,6 +25,7 @@ EOF
 
 if [ -f "$config_path" ]; then
   log "backup" "cp $config_path ${config_path}_${datetime_version}"
+  cp "$config_path" "${config_path}_${datetime_version}"
   write_docker_config
   exit
 fi
