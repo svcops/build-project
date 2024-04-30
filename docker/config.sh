@@ -22,7 +22,7 @@ EOF
 }
 
 if [ -f "$config_path" ]; then
-  cp "$config_path" "$config_path_$datatime_version"
+  log "backup" "cp $config_path $config_path_$datatime_version"
   write_docker_config
   exit
 fi
