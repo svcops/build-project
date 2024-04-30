@@ -9,7 +9,8 @@ function end() {
 }
 
 # writer side 构建的镜像
-build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:233.14938"
+# build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:233.14938"
+build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:241.15989"
 
 function tips() {
   log "tips" "-d writerside build directory"
@@ -83,7 +84,6 @@ if [ -d "$build_dir/output" ]; then
   rm -rf output
 fi
 
-
 if command_exists docker; then
   log "command_exists" "docker command exists"
 else
@@ -94,5 +94,5 @@ fi
 
 docker run --rm \
   -v "$build_dir:/opt/sources" \
-  -e INSTANCE="Writerside/$instance" \
+  -e INSTANCE="$instance" \
   $build_image
