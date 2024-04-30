@@ -18,6 +18,7 @@
     * [build docker's image (and push)](#build-dockers-image-and-push)
     * [remove docker's image](#remove-dockers-image)
     * [install docker](#install-docker)
+    * [config docker](#config-docker)
   * [linux](#linux)
     * [bashrc](#bashrc)
   * [develop](#develop)
@@ -56,7 +57,7 @@ echo "ssh port is $ssh_port"
 ### detect os
 
 ```shell
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh)
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/detect_os.sh)
 
 echo "$os_name"
 ```
@@ -204,6 +205,14 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/do
 ````
 
 - SRC: 源 (`docker` 官方源 / `tsinghua` 清华源 / `aliyun` 阿里云)
+
+### config docker
+
+> config `/etc/docker/daemon.json`
+
+```shell
+bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/config.sh)
+```
 
 ## linux
 
