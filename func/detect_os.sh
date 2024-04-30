@@ -13,15 +13,16 @@ if [ ! -f "/etc/os-release" ]; then
   exit
 fi
 
-source /etc/os-release
-
 if ! command_exists sudo; then
   log "command_exists" "command sudo does not exists"
   exit
 fi
 
+# use $ID
+source /etc/os-release
+
 if ! command_exists lsb_release; then
-  log "detect_os" "try install  lsb-release"
+  log "detect_os" "try install lsb-release"
   case $ID in
   debian | ubuntu | devuan)
     sudo apt-get install lsb-release -y
@@ -34,6 +35,7 @@ if ! command_exists lsb_release; then
     sudo $yumdnf install -y redhat-lsb-core -y
     ;;
   *)
+    log "detect_os" "install lsb-release failed"
     exit 1
     ;;
   esac
