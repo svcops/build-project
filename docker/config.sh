@@ -1,9 +1,9 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2154
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/date.sh)
-daemon_path="/etc/docker/daemon.json"
+config_path="/etc/docker/daemon.json"
 function write_docker_config() {
-  cat >"$daemon_path" <<EOF
+  cat >"$config_path" <<EOF
 {
   "insecure-registries": [],
   "registry-mirrors": [
@@ -21,8 +21,8 @@ function write_docker_config() {
 EOF
 }
 
-if [ -f "$deamon_path" ]; then
-  cp "$deamon_path" "$demon_path_$datatime_version"
+if [ -f "$config_path" ]; then
+  cp "$config_path" "$config_path_$datatime_version"
   write_docker_config
   exit
 fi
