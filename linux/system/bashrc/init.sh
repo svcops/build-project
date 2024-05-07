@@ -16,8 +16,21 @@ function init_apt_bashrc() {
 #9d5049f5-3f12-4004-9ac8-196956e91184
 
 # You may uncomment the following lines if you want \`ls' to be colorized:
-export LS_OPTIONS='--color=auto'
-eval "\$(dircolors)"
+# export LS_OPTIONS='--color=auto'
+# eval "\$(dircolors)"
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+  alias ls='ls --color=auto'
+  #alias dir='dir --color=auto'
+  #alias vdir='vdir --color=auto'
+
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
+fi
+
 alias lla='ls -ahlF --group-directories-first -X'
 alias ll='ls -hlF --group-directories-first -X'
 alias la='ls -A --group-directories-first -X'
