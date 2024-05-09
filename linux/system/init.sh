@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2154
 source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/detect_os.sh)
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/detect_os.sh)
 
 log "update" "update system & prepare"
 
