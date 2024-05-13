@@ -161,7 +161,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/writer
 > by Dockerfile
 
 ```shell
-bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
+bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/docker/build.sh) \
   -d [build_dir] \
   -f [path/to/Dockerfile] \
   -i <image_name> \
