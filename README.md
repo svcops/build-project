@@ -162,6 +162,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/writer
 
 ```shell
 bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/docker/build.sh) \
+  -m [multi_platform] \
   -d [build_dir] \
   -f [path/to/Dockerfile] \
   -i <image_name> \
@@ -171,6 +172,7 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/docker
   -p <push_flag>
 ```
 
+- `-m`: 多平台构建(同时构建amd64和arm64的平台)的选择 `true` | `false` ,默认 `true`
 - `-d`: `docker build` 最后指定的路径，如果为空，默认使用 Dockerfile所在的文件路径
 - `-f`: `Dockefile` 的路径, 默认的构建基础路径在Dockerfile的路径下
   - 可选的参数, 如果没有, 会寻找执行脚本路径下的 `DOCKERFILE` 或 `Dockerfile` 或 `dockerfile`

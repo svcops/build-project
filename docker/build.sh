@@ -8,6 +8,7 @@ function end() {
   log "docker build" ">>> docker build end <<<"
 }
 
+multi_platform=""
 path_to_dockerfile=""
 build_dir=""
 image_name=""
@@ -17,6 +18,7 @@ new_tag=""
 push_flag=""
 
 function tips() {
+  log "tips" "-m multi platform(amd64 arm64), optional"
   log "tips" "-d build directory, optional if empty,use Dockerfile's directory"
   log "tips" "-f path/to/dockerfile, optional"
   log "tips" "-i the name of the image to be built"
@@ -26,8 +28,12 @@ function tips() {
   log "tips" "-p push flag, default <false>"
 }
 
-while getopts ":f:d:i:v:r:t:p:" opt; do
+while getopts ":m:f:d:i:v:r:t:p:" opt; do
   case ${opt} in
+  m)
+    log "get opts" "multi_platform is : $OPTARG"
+    multi_platform=$OPTARG
+    ;;
   d)
     log "get opts" "build_dir is : $OPTARG"
     build_dir=$OPTARG
@@ -218,10 +224,23 @@ elif [ ! -d "$build_dir" ]; then
   exit 1
 fi
 
+if [ "$multi_platform" == "true" ]; then
+  log "multi_platform" "use docker buildx"
+  multi_platform="true"
+else
+  log "multi_platform" "use docker build"
+  multi_platform="false"
+fi
+
 function build_push() {
 
-  log "docker_build" "docker build -f $path_to_dockerfile -t $image_name:$image_tag $build_dir"
-  docker build -f "$path_to_dockerfile" -t "$image_name:$image_tag" "$build_dir"
+  if [ "$multi_platform" == "true" ]; then
+    log "docker_build" "docker buildx build --platform linux/amd64,linux/arm64 $path_to_dockerfile -t $image_name:$image_tag $build_dir"
+    docker buildx build --platform linux/amd64,linux/arm64 "$path_to_dockerfile" -t "$image_name:$image_tag" "$build_dir"
+  else
+    log "docker_build" "docker build -f $path_to_dockerfile -t $image_name:$image_tag $build_dir"
+    docker build -f "$path_to_dockerfile" -t "$image_name:$image_tag" "$build_dir"
+  fi
 
   local build_status=$?
   if [ $build_status -eq 0 ]; then
