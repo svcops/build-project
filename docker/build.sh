@@ -235,8 +235,10 @@ fi
 function build_push() {
 
   if [ "$multi_platform" == "true" ]; then
-    log "docker_build" "docker buildx build --platform linux/amd64,linux/arm64 $path_to_dockerfile -t $image_name:$image_tag $build_dir"
-    docker buildx build --platform linux/amd64,linux/arm64 "$path_to_dockerfile" -t "$image_name:$image_tag" "$build_dir"
+    #    log "docker_build" "docker buildx build --platform linux/amd64,linux/arm64 $path_to_dockerfile -t $image_name:$image_tag $build_dir"
+    #    docker buildx build --platform linux/amd64,linux/arm64 "$path_to_dockerfile" -t "$image_name:$image_tag" "$build_dir"
+    log "docker_build" "docker build -f $path_to_dockerfile -t $image_name:$image_tag $build_dir"
+    docker build -f "$path_to_dockerfile" -t "$image_name:$image_tag" "$build_dir"
   else
     log "docker_build" "docker build -f $path_to_dockerfile -t $image_name:$image_tag $build_dir"
     docker build -f "$path_to_dockerfile" -t "$image_name:$image_tag" "$build_dir"
