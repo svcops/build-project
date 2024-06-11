@@ -10,7 +10,8 @@ function end() {
 
 # writer side 构建的镜像
 # build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:233.14938"
-build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:241.15989"
+#build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:241.15989"
+build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:241.16003"
 
 function tips() {
   log "tips" "-d writerside build directory"
