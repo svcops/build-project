@@ -30,4 +30,5 @@ function install_docker() {
 
 }
 
-install_docker "$1"
+# os src
+install_docker "$1" "$2"
