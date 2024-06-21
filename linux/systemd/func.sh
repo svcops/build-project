@@ -17,7 +17,10 @@ function stop_systemd_service() {
 function start_systemd_service() {
   local service_name=$1
   log "systemd" "start systemd service: $service_name"
-  if systemctl -l -a | grep -q "$service_name"; then
+  #  if systemctl -l -a | grep -q "$service_name"; then
+  #    systemctl restart "$service_name"
+  #    return 0
+  if [ -f "/usr/lib/systemd/system/$service_name.service" ] || [ -f "/usr/lib/systemd/system/$service_name" ]; then
     systemctl restart "$service_name"
     return 0
   else
