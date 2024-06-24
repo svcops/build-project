@@ -1,6 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2154
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
 
 source <(curl -SL $ROOT_URI/func/log.sh)
 source <(curl -SL $ROOT_URI/func/detect_os.sh)

@@ -1,6 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
 
 bash <(curl -SL $ROOT_URI/docker/install/install_apt_tpl.sh) \
   "debian" \

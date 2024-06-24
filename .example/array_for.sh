@@ -1,6 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1090
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
 
 array=("A" "B" "C")
 for element in "${array[@]}"; do
