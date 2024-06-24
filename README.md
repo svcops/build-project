@@ -53,6 +53,7 @@ fi
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+
 ssh_port="$(bash <(curl -sSL $ROOT_URI/func/ssh_port.sh)"
 echo "ssh port is $ssh_port"
 ```
@@ -69,8 +70,8 @@ echo "$os_name"
 ### date format
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
-source <(curl -sSL $ROOT_URI/func/date.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+  source <(curl -sSL $ROOT_URI/func/date.sh)
 
 echo "$datetime_version"
 ```
@@ -156,6 +157,7 @@ build writerside's project by docker
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+
 bash <(curl $ROOT_URI/writerside/build.sh) \
   -d [build_dir] \
   -i <instance>
@@ -199,9 +201,11 @@ bash <(curl $ROOT_URI/docker/build.sh) \
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+
 bash <(curl -SL $ROOT_URI/docker/rmi.sh) \
- -i image_name \
- -s strategy
+  -i image_name \
+  -s strategy
+
 ```
 
 - `-i`: 镜像的名称
@@ -215,8 +219,8 @@ bash <(curl -SL $ROOT_URI/docker/rmi.sh) \
 **debian系** 安装 docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
-bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) SRC
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+  bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) SRC
 ````
 
 - SRC: 源 (`docker` 官方源 / `tsinghua` 清华源 / `aliyun` 阿里云)
@@ -226,7 +230,8 @@ bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) SRC
 > config `/etc/docker/daemon.json`
 
 ```shell
-bash <(curl -SL $ROOT_URI/docker/config.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+  bash <(curl -SL $ROOT_URI/docker/config.sh)
 ```
 
 ## linux
@@ -236,8 +241,8 @@ bash <(curl -SL $ROOT_URI/docker/config.sh)
 `debian` 系列
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
-bash <(curl -SL $ROOT_URI/linux/system/bashrc/init.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+  bash <(curl -SL $ROOT_URI/linux/system/bashrc/init.sh)
 ```
 
 ## develop
@@ -247,8 +252,8 @@ bash <(curl -SL $ROOT_URI/linux/system/bashrc/init.sh)
 config maven `settings.xml`
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
-bash <(curl -SL $ROOT_URI/maven/config.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+  bash <(curl -SL $ROOT_URI/maven/config.sh)
 ```
 
 ### verify nginx configuration
