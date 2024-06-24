@@ -32,7 +32,8 @@
 ### log func
 
 ```shell
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
 
 log "hello" "world"
 ```
@@ -40,7 +41,8 @@ log "hello" "world"
 ### command_exists func
 
 ```shell
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 if command_exists docker ; then
     echo "command docker exists"
@@ -50,14 +52,16 @@ fi
 ### detect ssh port
 
 ```shell
-ssh_port="$(bash <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh)"
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+ssh_port="$(bash <(curl -sSL $ROOT_URI/func/ssh_port.sh)"
 echo "ssh port is $ssh_port"
 ```
 
 ### detect os
 
 ```shell
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/detect_os.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -sSL $ROOT_URI/func/detect_os.sh)
 
 echo "$os_name"
 ```
@@ -65,7 +69,8 @@ echo "$os_name"
 ### date format
 
 ```shell
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/date.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -sSL $ROOT_URI/func/date.sh)
 
 echo "$datetime_version"
 ```
@@ -75,7 +80,8 @@ echo "$datetime_version"
 build gradle's project by docker
 
 ```shell
-bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl $ROOT_URI/gradle/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
   -i <gradle_image> \
@@ -93,7 +99,8 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 build maven's project by docker
 
 ```shell
-bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle/build.sh) \
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl $ROOT_URI/gradle/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
   -i <maven_image> \
@@ -113,7 +120,8 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/gradle
 build golang's project by docker
 
 ```shell
-bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang/build.sh) \
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl $ROOT_URI/golang/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
   -i <gradle_image> \
@@ -129,7 +137,8 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/golang
 ## build node's project
 
 ```shell
-bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/node/build.sh) \
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl $ROOT_URI/node/build.sh) \
   -d [build_dir] \
   -i <gradle_image> \
   -x <gradle_command>
@@ -143,10 +152,11 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/node/b
 
 ## build writerside's project
 
-build golang's project by docker
+build writerside's project by docker
 
 ```shell
-bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/writerside/build.sh) \
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl $ROOT_URI/writerside/build.sh) \
   -d [build_dir] \
   -i <instance>
 ```
@@ -161,7 +171,8 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/writer
 > by Dockerfile
 
 ```shell
-bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/docker/build.sh) \
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl $ROOT_URI/docker/build.sh) \
   -m [multi_platform] \
   -d [build_dir] \
   -f [path/to/Dockerfile] \
@@ -187,7 +198,8 @@ bash <(curl https://code.kubectl.net/devops/build-project/raw/branch/main/docker
 ### remove docker's image
 
 ```shell
-bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/rmi.sh) \
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl -SL $ROOT_URI/docker/rmi.sh) \
  -i image_name \
  -s strategy
 ```
@@ -203,7 +215,8 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/do
 **debian系** 安装 docker
 
 ```shell
-bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) SRC
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) SRC
 ````
 
 - SRC: 源 (`docker` 官方源 / `tsinghua` 清华源 / `aliyun` 阿里云)
@@ -213,7 +226,7 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/do
 > config `/etc/docker/daemon.json`
 
 ```shell
-bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/config.sh)
+bash <(curl -SL $ROOT_URI/docker/config.sh)
 ```
 
 ## linux
@@ -223,7 +236,8 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/do
 `debian` 系列
 
 ```shell
-bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/linux/system/bashrc/init.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl -SL $ROOT_URI/linux/system/bashrc/init.sh)
 ```
 
 ## develop
@@ -233,7 +247,8 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/li
 config maven `settings.xml`
 
 ```shell
-bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/maven/config.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl -SL $ROOT_URI/maven/config.sh)
 ```
 
 ### verify nginx configuration
@@ -241,7 +256,8 @@ bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/ma
 验证基于`docker-compose`启动的nginx的配置文件
 
 ```shell
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/nginx/verify_func.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -sSL $ROOT_URI/nginx/verify_func.sh)
 if verify_nginx_configuration nginx path/to/docker-compose.yml; then
   log "verify" "verify success, then start"
 else
@@ -255,7 +271,8 @@ fi
 快速验证
 
 ```shell
-bash <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/nginx/verify.sh) nginx path/to/docker-compose.yml
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+bash <(curl -sSL $ROOT_URI/nginx/verify.sh) nginx path/to/docker-compose.yml
 ```
 
 - `nginx` 是 `docker-compose.yaml`中定义的`service`
