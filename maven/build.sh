@@ -1,7 +1,9 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2155  disable=SC1090
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 log "maven build" ">>> start <<<"
 function end() {

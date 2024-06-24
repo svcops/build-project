@@ -1,8 +1,9 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2155
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+# shellcheck disable=SC1090 disable=SC2155 disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
 
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 # Debian or Ubuntu
 OS=""
@@ -48,10 +49,10 @@ docker_exists
 
 function tips() {
   log "tips" "SRC 为脚本的参数,源选择,可选 docker(官方源) tsinghua(清华源) aliyun(阿里云) intellij(镜像)"
-  log "tips" "e.g.: bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) intellij"
-  log "tips" "e.g.: bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) tsinghua"
-  log "tips" "e.g.: bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) aliyun"
-  log "tips" "e.g.: bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/install_apt.sh) docker"
+  log "tips" "e.g.: bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) intellij"
+  log "tips" "e.g.: bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) tsinghua"
+  log "tips" "e.g.: bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) aliyun"
+  log "tips" "e.g.: bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) docker"
 }
 
 SRC=$1
@@ -62,16 +63,16 @@ function do_install() {
     # install docker on Debian
     if [ "$SRC" == "docker" ]; then
       log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/debian/install.sh)
     elif [ "$SRC" == "tsinghua" ]; then
       log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install_tsinghua.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/debian/install_tsinghua.sh)
     elif [ "$SRC" == "aliyun" ]; then
       log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install_aliyun.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/debian/install_aliyun.sh)
     elif [ "$SRC" == "intellij" ]; then
       log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/debian/install_intellij.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/debian/install_intellij.sh)
     else
       tips
       exit 1
@@ -81,16 +82,16 @@ function do_install() {
     # install docker on Ubuntu
     if [ "$SRC" == "docker" ]; then
       log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/ubuntu/install.sh)
     elif [ "$SRC" == "tsinghua" ]; then
       log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install_tsinghua.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/ubuntu/install_tsinghua.sh)
     elif [ "$SRC" == "aliyun" ]; then
       log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install_aliyun.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/ubuntu/install_aliyun.sh)
     elif [ "$SRC" == "intellij" ]; then
       log "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/ubuntu/install_intellij.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/ubuntu/install_intellij.sh)
     else
       tips
       exit 1

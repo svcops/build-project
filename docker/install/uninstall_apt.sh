@@ -1,7 +1,10 @@
 #!/bin/bash
+# shellcheck disable=SC1090 disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -SL $ROOT_URI/func/log.sh)
+
 # debian 系卸载 docker
-# shellcheck disable=SC1090
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
 
 log "uninstall" "try stop docker.socket & docker"
 

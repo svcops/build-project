@@ -1,7 +1,9 @@
 #!/bin/bash
-# shellcheck disable=SC1090
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+# shellcheck disable=SC1090 disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 os_base_name=""
 os_base_version=""

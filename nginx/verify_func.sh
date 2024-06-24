@@ -1,7 +1,9 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2164 disable=SC2126
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+# shellcheck disable=SC1090 disable=SC2164 disable=SC2126  disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 function verify_nginx_configuration() {
   log "nginx" "Verify the nginx configuration file that docker-compose starts"

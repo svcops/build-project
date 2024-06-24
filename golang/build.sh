@@ -1,7 +1,9 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2155 disable=SC2126 disable=SC1090
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
 log "go build" ">>> go build start <<<"
 function end() {

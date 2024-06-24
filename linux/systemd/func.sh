@@ -1,6 +1,8 @@
 #!/bin/bash
-# shellcheck disable=SC1090
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+# shellcheck disable=SC1090 disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -sSL $ROOT_URI/func/log.sh)
 
 function stop_systemd_service() {
   local service_name=$1

@@ -1,7 +1,9 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2154
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/func/date.sh)
+# shellcheck disable=SC1090 disable=SC2154 disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/date.sh)
 config_path="/etc/docker/daemon.json"
 function write_docker_config() {
   log "config" "write docker config"

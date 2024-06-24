@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# remove proxy
 function apt_remove_proxy() {
   rm -rf "/etc/apt/apt.conf.d/proxy.conf"
 }

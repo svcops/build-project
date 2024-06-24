@@ -1,7 +1,9 @@
 #!/bin/bash
-# shellcheck disable=SC2155 disable=SC1090
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+# shellcheck disable=SC1090 disable=SC2154 disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
 if command_exists docker; then
   log "command_exists" "docker 命令存在"

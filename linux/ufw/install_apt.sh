@@ -1,12 +1,14 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2034
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/command_exists.sh)
+# shellcheck disable=SC1090 disable=SC2034 disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
 log "command_exists" "ufw"
 
 function detect_ssh_port() {
-  ssh_port=$(bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/ssh_port.sh))
+  ssh_port=$(bash <(curl -SL $ROOT_URI/func/ssh_port.sh))
   log "ssh_port" "ssh port is $ssh_port"
 }
 
@@ -39,16 +41,16 @@ function ufw_allow_ssh() {
 
 function ufw_allow_80_443() {
   log "ufw" "ufw_allow_ssh"
-#  ufw allow 80
-#  ufw allow 443
-#  ufw reload
-#  ufw status
+  #  ufw allow 80
+  #  ufw allow 443
+  #  ufw reload
+  #  ufw status
 }
 
 function tips() {
   log "tips" "install strategy: oi (only install and do not config), oics (install and config ssh)"
-  log "tips" "e.g.: bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/linux/ufw/install_apt.sh) oi"
-  log "tips" "e.g.: bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/linux/ufw/install_apt.sh) oics"
+  log "tips" "e.g.: bash <(curl -SL $ROOT_URI/linux/ufw/install_apt.sh) oi"
+  log "tips" "e.g.: bash <(curl -SL $ROOT_URI/linux/ufw/install_apt.sh) oics"
 }
 
 strategy=$1

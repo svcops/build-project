@@ -1,7 +1,9 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2154
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/detect_os.sh)
+# shellcheck disable=SC1090 disable=SC2086 disable=SC2154
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
+
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/detect_os.sh)
 
 log "bashrc" "init bashrc"
 

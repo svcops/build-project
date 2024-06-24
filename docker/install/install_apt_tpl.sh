@@ -1,8 +1,9 @@
 #!/bin/bash
-# shellcheck disable=SC1090
-source <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/func/log.sh)
+# shellcheck disable=SC1090 disable=SC2086
+source <(curl -sSL https://code.kubectl.net/devops/build-project/raw/branch/main/basic.sh)
 
-bash <(curl -SL https://code.kubectl.net/devops/build-project/raw/branch/main/docker/install/uninstall_apt.sh)
+source <(curl -SL $ROOT_URI/func/log.sh)
+bash <(curl -SL $ROOT_URI/docker/install/uninstall_apt.sh)
 
 function install_docker() {
   local os="$1"
