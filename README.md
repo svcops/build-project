@@ -33,16 +33,19 @@
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/log.sh)
 
 log "hello" "world"
+log_info "hello" "world"
+log_warn "hello" "world"
+log_error "hello" "world"
 ```
 
 ### command_exists func
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-source <(curl -sSL $ROOT_URI/func/command_exists.sh)
+source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
 if command_exists docker ; then
     echo "command docker exists"
@@ -54,7 +57,7 @@ fi
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-ssh_port="$(bash <(curl -sSL $ROOT_URI/func/ssh_port.sh)"
+ssh_port="$(bash <(curl -SL $ROOT_URI/func/ssh_port.sh)"
 echo "ssh port is $ssh_port"
 ```
 
@@ -62,7 +65,7 @@ echo "ssh port is $ssh_port"
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-source <(curl -sSL $ROOT_URI/func/detect_os.sh)
+source <(curl -SL $ROOT_URI/func/detect_os.sh)
 
 echo "$os_name"
 ```
@@ -71,7 +74,7 @@ echo "$os_name"
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
-  source <(curl -sSL $ROOT_URI/func/date.sh)
+  source <(curl -SL $ROOT_URI/func/date.sh)
 
 echo "$datetime_version"
 ```
@@ -262,7 +265,7 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-source <(curl -sSL $ROOT_URI/nginx/verify_func.sh)
+source <(curl -SL $ROOT_URI/nginx/verify_func.sh)
 if verify_nginx_configuration nginx path/to/docker-compose.yml; then
   log "verify" "verify success, then start"
 else
@@ -277,7 +280,7 @@ fi
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl -sSL $ROOT_URI/nginx/verify.sh) nginx path/to/docker-compose.yml
+bash <(curl -SL $ROOT_URI/nginx/verify.sh) nginx path/to/docker-compose.yml
 ```
 
 - `nginx` 是 `docker-compose.yaml`中定义的`service`

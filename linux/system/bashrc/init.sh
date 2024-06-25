@@ -5,10 +5,10 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 source <(curl -SL $ROOT_URI/func/log.sh)
 source <(curl -SL $ROOT_URI/func/detect_os.sh)
 
-log "bashrc" "init bashrc"
+log_info "bashrc" "init bashrc"
 
 if [ -f "/root/.bashrc" ]; then
-  log "bashrc" "try delete"
+  log_warn "bashrc" "try delete"
   sed -i '/^#9d5049f5-3f12-4004-9ac8-196956e91184/,/#58efd70b-e5be-4d58-856a-5807ed05b29d/d' /root/.bashrc
 fi
 
@@ -53,7 +53,7 @@ EOF
 }
 
 function init_yum_bashrc() {
-  log "bashrc" "TODO append bashrc"
+  log_warn "bashrc" "TODO append bashrc"
 }
 
 if [ "$os_base_name" == "Ubuntu" ] || [ "$os_base_name" == "Debian" ]; then

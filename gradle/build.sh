@@ -2,8 +2,8 @@
 # shellcheck disable=SC2086 disable=SC2155  disable=SC1090
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
-source <(curl -sSL $ROOT_URI/func/command_exists.sh)
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
 log_info "gradle build" ">>> start <<<"
 function end() {
@@ -89,7 +89,7 @@ else
 fi
 
 if command_exists docker; then
-  log "command_exists" "docker command exists"
+  log_info "command_exists" "docker command exists"
 else
   log_error "command_exists" "docker command does not exist"
   end

@@ -6,7 +6,7 @@ source <(curl -SL $ROOT_URI/func/log.sh)
 
 bash <(curl -SL $ROOT_URI/docker/install/uninstall_apt.sh)
 
-log "install" "install docker"
+log_info "install" "install docker"
 # Add Docker's official GPG key:
 sudo apt-get update -y
 sudo apt-get install ca-certificates curl -y
@@ -20,6 +20,6 @@ echo \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
   sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 
-log "install" "apt-get install ..."
+log_info "install" "apt-get install ..."
 sudo apt-get update -y
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y

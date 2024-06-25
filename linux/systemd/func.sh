@@ -2,7 +2,7 @@
 # shellcheck disable=SC1090 disable=SC2086
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/log.sh)
 
 function stop_systemd_service() {
   local service_name=$1

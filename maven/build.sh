@@ -2,12 +2,12 @@
 # shellcheck disable=SC2086 disable=SC2155  disable=SC1090
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
-source <(curl -sSL $ROOT_URI/func/command_exists.sh)
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
-log "maven build" ">>> start <<<"
+log_info "maven build" ">>> start <<<"
 function end() {
-  log "maven build" ">>> end <<<"
+  log_info "maven build" ">>> end <<<"
 }
 
 cache=""
@@ -17,11 +17,11 @@ build_dir=""
 settings=""
 
 function tips() {
-  log "tips" "-d maven's build directory"
-  log "tips" "-c user docker volume's to cache the build process"
-  log "tips" "-i maven's docker image"
-  log "tips" "-x maven's build command"
-  log "tips" "-s maven's settings.xml path"
+  log_info "tips" "-d maven's build directory"
+  log_info "tips" "-c user docker volume's to cache the build process"
+  log_info "tips" "-i maven's docker image"
+  log_info "tips" "-x maven's build command"
+  log_info "tips" "-s maven's settings.xml path"
 }
 
 while getopts ":c:i:x:s:d:" opt; do
@@ -65,12 +65,12 @@ function validate_param() {
   local key=$1
   local value=$2
   if [ -z "$value" ]; then
-    log "validate_param" "parameter $key is empty, then exit"
+    log_info "validate_param" "parameter $key is empty, then exit"
     tips
     end
     exit 1
   else
-    log "validate_param" "parameter $key : $value"
+    log_info "validate_param" "parameter $key : $value"
   fi
 }
 
@@ -80,35 +80,35 @@ validate_param "build" "$build"
 validate_param "settings" "$settings"
 
 if [ -z "$build_dir" ]; then
-  log "build_dir" "build_dir is empty then use current directory"
+  log_info "build_dir" "build_dir is empty then use current directory"
   build_dir="$(pwd)"
 elif [ ! -d "$build_dir" ]; then
-  log "build_dir" "build_dir is not a valid paths"
+  log_error "build_dir" "build_dir is not a valid paths"
   exit 1
 fi
 
 if [[ $cache =~ ^[a-zA-Z0-9_.-]+$ ]]; then
-  log "cache_str_validate" "cache str validate success"
+  log_info "cache_str_validate" "cache str validate success"
 else
-  log "cache_str_validate" "cache str contains only English characters, digits, underscores, dots, and hyphens."
-  log "cache_str_validate" "cache str validate failed"
+  log_error "cache_str_validate" "cache str contains only English characters, digits, underscores, dots, and hyphens."
+  log_error "cache_str_validate" "cache str validate failed"
   exit 1
 fi
 
 if [ ! -f $settings ]; then
-  log "settings.xml" "settings.xml path error"
+  log_error "settings.xml" "settings.xml path error"
   exit 1
 fi
 
 if command_exists docker; then
-  log "command_exists" "docker command exists"
+  log_info "command_exists" "docker command exists"
 else
-  log "command_exists" "docker command does not exist"
+  log_error "command_exists" "docker command does not exist"
   end
   exit 1
 fi
 
-log "build" "========== build maven's project in docker =========="
+log_info "build" "========== build maven's project in docker =========="
 
 docker run -i --rm -u root \
   --network=host \

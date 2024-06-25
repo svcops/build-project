@@ -9,9 +9,9 @@ function install_docker() {
   local os="$1"
   local src="$2"
 
-  log "show" "os is $1|mirror is $src"
+  log_info "show" "os is $1|mirror is $src"
 
-  log "install" "install docker"
+  log_info "install" "install docker"
   # Add Docker's official GPG key:
   sudo apt-get update -y
   sudo apt-get install ca-certificates curl -y

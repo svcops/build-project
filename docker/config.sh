@@ -2,8 +2,8 @@
 # shellcheck disable=SC1090 disable=SC2154 disable=SC2086
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
-source <(curl -sSL $ROOT_URI/func/date.sh)
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/date.sh)
 config_path="/etc/docker/daemon.json"
 function write_docker_config() {
   log "config" "write docker config"

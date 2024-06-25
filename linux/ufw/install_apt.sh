@@ -5,18 +5,18 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 source <(curl -SL $ROOT_URI/func/log.sh)
 source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
-log "command_exists" "ufw"
+log_info "command_exists" "ufw"
 
 function detect_ssh_port() {
   ssh_port=$(bash <(curl -SL $ROOT_URI/func/ssh_port.sh))
-  log "ssh_port" "ssh port is $ssh_port"
+  log_info "ssh_port" "ssh port is $ssh_port"
 }
 
 detect_ssh_port
 
 function install_ufw() {
   apt-get install -y ufw
-  log "ufw_config" "IPV6=no"
+  log_info "ufw_config" "IPV6=no"
 }
 
 function config_ufw() {
@@ -26,21 +26,21 @@ function config_ufw() {
 }
 
 function enable_ufw() {
-  log "ufw" "enable_ufw"
+  log_info "ufw" "enable_ufw"
   systemctl enable ufw
   echo -e "y\n" | ufw enable
   ufw status
 }
 
 function ufw_allow_ssh() {
-  log "ufw" "ufw_allow_ssh"
+  log_info "ufw" "ufw_allow_ssh"
   ufw allow $ssh_port
   ufw reload
   ufw status
 }
 
 function ufw_allow_80_443() {
-  log "ufw" "ufw_allow_ssh"
+  log_info "ufw" "ufw_allow_ssh"
   #  ufw allow 80
   #  ufw allow 443
   #  ufw reload
@@ -48,9 +48,9 @@ function ufw_allow_80_443() {
 }
 
 function tips() {
-  log "tips" "install strategy: oi (only install and do not config), oics (install and config ssh)"
-  log "tips" "e.g.: bash <(curl -SL $ROOT_URI/linux/ufw/install_apt.sh) oi"
-  log "tips" "e.g.: bash <(curl -SL $ROOT_URI/linux/ufw/install_apt.sh) oics"
+  log_info "tips" "install strategy: oi (only install and do not config), oics (install and config ssh)"
+  log_info "tips" "e.g.: bash <(curl -SL $ROOT_URI/linux/ufw/install_apt.sh) oi"
+  log_info "tips" "e.g.: bash <(curl -SL $ROOT_URI/linux/ufw/install_apt.sh) oics"
 }
 
 strategy=$1
