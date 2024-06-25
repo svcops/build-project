@@ -32,7 +32,7 @@
 ### log func
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 source <(curl -sSL $ROOT_URI/func/log.sh)
 
 log "hello" "world"
@@ -41,7 +41,7 @@ log "hello" "world"
 ### command_exists func
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 if command_exists docker ; then
@@ -52,7 +52,7 @@ fi
 ### detect ssh port
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
 ssh_port="$(bash <(curl -sSL $ROOT_URI/func/ssh_port.sh)"
 echo "ssh port is $ssh_port"
@@ -61,7 +61,7 @@ echo "ssh port is $ssh_port"
 ### detect os
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 source <(curl -sSL $ROOT_URI/func/detect_os.sh)
 
 echo "$os_name"
@@ -70,7 +70,7 @@ echo "$os_name"
 ### date format
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
   source <(curl -sSL $ROOT_URI/func/date.sh)
 
 echo "$datetime_version"
@@ -81,7 +81,7 @@ echo "$datetime_version"
 build gradle's project by docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 bash <(curl $ROOT_URI/gradle/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
@@ -100,7 +100,7 @@ bash <(curl $ROOT_URI/gradle/build.sh) \
 build maven's project by docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 bash <(curl $ROOT_URI/gradle/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
@@ -121,7 +121,7 @@ bash <(curl $ROOT_URI/gradle/build.sh) \
 build golang's project by docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 bash <(curl $ROOT_URI/golang/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
@@ -138,7 +138,7 @@ bash <(curl $ROOT_URI/golang/build.sh) \
 ## build node's project
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 bash <(curl $ROOT_URI/node/build.sh) \
   -d [build_dir] \
   -i <gradle_image> \
@@ -156,7 +156,7 @@ bash <(curl $ROOT_URI/node/build.sh) \
 build writerside's project by docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
 bash <(curl $ROOT_URI/writerside/build.sh) \
   -d [build_dir] \
@@ -173,7 +173,7 @@ bash <(curl $ROOT_URI/writerside/build.sh) \
 > by Dockerfile
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 bash <(curl $ROOT_URI/docker/build.sh) \
   -m [multi_platform] \
   -d [build_dir] \
@@ -200,7 +200,7 @@ bash <(curl $ROOT_URI/docker/build.sh) \
 ### remove docker's image
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
 bash <(curl -SL $ROOT_URI/docker/rmi.sh) \
   -i image_name \
@@ -219,7 +219,7 @@ bash <(curl -SL $ROOT_URI/docker/rmi.sh) \
 **debian系** 安装 docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
   bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) SRC
 ````
 
@@ -230,7 +230,7 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
 > config `/etc/docker/daemon.json`
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
   bash <(curl -SL $ROOT_URI/docker/config.sh)
 ```
 
@@ -241,7 +241,7 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
 `debian` 系列
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
   bash <(curl -SL $ROOT_URI/linux/system/bashrc/init.sh)
 ```
 
@@ -252,7 +252,7 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
 config maven `settings.xml`
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
   bash <(curl -SL $ROOT_URI/maven/config.sh)
 ```
 
@@ -261,7 +261,7 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh) &&
 验证基于`docker-compose`启动的nginx的配置文件
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 source <(curl -sSL $ROOT_URI/nginx/verify_func.sh)
 if verify_nginx_configuration nginx path/to/docker-compose.yml; then
   log "verify" "verify success, then start"
@@ -276,7 +276,7 @@ fi
 快速验证
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/basic.sh)
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 bash <(curl -sSL $ROOT_URI/nginx/verify.sh) nginx path/to/docker-compose.yml
 ```
 
