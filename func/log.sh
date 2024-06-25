@@ -1,6 +1,7 @@
-GREEN='\033[0;32m' # 绿色
-RED='\033[0;31m'   # 红色
-NC='\033[0m'       # reset
+GREEN='\033[0;32m'      # 绿色
+ORANGE='\033[38;5;208m' # 橙色
+RED='\033[0;31m'        # 红色
+NC='\033[0m'            # reset
 
 function log() {
   local remark="$1"
@@ -28,6 +29,20 @@ function log_info() {
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
   echo -e "${GREEN}$now - [ $remark ] $msg${NC}"
+}
+
+function log_warn() {
+  local remark="$1"
+  local msg="$2"
+  if [ -z "$remark" ]; then
+    remark="unknown remark"
+  fi
+  if [ -z "$msg" ]; then
+    msg="unknown message"
+  fi
+  # shellcheck disable=SC2155
+  local now=$(date +"%Y-%m-%d %H:%M:%S")
+  echo -e "${ORANGE}$now - [ $remark ] $msg${NC}"
 }
 
 function log_error() {
