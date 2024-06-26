@@ -11,8 +11,8 @@ function end() {
 }
 
 function tips() {
-  log "tips" "-i image name"
-  log "tips" "-s strategy: contain_latest remove_none all"
+  log_info "tips" "-i image name"
+  log_info "tips" "-s strategy: contain_latest remove_none all"
 }
 
 title_reg="^REPOSITORY\s*TAG\s*IMAGE\s*\ID\s*CREATED\s*SIZE$"
@@ -23,21 +23,21 @@ strategy=""
 while getopts ":i:s:" opt; do
   case ${opt} in
   i)
-    log "get opts" "image name is : $OPTARG"
+    log_info "get opts" "image name is : $OPTARG"
     image_name=$OPTARG
     ;;
   s)
-    log "get opts" "remove strategy is : $OPTARG"
+    log_info "get opts" "remove strategy is : $OPTARG"
     strategy=$OPTARG
     ;;
   \?)
-    log "get opts" "Invalid option: -$OPTARG"
+    log_error "get opts" "Invalid option: -$OPTARG"
     tips
     end
     exit 1
     ;;
   :)
-    log "get opts" "Invalid option: -$OPTARG requires an argument"
+    log_info "get opts" "Invalid option: -$OPTARG requires an argument"
     tips
     end
     exit 1
@@ -49,7 +49,7 @@ function validate_param() {
   local key=$1
   local value=$2
   if [ -z "$value" ]; then
-    log "validate_param" "parameter $key is empty, then exit"
+    log_error "validate_param" "parameter $key is empty, then exit"
     tips
     end
     exit 1
@@ -61,14 +61,14 @@ function validate_param() {
 validate_param "image_name" "$image_name"
 
 if [ -z "$strategy" ]; then
-  log "strategy" "strategy is empty use default contain_latest"
+  log_warn "strategy" "strategy is empty use default contain_latest"
   strategy="contain_latest"
 fi
 
 if command_exists docker; then
-  log "command_exists" "docker command exists"
+  log_info "command_exists" "docker command exists"
 else
-  log "command_exists" "docker command does not exist"
+  log_error "command_exists" "docker command does not exist"
   end
   exit 1
 fi
@@ -78,7 +78,7 @@ if [ "$strategy" == "contain_latest" ]; then
   con=$(docker image ls $image_name | grep -v $title_reg | grep -v "latest" | wc -l)
 
   if [ $con -eq 0 ]; then
-    log "contain_latest" "image doesn't exit ,then exit"
+    log_warn "contain_latest" "image doesn't exit ,then exit"
     end
     exit
   fi
@@ -90,7 +90,7 @@ elif [ "$strategy" == "remove_none" ]; then
   con=$(docker image ls $image_name | grep -v $title_reg | grep "<none>" | wc -l)
 
   if [ $con -eq 0 ]; then
-    log "remove_none" "image doesn't exit ,then exit"
+    log_info "remove_none" "image doesn't exit ,then exit"
     end
     exit
   fi
@@ -102,7 +102,7 @@ elif [ "$strategy" == "all" ]; then
   con=$(docker image ls $image_name | grep -v $title_reg | wc -l)
 
   if [ $con -eq 0 ]; then
-    log "all" "image doesn't exit ,then exit"
+    log_info "all" "image doesn't exit ,then exit"
     end
     exit
   fi
