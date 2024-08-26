@@ -18,6 +18,7 @@ image_tag=""
 re_tag_flag=""
 new_tag=""
 push_flag=""
+build_arg=""
 
 function tips() {
   log_info "tips" "-m multi platform(amd64 arm64), optional"
@@ -28,9 +29,10 @@ function tips() {
   log_info "tips" "-r re tag flag, default <true>"
   log_info "tips" "-t the new_tag of the image to be built. if empty, use timestamp_tag."
   log_info "tips" "-p push flag, default <false>"
+  log_info "tips" "-a build arg, stringArray. Set build-time variables"
 }
 
-while getopts ":m:f:d:i:v:r:t:p:" opt; do
+while getopts ":m:f:d:i:v:r:t:p:a:" opt; do
   case ${opt} in
   m)
     log_info "get opts" "multi_platform is : $OPTARG"
@@ -64,6 +66,10 @@ while getopts ":m:f:d:i:v:r:t:p:" opt; do
     log_info "get opts" "push flag is: $OPTARG"
     push_flag=$OPTARG
     ;;
+  a)
+    log_info "get opts" "build arg is: $OPTARG"
+    build_arg=$OPTARG
+    ;;
   \?)
     log_info "get opts" "Invalid option: -$OPTARG"
     tips
@@ -86,6 +92,7 @@ function print_param() {
   log_info "print" "re_tag_flag: $re_tag_flag"
   log_info "print" "new_tag: $new_tag"
   log_info "print" "push_flag: $push_flag"
+  log_info "print" "build_arg: $build_arg"
 }
 
 print_param
@@ -259,6 +266,7 @@ function build_push() {
     log_info "build_push" "docker push $image_name:$image_tag"
     docker push "$image_name:$image_tag"
   fi
+
 }
 
 if command_exists docker; then
