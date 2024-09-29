@@ -51,36 +51,36 @@ function verify_nginx_configuration() {
   local output
   if command_exists docker-compose; then
     log_info "nginx" "use docker-compose"
-    log_info "nginx" "$(docker-compose -f "$compose_file" run --rm -it "$service_name" nginx -v 2>&1 | tail -n 1)"
-    log_info "nginx" "docker-compose -f $compose_file run --rm -it $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
+    log_info "nginx" "$(docker-compose -f "$compose_file" run --rm -i "$service_name" nginx -v 2>&1 | tail -n 1)"
+    log_info "nginx" "docker-compose -f $compose_file run --rm -i $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
     # 2>&1 重定向到标准输出
-    output=$(docker-compose -f "$compose_file" run --rm -it "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:')
+    output=$(docker-compose -f "$compose_file" run --rm -i "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:')
   elif [ "true" == "$docker_in_docker" ]; then
     log_info "nginx" "use docker compose plugin (docker in docker)"
 
     log_info "nginx" "$(
-      docker run --rm -it -v "/var/run/docker.sock:/var/run/docker.sock" \
+      docker run --rm -i -v "/var/run/docker.sock:/var/run/docker.sock" \
         -v "$COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER" \
         --privileged \
         docker \
-        docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -it "$service_name" nginx -v 2>&1 | tail -n 1
+        docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -i "$service_name" nginx -v 2>&1 | tail -n 1
     )"
-    local compose_command="docker compose -f $COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME run --rm -it $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
-    log_info "nginx" "\n  docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER --privileged docker $compose_command"
+    local compose_command="docker compose -f $COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME run --rm -i $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
+    log_info "nginx" "\n  docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock -v $COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER --privileged docker $compose_command"
 
     output=$(
-      docker run --rm -it --privileged \
+      docker run --rm -i --privileged \
         -v "/var/run/docker.sock:/var/run/docker.sock" \
         -v "$COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER" \
         docker \
-        docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -it "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:'
+        docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -i "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:'
     )
 
   else
     log_info "nginx" "use docker compose plugin"
-    log_info "nginx" "$(docker compose -f "$compose_file" run --rm -it "$service_name" nginx -v 2>&1 | tail -n 1)"
-    log_info "nginx" "docker compose -f $compose_file run --rm -it $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
-    output=$(docker compose -f "$compose_file" run --rm -it "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:')
+    log_info "nginx" "$(docker compose -f "$compose_file" run --rm -i "$service_name" nginx -v 2>&1 | tail -n 1)"
+    log_info "nginx" "docker compose -f $compose_file run --rm -i $service_name nginx -t 2>&1 | tail -n 2 | grep 'nginx:'"
+    output=$(docker compose -f "$compose_file" run --rm -i "$service_name" nginx -t 2>&1 | tail -n 2 | grep 'nginx:')
   fi
 
   if [ -z "$output" ]; then
@@ -116,3 +116,7 @@ function verify_nginx_configuration() {
   fi
 
 }
+
+# docker run --rm -it => docker run --rm -i
+# the input device is not a TTY
+# https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty
