@@ -15,7 +15,7 @@ function delete_nvm() {
 
 function delete_bashrc_content() {
   log_warn "delete" "sed"
-  sed -i '/^#bf563159-1c46-4e10-a67a-e64bc308e517/,/#c0eee075-f614-4ffd-87f4-41f62655512d/d' /root/.bashrjc
+  sed -i '/^#bf563159-1c46-4e10-a67a-e64bc308e517/,/#c0eee075-f614-4ffd-87f4-41f62655512d/d' /root/.bashrc
 }
 
 delete_npmrc
