@@ -1,32 +1,5 @@
 # build project
 
-<!-- TOC -->
-
-* [build project](#build-project)
-  * [functions](#functions)
-    * [log func](#log-func)
-    * [command_exists func](#command_exists-func)
-    * [detect ssh port](#detect-ssh-port)
-    * [detect os](#detect-os)
-    * [date format](#date-format)
-  * [build gradle's project](#build-gradles-project)
-  * [build maven's project](#build-mavens-project)
-  * [build golang's project](#build-golangs-project)
-  * [build node's project](#build-nodes-project)
-  * [build writerside's project](#build-writersides-project)
-  * [docker](#docker)
-    * [build docker's image (and push)](#build-dockers-image-and-push)
-    * [remove docker's image](#remove-dockers-image)
-    * [install docker](#install-docker)
-    * [config docker](#config-docker)
-  * [linux](#linux)
-    * [bashrc](#bashrc)
-  * [develop](#develop)
-    * [config maven](#config-maven)
-    * [verify nginx configuration](#verify-nginx-configuration)
-
-<!-- TOC -->
-
 ## functions
 
 ### log func
@@ -153,6 +126,24 @@ bash <(curl $ROOT_URI/node/build.sh) \
 - `-x`: node 的命令
   - e.g. : `npm install --registry=https://registry.npmmirror.com`
   - e.g. : `npm run build`
+
+### nvm on linux
+
+> HOME is /root
+
+install
+
+```shell
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl $ROOT_URI/node/nvm/install.sh)
+```
+
+uninstall
+
+```shell
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl $ROOT_URI/node/nvm/uninstall.sh)
+```
 
 ## build writerside's project
 
