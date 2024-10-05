@@ -1,5 +1,33 @@
 # build project
 
+<!-- TOC -->
+
+* [build project](#build-project)
+  * [functions](#functions)
+    * [log func](#log-func)
+    * [command_exists func](#command_exists-func)
+    * [detect ssh port](#detect-ssh-port)
+    * [detect os](#detect-os)
+    * [date format](#date-format)
+  * [build gradle's project](#build-gradles-project)
+  * [build maven's project](#build-mavens-project)
+  * [build golang's project](#build-golangs-project)
+  * [build node's project](#build-nodes-project)
+    * [nvm on linux](#nvm-on-linux)
+  * [build writerside's project](#build-writersides-project)
+  * [docker](#docker)
+    * [build docker's image (and push)](#build-dockers-image-and-push)
+    * [remove docker's image](#remove-dockers-image)
+    * [install docker](#install-docker)
+    * [config docker](#config-docker)
+  * [linux](#linux)
+    * [bashrc](#bashrc)
+  * [develop](#develop)
+    * [config maven](#config-maven)
+    * [verify nginx configuration](#verify-nginx-configuration)
+
+<!-- TOC -->
+
 ## functions
 
 ### log func
