@@ -238,7 +238,7 @@ bash <(curl -SL $ROOT_URI/docker/rmi.sh) \
 
 ### install docker
 
-**debian系** 安装 docker
+**debian系 安装docker**
 
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
