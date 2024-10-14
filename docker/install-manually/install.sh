@@ -18,11 +18,12 @@ if [ -z $version ]; then
 fi
 
 function download_and_move() {
+  rm -rf docker-$version.tgz docker/
   log_info "print" "arch = $arch; version=$version"
   curl https://download.docker.com/linux/static/stable/$arch/docker-$version.tgz -o docker-$version.tgz
   tar zxvf docker-$version.tgz
   mv docker/* /usr/bin/
-  rm -rf docker
+  rm -rf docker docker-$version.tgz
 }
 
 function config_systemd() {
