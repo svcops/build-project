@@ -247,6 +247,17 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 
 - SRC: 源 (`docker` 官方源 / `tsinghua` 清华源 / `aliyun` 阿里云)
 
+**手动安装docker**
+
+```shell
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
+  bash <(curl -SL $ROOT_URI/docker/install-manually/install.sh) $arch $version
+
+````
+
+- `arch`: 系统架构
+- `version`: docker版本
+
 ### config docker
 
 > config `/etc/docker/daemon.json`
