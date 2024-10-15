@@ -1,0 +1,40 @@
+#!/bin/bash
+# shellcheck disable=SC1090 disable=SC2154 disable=SC2086
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/date.sh)
+
+PROXY_URL="$1"
+NO_PROXY_CONTENT="$2"
+
+config_path="/etc/systemd/system/docker.service.d/proxy.conf"
+
+if [ -z $PROXY_URL ]; then
+  log_error "validate" "proxy url is blank"
+  log_info "proxy url" "e.g. http://127.0.0.1:8888"
+  log_info "proxy url" "e.g. socks5h://127.0.0.1:1080"
+  exit 1
+fi
+
+if [ -z $NO_PROXY_CONTENT ]; then
+  NO_PROXY_CONTENT="localhost,127.0.0.1,docker-registry.somecorporation.com"
+  log_info "NO_PROXY" "NO_PROXY_CONTENT is blank.default $NO_PROXY_CONTENT"
+fi
+
+if [ -f $config_path ]; then
+  log "backup" "cp $config_path ${config_path}_${datetime_version}"
+  cp "$config_path" "${config_path}_${datetime_version}"
+fi
+
+function write_docker_daemon_proxy_config() {
+  log_info "config" "write docker daemon proxy config"
+  cat >"$config_path" <<EOF
+[Service]
+Environment="HTTP_PROXY=$PROXY_URL"
+Environment="HTTPS_PROXY=$PROXY_UR"
+Environment="NO_PROXY=$NO_PROXY_CONTENT"
+EOF
+}
+
+mkdir -p "/etc/systemd/system/docker.service.d/"
+write_docker_daemon_proxy_config

@@ -8,11 +8,11 @@ source <(curl -SL $ROOT_URI/func/detect_os.sh)
 
 log_info "bashrc" "init bashrc"
 
-file="/root/.bashrc"
+file="$HOME/.bashrc"
 
 if [ -f $file ]; then
   log_warn "bashrc" "try delete"
-  sed -i '/^#9d5049f5-3f12-4004-9ac8-196956e91184/,/#58efd70b-e5be-4d58-856a-5807ed05b29d/d' /root/.bashrc
+  sed -i '/^#9d5049f5-3f12-4004-9ac8-196956e91184/,/#58efd70b-e5be-4d58-856a-5807ed05b29d/d' $file
 fi
 
 function init_apt_bashrc() {
