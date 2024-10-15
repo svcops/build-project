@@ -25,6 +25,9 @@
   * [develop](#develop)
     * [config maven](#config-maven)
     * [verify nginx configuration](#verify-nginx-configuration)
+  * [proxy config](#proxy-config)
+    * [bashrc proxy config](#bashrc-proxy-config)
+    * [docker daemon proxy config](#docker-daemon-proxy-config)
 
 <!-- TOC -->
 
@@ -314,4 +317,32 @@ bash <(curl -SL $ROOT_URI/nginx/verify.sh) nginx path/to/docker-compose.yml
 ```
 
 - `nginx` 是 `docker-compose.yaml`中定义的`service`
-- 第二个参数 `docker-comopse.yml`的路径，默认会在执行脚本的当前路径下寻找 `docker-compose.yml` 或者 `docker-compose.yaml` 
+- 第二个参数 `docker-comopse.yml`的路径，默认会在执行脚本的当前路径下寻找 `docker-compose.yml` 或者 `docker-compose.yaml`
+
+## proxy config
+
+### bashrc proxy config
+
+```shell
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -SL $ROOT_URI/linux/system/bashrc/config_bashrc_proxy.sh) $PROXY_URL $NO_PROXY_CONTENT
+```
+
+- `PROXY_URL`: 代理的地址
+  - e.g. `http://127.0.0.1:8888`
+  - e.g. `socks5h://127.0.0.1:1080`
+- `NO_PROXY_CONTENT`: 不需要代理地址
+  - e.g. `.local,localhost,127.0.0.1,192.168.*.*,10.0.0.0/8`
+
+### docker daemon proxy config
+
+```shell
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -SL $ROOT_URI/docker/config_daemon_proxy.sh) $PROXY_URL $NO_PROXY_CONTENT
+```
+
+- `PROXY_URL`: 代理的地址
+  - e.g. `http://127.0.0.1:8888`
+  - e.g. `socks5h://127.0.0.1:1080`
+- `NO_PROXY_CONTENT`: 不需要代理地址
+  - e.g. `localhost,127.0.0.1,docker-registry.somecorporation.com`
