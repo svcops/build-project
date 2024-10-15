@@ -31,7 +31,7 @@ function write_docker_daemon_proxy_config() {
   cat >"$config_path" <<EOF
 [Service]
 Environment="HTTP_PROXY=$PROXY_URL"
-Environment="HTTPS_PROXY=$PROXY_UR"
+Environment="HTTPS_PROXY=$PROXY_URL"
 Environment="NO_PROXY=$NO_PROXY_CONTENT"
 EOF
 }
