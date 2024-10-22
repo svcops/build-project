@@ -12,13 +12,13 @@ file="$HOME/.bashrc"
 
 if [ -f $file ]; then
   log_warn "bashrc" "try delete"
-  sed -i '/^#9d5049f5-3f12-4004-9ac8-196956e91184/,/#58efd70b-e5be-4d58-856a-5807ed05b29d/d' $file
+  sed -i '/^# BASHRC INIT START$/,/# BASHRC INIT END$/d' $file
 fi
 
 function init_apt_bashrc() {
   log "bashrc" "append bashrc"
   cat <<EOF >>$file
-#9d5049f5-3f12-4004-9ac8-196956e91184
+# BASHRC INIT START
 
 # You may uncomment the following lines if you want \`ls' to be colorized:
 # export LS_OPTIONS='--color=auto'
@@ -48,7 +48,7 @@ alias mv='mv -i'
 
 export PS1="\$PS1\[\e]1337;CurrentDir="'\$(pwd)\a\]'
 
-#58efd70b-e5be-4d58-856a-5807ed05b29d
+# BASHRC INIT END
 
 EOF
 
@@ -56,7 +56,7 @@ EOF
 }
 
 function init_yum_bashrc() {
-  log_warn "bashrc" "TODO append bashrc"
+  log_warn "bashrc" "TODO ..."
 }
 
 if [ "$os_base_name" == "Ubuntu" ] || [ "$os_base_name" == "Debian" ]; then
