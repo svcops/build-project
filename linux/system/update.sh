@@ -16,12 +16,13 @@ function apt_upgrade() {
   apt-get install -y sudo vim git wget net-tools jq lsof tree zip unzip
 }
 
-function yum_update() {
-  yum update -y
+function other_update_todo() {
+  #  yum update -y
+  log_info "other" "todo ..."
 }
 
 if [ "$os_base_name" == "Ubuntu" ] || [ "$os_base_name" == "Debian" ]; then
   apt_upgrade
 else
-  yum_update
+  other_update_todo
 fi

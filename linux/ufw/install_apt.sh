@@ -6,7 +6,7 @@ ROOT_URI=https://code.kubectl.net/devops/build-project/raw/branch/main
 source <(curl -SL $ROOT_URI/func/log.sh)
 source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
-log_info "command_exists" "ufw"
+log_info "ufw" "config ufw"
 
 function detect_ssh_port() {
   ssh_port=$(bash <(curl -SL $ROOT_URI/func/ssh_port.sh))

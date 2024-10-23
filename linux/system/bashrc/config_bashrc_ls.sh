@@ -6,19 +6,19 @@ ROOT_URI=https://code.kubectl.net/devops/build-project/raw/branch/main
 source <(curl -SL $ROOT_URI/func/log.sh)
 source <(curl -SL $ROOT_URI/func/detect_os.sh)
 
-log_info "bashrc" "init bashrc"
+log_info "bashrc" "config bashrc ls"
 
 file="$HOME/.bashrc"
 
 if [ -f $file ]; then
   log_warn "bashrc" "try delete"
-  sed -i '/^# BASHRC INIT START$/,/# BASHRC INIT END$/d' $file
+  sed -i '/^# BASHRC CONFIG LS START$/,/# BASHRC CONFIG LS END$/d' $file
 fi
 
 function init_apt_bashrc() {
   log "bashrc" "append bashrc"
   cat <<EOF >>$file
-# BASHRC INIT START
+# BASHRC CONFIG LS START
 
 # You may uncomment the following lines if you want \`ls' to be colorized:
 # export LS_OPTIONS='--color=auto'
@@ -48,19 +48,18 @@ alias mv='mv -i'
 
 export PS1="\$PS1\[\e]1337;CurrentDir="'\$(pwd)\a\]'
 
-# BASHRC INIT END
+# BASHRC CONFIG LS END
 
 EOF
-
   cat $file
 }
 
-function init_yum_bashrc() {
+function other_todo() {
   log_warn "bashrc" "TODO ..."
 }
 
 if [ "$os_base_name" == "Ubuntu" ] || [ "$os_base_name" == "Debian" ]; then
   init_apt_bashrc
 else
-  init_yum_bashrc
+  other_todo
 fi
