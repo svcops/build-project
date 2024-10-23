@@ -109,7 +109,7 @@ function verify_nginx_configuration() {
     return 0
   elif echo "$status" | grep -q "failed"; then
     # skip dns validate
-    if echo "$reason" | greq -q "host not found in upstream"; then
+    if echo "$reason" | grep -q "host not found in upstream"; then
       log_warn "skip" "skip validate: host not found in upstream"
       return 0
     fi
