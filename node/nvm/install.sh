@@ -7,7 +7,7 @@ source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 # https://code.kubectl.net/devops/nvm/tags
 nvm_version="v0.40.1"
 
-log_info "install" "start install nvm"
+log_info "install" "start install nvm by root user"
 
 function prepare() {
   if ! command_exists curl; then
@@ -69,16 +69,16 @@ function unzip_with_config() {
       local config_bashrc_file="/root/.bashrc"
 
       log_warn "bashrc" "try delete"
-      sed -i '/^#bf563159-1c46-4e10-a67a-e64bc308e517/,/#c0eee075-f614-4ffd-87f4-41f62655512d/d' $config_bashrc_file
+      sed -i '/^# NVM CONFIG START$/,/^# NVM CONFIG END$/d' $config_bashrc_file
 
       cat <<EOF >>$config_bashrc_file
-#bf563159-1c46-4e10-a67a-e64bc308e517
+# NVM CONFIG START
 export NVM_DIR="\$HOME/.nvm"
 [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "\$NVM_DIR/bash_completion" ] && \. "\$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export NVM_NODEJS_ORG_MIRROR=http://npm.taobao.org/mirrors/node
-#c0eee075-f614-4ffd-87f4-41f62655512d
+# NVM CONFIG END
 EOF
     }
 
