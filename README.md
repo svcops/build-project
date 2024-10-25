@@ -20,8 +20,6 @@
     * [remove docker's image](#remove-dockers-image)
     * [install docker](#install-docker)
     * [config docker](#config-docker)
-  * [linux](#linux)
-    * [bashrc](#bashrc)
   * [develop](#develop)
     * [config maven](#config-maven)
     * [verify nginx configuration](#verify-nginx-configuration)
@@ -268,17 +266,6 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 ```shell
 source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
   bash <(curl -SL $ROOT_URI/docker/config.sh)
-```
-
-## linux
-
-### bashrc
-
-`debian` 系列
-
-```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
-  bash <(curl -SL $ROOT_URI/linux/system/bashrc/init.sh)
 ```
 
 ## develop
