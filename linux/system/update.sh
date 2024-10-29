@@ -15,6 +15,7 @@ function apt_upgrade() {
   echo '* libraries/restart-without-asking boolean true' | debconf-set-selections
   DEBIAN_FRONTEND=noninteractive \
     DEBCONF_NONINTERACTIVE_SEEN=true \
+    NEEDRESTART_MODE=a \
     apt-get upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" --allow-downgrades --allow-remove-essential --allow-change-held-packages
 
   apt-get install -y sudo vim git wget net-tools jq lsof tree zip unzip
