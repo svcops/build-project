@@ -4,18 +4,18 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 source <(curl -sSL $ROOT_URI/func/log.sh)
 
 function delete_npmrc() {
-  log_warn "delete" "rm -rf /root/.npmrc"
-  rm -rf /root/.npmrc
+  log_warn "delete" "rm -rf $HOME/.npmrc"
+  rm -rf $HOME/.npmrc
 }
 
 function delete_nvm() {
-  log_warn "delete" "rm -rf /root/.nvm"
-  rm -rf /root/.nvm
+  log_warn "delete" "rm -rf $HOME/.nvm"
+  rm -rf $HOME/.nvm
 }
 
 function delete_bashrc_content() {
   log_warn "delete" "sed"
-  sed -i '/^# NVM CONFIG START$/,/^# NVM CONFIG END$/d' /root/.bashrc
+  sed -i '/^# NVM CONFIG START$/,/^# NVM CONFIG END$/d' $HOME/.bashrc
 }
 
 delete_npmrc

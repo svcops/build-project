@@ -40,33 +40,33 @@ function unzip_with_config() {
 
   function before_clear() {
     log_info "before_clear" "..."
-    if [ -d "/root/nvm" ]; then
-      rm -rf /root/nvm
+    if [ -d "$HOME/nvm" ]; then
+      rm -rf $HOME/nvm
     fi
 
-    if [ -d "/root/.nvm" ]; then
-      rm -rf /root/.nvm
+    if [ -d "$HOME/.nvm" ]; then
+      rm -rf $HOME/.nvm
     fi
 
-    if [ -f "/root/.npmrc" ]; then
-      rm -rf "/root/.npmrc"
+    if [ -f "$HOME/.npmrc" ]; then
+      rm -rf "$HOME/.npmrc"
     fi
   }
   before_clear
 
   function unzip_and_move() {
     log_info "unzip_and_move" "..."
-    tar -zxvf $download_target_file -C /root
-    log_info "move" "mv /root/nvm /root/.nvm"
-    mv /root/nvm /root/.nvm
+    tar -zxvf $download_target_file -C $HOME
+    log_info "move" "mv $HOME/nvm $HOME/.nvm"
+    mv $HOME/nvm $HOME/.nvm
   }
 
   unzip_and_move
 
   function do_config() {
     function config_bashrc() {
-      log_info "config" "config /root/.bashrc"
-      local config_bashrc_file="/root/.bashrc"
+      log_info "config" "config $HOME/.bashrc"
+      local config_bashrc_file="$HOME/.bashrc"
 
       log_warn "bashrc" "try delete"
       sed -i '/^# NVM CONFIG START$/,/^# NVM CONFIG END$/d' $config_bashrc_file
@@ -83,8 +83,8 @@ EOF
     }
 
     function config_npmrc() {
-      log_info "config" "config /root/.npmrc"
-      local config_npmrc_file="/root/.npmrc"
+      log_info "config" "config $HOME/.npmrc"
+      local config_npmrc_file="$HOME/.npmrc"
       cat >>$config_npmrc_file <<EOF
 registry=https://registry.npmmirror.com
 EOF
