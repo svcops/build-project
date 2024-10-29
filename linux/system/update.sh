@@ -13,6 +13,7 @@ function apt_upgrade() {
   # WARNING: apt does not have a stable CLI interface. Use with caution in scripts
   #  DEBCONF_NONINTERACTIVE_SEEN=true \
   echo '* libraries/restart-without-asking boolean true' | debconf-set-selections
+  # Upgrade packages with automatic service restart NEEDRESTART_MODE=a
   DEBIAN_FRONTEND=noninteractive \
     DEBCONF_NONINTERACTIVE_SEEN=true \
     NEEDRESTART_MODE=a \
