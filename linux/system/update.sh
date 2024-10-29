@@ -12,7 +12,7 @@ function apt_upgrade() {
   apt-get update -y
   # WARNING: apt does not have a stable CLI interface. Use with caution in scripts
   #  DEBCONF_NONINTERACTIVE_SEEN=true \
-  # echo '* libraries/restart-without-asking boolean true' | debconf-set-selections
+  echo '* libraries/restart-without-asking boolean true' | debconf-set-selections
 
   #  DEBIAN_FRONTEND=noninteractive：设置包管理器在非交互模式下运行，从而避免在安装或升级软件包时弹出交互式对话框。
   #  DEBCONF_NONINTERACTIVE_SEEN=true：确保所有的 debconf 配置项都已经标记为“Seen”（已处理），使其不会在后续的操作中再提示。
