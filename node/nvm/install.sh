@@ -71,13 +71,14 @@ function unzip_with_config() {
       log_warn "bashrc" "try delete"
       sed -i '/^# NVM CONFIG START$/,/^# NVM CONFIG END$/d' $config_bashrc_file
 
+      local nvm_nodejs_mirror="https://npmmirror.com/mirrors/node/"
       cat <<EOF >>$config_bashrc_file
 # NVM CONFIG START
 export NVM_DIR="\$HOME/.nvm"
 [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "\$NVM_DIR/bash_completion" ] && \. "\$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export NVM_NODEJS_ORG_MIRROR=http://npm.taobao.org/mirrors/node
+export NVM_NODEJS_ORG_MIRROR=$nvm_nodejs_mirror
 # NVM CONFIG END
 EOF
     }
