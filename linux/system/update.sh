@@ -12,7 +12,7 @@ function apt_upgrade() {
   apt-get update -y
   # WARNING: apt does not have a stable CLI interface. Use with caution in scripts
   #  DEBCONF_NONINTERACTIVE_SEEN=true \
-  echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections
+  echo '* libraries/restart-without-asking boolean true' | debconf-set-selections
   DEBIAN_FRONTEND=noninteractive \
     apt-get upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" --allow-downgrades --allow-remove-essential --allow-change-held-packages
 
