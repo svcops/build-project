@@ -165,7 +165,7 @@ under the License.
             <id>aliyun</id>
             <mirrorOf>central</mirrorOf>
             <name>aliyun</name>
-            <url>https://maven.aliyun.com/repository/public</url>
+            <url>https://maven.aliyun.com/repository/central</url>
         </mirror>
     </mirrors>
 
