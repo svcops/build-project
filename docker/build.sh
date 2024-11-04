@@ -157,7 +157,7 @@ function prepare_build_args_exec() {
   for build_arg in "${build_args[@]}"; do
     build_args_exec="$build_args_exec --build-arg $build_arg"
   done
-  log_info "build_args_exec" "$build_args_exec"
+  log_info "build_args_exec" "build exec: $build_args_exec"
 }
 
 prepare_build_args_exec
