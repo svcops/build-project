@@ -62,23 +62,23 @@ while getopts ":c:i:x:s:d:" opt; do
   esac
 done
 
-function validate_param() {
+function validate_not_blank() {
   local key=$1
   local value=$2
   if [ -z "$value" ]; then
-    log_info "validate_param" "parameter $key is empty, then exit"
+    log_info "validate_not_blank" "parameter $key is empty, then exit"
     tips
     end
     exit 1
   else
-    log_info "validate_param" "parameter $key : $value"
+    log_info "validate_not_blank" "parameter $key : $value"
   fi
 }
 
-validate_param "cache" "$cache"
-validate_param "image" "$image"
-validate_param "build" "$build"
-validate_param "settings" "$settings"
+validate_not_blank "cache" "$cache"
+validate_not_blank "image" "$image"
+validate_not_blank "build" "$build"
+validate_not_blank "settings" "$settings"
 
 if [ -z "$build_dir" ]; then
   log_info "build_dir" "build_dir is empty then use current directory"

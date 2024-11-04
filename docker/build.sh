@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2086
+# shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128
 # source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 ROOT_URI=https://code.kubectl.net/devops/build-project/raw/branch/main
 
@@ -88,7 +88,7 @@ while getopts ":m:f:d:i:v:r:t:p:a:" opt; do
   esac
 done
 
-function print_param() {
+function print_params() {
   log_info "print" "path_to_dockerfile: $path_to_dockerfile"
   log_info "print" "image_name: $image_name"
   log_info "print" "image_tag: $image_tag"
@@ -100,24 +100,25 @@ function print_param() {
   done
 }
 
-print_param
+print_params
 
-function do_validate() {
+function prepare_params() {
 
-  function validate_param() {
+  function validate_not_blank() {
     local key=$1
     local value=$2
     if [ -z "$value" ]; then
-      log_error "validate_param" "parameter $key is empty, then exit"
+      log_error "validate_not_blank" "parameter $key is empty, then exit"
       tips
       end
       exit 1
     else
-      log_info "validate_param" "parameter $key : $value"
+      log_info "validate_not_blank" "parameter $key : $value"
     fi
   }
 
   function validate_build_args() {
+    log_info "validate_build_args" "validate_build_args"
     local v=$1
     for build_arg in "${v[@]}"; do
       log_info "validate_build_args" "todo..."
@@ -125,45 +126,24 @@ function do_validate() {
   }
 
   function validate_docker_tag() {
-    if echo "$1" | grep -Eq "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"; then
-      # echo "Valid"
-      # log "validate_docker_tag" "$1 is Valid"
+    local docker_tag=$1
+    if echo "$docker_tag" | grep -Eq "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"; then
+      log_info "validate_docker_tag" "tag $1 is Valid"
       return 0
     else
-      # echo "Invalid"
-      # log "validate_docker_tag" "$1 is Invalid"
+      log_error "validate_docker_tag" "tag $1 is Invalid"
       return 1
     fi
   }
 
-  function prepare_validate() {
-    validate_param "image_name" "$image_name"
-    validate_param "image_tag" "$image_tag"
-    # shellcheck disable=SC2128
-    validate_build_args $build_args
-    if ! validate_docker_tag "$image_tag"; then
-      exit
-    fi
-  }
+  validate_not_blank "image_name" "$image_name"
+  validate_not_blank "image_tag" "$image_tag"
+  validate_build_args $build_args
+  if ! validate_docker_tag "$image_tag"; then
+    exit 1
+  fi
 
-  # 准备验证
-  prepare_validate
-}
-do_validate
-
-# --build-arg foo=bar ...
-function prepare_build_args_exec() {
-  build_args_exec=""
-  for build_arg in "${build_args[@]}"; do
-    build_args_exec="$build_args_exec --build-arg $build_arg"
-  done
-  log_info "build_args_exec" "build exec: $build_args_exec"
-}
-
-prepare_build_args_exec
-
-# --- 处理是否需要重新打标签
-function prepare_tags() {
+  # prepare tag and new tag
   if [ "$re_tag_flag" == "true" ]; then
     re_tag_flag="true"
     log_info "re tag" "need re tag"
@@ -173,10 +153,9 @@ function prepare_tags() {
   fi
 
   # 如果需要重新tag,验证新的tag
-  timestamp_tag=$(date '+%Y-%m-%d_%H-%M-%S')
   function validate_new_tag() {
     log_info "validate_new_tag" "validate_new_tag"
-
+    local timestamp_tag=$(date '+%Y-%m-%d_%H-%M-%S')
     if [ -z "$new_tag" ]; then
       # 需要 re_tag 的时候, 传入的 new_tag 为空, 默认使用 timestamp_tag
       log_info "validate_new_tag" "new tag is empty ,will use timestamp_tag"
@@ -191,7 +170,7 @@ function prepare_tags() {
       end
       exit 1
     else
-      # new tag
+      # set new_tag=$timestamp_tag
       # 新的tag的镜像在 docker image ls 中存在，使用 timestamp_tag
       if docker image ls "$image_name" | grep -q -E "\b$new_tag\b"; then
         log_info "validate_new_tag" "$image_name:$new_tag has existed,then use timestamp_tag"
@@ -204,17 +183,27 @@ function prepare_tags() {
     validate_new_tag
   fi
 
-  # ---
+  # handle push_flag
   if [ "$push_flag" == "true" ]; then
     push_flag="true"
-    log "push flag" "push_flag is true"
+    log_info "push flag" "push_flag is true"
   else
     push_flag="false"
-    log "push flag" "push_flag is false"
+    log_info "push flag" "push_flag is false"
   fi
+
+  # --build-arg foo=bar ...
+  function prepare_build_args_exec() {
+    build_args_exec=""
+    for build_arg in "${build_args[@]}"; do
+      build_args_exec="$build_args_exec --build-arg $build_arg"
+    done
+    log_info "build_args_exec" "build exec: $build_args_exec"
+  }
+  prepare_build_args_exec
 }
 
-prepare_tags
+prepare_params
 
 # ---
 function prepare_dockerfile_and_build_dir() {
@@ -240,18 +229,18 @@ function prepare_dockerfile_and_build_dir() {
   fi
 
   # 获取dockerfile的目录和文件名称
-  build_dir_default=$(cd "$(dirname "$path_to_dockerfile")" && pwd)
+  local build_dir_default=$(cd "$(dirname "$path_to_dockerfile")" && pwd)
   #  DOCKERFILE=$(basename $path_to_dockerfile)
 
   if [ -z "$build_dir" ]; then
-    log_info "build_dir" "build_dir is empty then use DOCKER_BUILD_DIR"
+    log_info "build_dir" "build_dir is empty, then use $path_to_dockerfile's dir"
     build_dir="$build_dir_default"
   elif [ ! -d "$build_dir" ]; then
     log_error "build_dir" "build_dir is not a valid paths"
     exit 1
   fi
 
-  log_info "dockerfile" "docker build dir : $build_dir_default; dockerfile : $path_to_dockerfile"
+  log_info "dockerfile" "docker build dir : $build_dir; dockerfile : $path_to_dockerfile"
 }
 prepare_dockerfile_and_build_dir
 
@@ -277,7 +266,7 @@ function build_push() {
 
   local build_status=$?
   if [ $build_status -eq 0 ]; then
-    log_info "docker_build" "Docker build succeeded"
+    log_info "docker_build" "Docker build success"
   else
     log_error "docker_build" "Docker build failed"
     exit 1
