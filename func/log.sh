@@ -14,7 +14,7 @@ function log() {
   fi
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "$now - [ $remark ] $msg"
+  echo -e "$now - [INFO ] [ $remark ] $msg"
 }
 
 function log_info() {
@@ -28,7 +28,7 @@ function log_info() {
   fi
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "${GREEN}$now - [ $remark ] $msg${NC}"
+  echo -e "${GREEN}$now - [INFO ] [ $remark ] $msg${NC}"
 }
 
 function log_warn() {
@@ -42,7 +42,7 @@ function log_warn() {
   fi
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "${ORANGE}$now - [ $remark ] $msg${NC}"
+  echo -e "${ORANGE}$now - [WARN ] [ $remark ] $msg${NC}"
 }
 
 function log_error() {
@@ -56,5 +56,5 @@ function log_error() {
   fi
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "${RED}$now - [ $remark ] $msg${NC}"
+  echo -e "${RED}$now - [ERROR] [ $remark ] $msg${NC}"
 }
