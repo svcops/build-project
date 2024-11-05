@@ -3,7 +3,11 @@
 SHELL_FOLDER=$(cd "$(dirname "$0")" && pwd)
 cd "$SHELL_FOLDER"
 
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+if [ -z $ROOT_URI ]; then
+  source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+else
+  echo "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
+fi
 source <(curl -sSL $ROOT_URI/func/log.sh)
 
 arch=$1
