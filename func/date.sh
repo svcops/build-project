@@ -5,7 +5,7 @@ if [ -z $ROOT_URI ]; then
 else
   echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 fi
-source <(curl -sSl $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
 
 date_general=$(date '+%Y-%m-%d %H:%M:%S')
 datetime_version=$(date '+%Y-%m-%d_%H-%M-%S')
