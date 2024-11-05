@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC1090
-# source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-ROOT_URI=https://code.kubectl.net/devops/build-project/raw/branch/main
+source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+# ROOT_URI=https://dev.kubectl.net
 
 array=("A" "B" "C")
 for element in "${array[@]}"; do
