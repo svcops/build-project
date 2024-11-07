@@ -120,9 +120,15 @@ function prepare_params() {
 
   function validate_build_args() {
     log_info "validate_build_args" "validate_build_args"
-    local v=$1
+    local v=("$@")
     for build_arg in "${v[@]}"; do
-      log_info "validate_build_args" "todo..."
+      if [[ ! "$build_arg" =~ ^[a-zA-Z_][a-zA-Z0-9_]*=.*$ ]]; then
+        log_error "validate_build_args" "Invalid build-arg: $build_arg"
+        end
+        exit 1
+      else
+        log_info "validate_build_args" "Valid build-arg: $build_arg"
+      fi
     done
   }
 
@@ -139,7 +145,7 @@ function prepare_params() {
 
   validate_not_blank "image_name" "$image_name"
   validate_not_blank "image_tag" "$image_tag"
-  validate_build_args $build_args
+  validate_build_args "${build_args[@]}"
   if ! validate_docker_tag "$image_tag"; then
     exit 1
   fi
