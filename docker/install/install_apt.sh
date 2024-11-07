@@ -1,10 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2155 disable=SC2086
-if [ -z $ROOT_URI ]; then
-  source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-else
-  echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
-fi
+[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
 source <(curl -SL $ROOT_URI/func/log.sh)
@@ -18,15 +15,16 @@ function detect_os() {
   local os_release="/etc/os-release"
   if [ ! -f $os_release ]; then
     OS="Unknown"
+    log_error "detect_os" "can't find file os_release "
     return
   fi
 
   local os_name="$(. /etc/os-release && echo "$NAME")"
   log "detect_os" "current os is $os_name"
   if [[ $os_name =~ "Ubuntu" ]]; then
-    OS="Ubuntu"
+    OS="ubuntu"
   elif [[ $os_name =~ "Debian" ]]; then
-    OS="Debian"
+    OS="debian"
   else
     OS="Unknown"
   fi
@@ -60,44 +58,14 @@ SRC=$1
 
 function do_install() {
 
-  if [ "$OS" == "Debian" ]; then
-    # install docker on Debian
-    if [ "$SRC" == "docker" ]; then
+  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+    if [ "$SRC" == "docker" ] || [ "$SRC" == "tsinghua" ] || [ "$SRC" == "aliyun" ] || [ "$SRC" == "intellij" ]; then
       log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/debian/install.sh)
-    elif [ "$SRC" == "tsinghua" ]; then
-      log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/debian/install_tsinghua.sh)
-    elif [ "$SRC" == "aliyun" ]; then
-      log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/debian/install_aliyun.sh)
-    elif [ "$SRC" == "intellij" ]; then
-      log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/debian/install_intellij.sh)
+      bash <(curl -SL $ROOT_URI/docker/install/$OS/install_$SRC.sh)
     else
       tips
       exit 1
     fi
-
-  elif [ "$OS" == "Ubuntu" ]; then
-    # install docker on Ubuntu
-    if [ "$SRC" == "docker" ]; then
-      log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/ubuntu/install.sh)
-    elif [ "$SRC" == "tsinghua" ]; then
-      log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/ubuntu/install_tsinghua.sh)
-    elif [ "$SRC" == "aliyun" ]; then
-      log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/ubuntu/install_aliyun.sh)
-    elif [ "$SRC" == "intellij" ]; then
-      log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/ubuntu/install_intellij.sh)
-    else
-      tips
-      exit 1
-    fi
-
   else
     tips
     exit 1

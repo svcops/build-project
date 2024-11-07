@@ -1,10 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2155 disable=SC2126 disable=SC1090 disable=SC2028
-if [ -z $ROOT_URI ]; then
-  source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-else
-  echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
-fi
+[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
 source <(curl -SL $ROOT_URI/func/log.sh)
