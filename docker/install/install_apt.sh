@@ -67,6 +67,7 @@ function do_install() {
       exit 1
     fi
   else
+    log_warn "install" "当前只支持 Debian 和 Ubuntu"
     tips
     exit 1
   fi
