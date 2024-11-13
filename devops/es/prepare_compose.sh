@@ -152,7 +152,7 @@ http:
   port: 9200
 
 node:
-  name: "node-0"
+  name: "$node_name"
   roles: [ "master", "data" ]
 
 discovery:
