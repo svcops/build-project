@@ -6,6 +6,7 @@ echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 source <(curl -SL $ROOT_URI/func/log.sh)
 
 function tips() {
+  log_info "elasticsearch" "tips: prepare elasticsearch docker compose start"
   echo "--- sysctl.conf --"
   log_info "elasticsearch" "tips: vim /etc/sysctl.conf"
   echo "vm.max_map_count=262144"
@@ -18,10 +19,9 @@ function tips() {
   echo "* hard nofile 1048576"
   echo "* soft nproc 65536"
   echo "* hard nproc 65536"
-  echo "reboot"
+  echo "===> reboot"
   echo ""
 
-  echo "---"
   log_info "elasticsearch" "tips: unlimited -n 1048576 -u 65536"
   echo "ulimit -n 1048576 -u 65536"
   echo ""
@@ -32,7 +32,7 @@ function tips() {
   echo "192.168.0.11 node-1"
   echo "192.168.0.12 node-2"
   echo "Modify it to what you need!!!"
-
+  log_info "elasticsearch" "tips: prepare elasticsearch docker compose end"
 }
 
 tips
@@ -71,11 +71,8 @@ else
   exit 0
 fi
 
-if [ -f "docker-compose.yml" ]; then
-  read -p "Do you want to rewrite it? [y/n]" answer
-  if [ $answer == "y" ]; then
-    answer=""
-    cat >docker-compose.yml <<EOF
+function write_docker_compose_yml() {
+  cat >docker-compose.yml <<EOF
 services:
   elasticsearch:
     image: $es_image
@@ -96,60 +93,57 @@ services:
       - "./cert:/usr/share/elasticsearch/config/cert"
       - "./plugins:/usr/share/elasticsearch/plugins"
 EOF
-  else
-    log_info "elasticsearch" "exit"
-    exit 0
-  fi
-fi
+}
 
-if [ -d "conf" ] || [ -f "conf/elasticsearch.yml" ]; then
-  log_info "elasticsearch" "conf is exist"
-  log_warn "elasticsearch" "Do you want to delete config file? Will lost config data!!!"
-  log_warn "elasticsearch" "Do you want to delete config file? Will lost config data!!!"
-  log_warn "elasticsearch" "Do you want to delete config file? Will lost config data!!!"
-
-  read -p "Do you want to delete config file? [y/n]" answer
-
+if [ -f "docker-compose.yml" ]; then
+  read -p "Do you want to rewrite it? [y/n]" answer
   if [ $answer == "y" ]; then
     answer=""
-    log_warn "elasticsearch" "delete config file"
-    rm -rf conf/
-    log_info "elasticsearch" "mkdir -p conf"
-    mkdir -p conf
-    log_info "elasticsearch" "chown -R 1000.1000 conf"
-    read -p "Confirm xpack.security.transport.ssl.enabled? [y/n]" answer
-    transport_ssl=
-    if [ $answer == "y" ]; then
-      answer=""
-      transport_ssl="true"
-    else
-      transport_ssl="false"
-    fi
+    log_warn "elasticsearch" "rewrite docker-compose.yml"
+    write_docker_compose_yml
+  else
+    log_info "elasticsearch" "do not rewrite"
+  fi
+else
+  log_info "elasticsearch" "write docker-compose.yml"
+  write_docker_compose_yml
+fi
 
-    function choose_node_name() {
-      log_info "elasticsearch" "choose node name"
-      echo "node-0 [0]"
-      echo "node-1 [1]"
-      echo "node-2 [2]"
-      read -p "Choose node name [0/1/2]" answer
-      case $answer in
-      0)
-        node_name="node-0"
-        ;;
-      1)
-        node_name="node-1"
-        ;;
-      2)
-        node_name="node-2"
-        ;;
-      *)
-        log_warn "elasticsearch" "default node_name=node-0"
-        node_name="node-0"
-        ;;
-      esac
-    }
+function write_config_file() {
+  read -p "Confirm xpack.security.transport.ssl.enabled? [y/n]" answer
+  transport_ssl=
+  if [ $answer == "y" ]; then
+    answer=""
+    transport_ssl="true"
+  else
+    transport_ssl="false"
+  fi
 
-    cat >conf/elasticsearch.yml <<EOF
+  function choose_node_name() {
+    log_info "elasticsearch" "choose node name"
+    echo "node-0 [0]"
+    echo "node-1 [1]"
+    echo "node-2 [2]"
+    read -p "Choose node name [0/1/2]" answer
+    case $answer in
+    0)
+      node_name="node-0"
+      ;;
+    1)
+      node_name="node-1"
+      ;;
+    2)
+      node_name="node-2"
+      ;;
+    *)
+      log_warn "elasticsearch" "default node_name=node-0"
+      node_name="node-0"
+      ;;
+    esac
+  }
+  choose_node_name
+
+  cat >conf/elasticsearch.yml <<EOF
 network:
   host: "$node_name"
 
@@ -189,11 +183,36 @@ xpack:
         truststore:
           path: cert/elastic-certificates.p12
 EOF
+}
+
+if [ -d "conf" ] && [ -f "conf/elasticsearch.yml" ]; then
+  log_info "elasticsearch" "conf is exist"
+  log_warn "elasticsearch" "Do you want to delete config file? Will lost config data!!!"
+  log_warn "elasticsearch" "Do you want to delete config file? Will lost config data!!!"
+  log_warn "elasticsearch" "Do you want to delete config file? Will lost config data!!!"
+
+  read -p "Do you want to delete config file? [y/n]" answer
+
+  if [ $answer == "y" ]; then
+    answer=""
+    log_warn "elasticsearch" "delete config file"
+    log_info "elasticsearch" "mkdir -p conf"
+    rm -rf conf/
+    mkdir -p conf
+    log_info "elasticsearch" "chown -R 1000.1000 conf"
+    write_config_file
   else
     log_info "elasticsearch" "skip delete config file"
   fi
-  chown -R 1000.1000 conf
+else
+  log_info "elasticsearch" "mkdir -p conf"
+  rm -rf conf/
+  mkdir -p conf
+  log_info "elasticsearch" "chown -R 1000.1000 conf"
+  write_config_file
 fi
+
+chown -R 1000.1000 conf
 
 if [ -d "data" ] || [ -d "logs" ] || [ -d "plugins" ]; then
   log_info "elasticsearch" "data logs plugins is exist"
@@ -213,4 +232,10 @@ if [ -d "data" ] || [ -d "logs" ] || [ -d "plugins" ]; then
     log_info "elasticsearch" "exit"
     exit 0
   fi
+else
+  log_info "elasticsearch" "data logs plugins is not exist"
+  log_warn "elasticsearch" "mkdir -p data logs plugins"
+  mkdir -p data logs plugins
+  log_warn "elasticsearch" "chown -R 1000.1000 data logs plugins"
+  chown -R 1000.1000 data logs plugins
 fi
