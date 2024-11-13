@@ -35,7 +35,7 @@ fi
 # ERROR: Invalid username [kibana]... Username [kibana] is reserved and may not be used., with exit code 65
 # ERROR: Invalid username [apm_system]... Username [apm_system] is reserved and may not be used., with exit code 65
 
-usernames=("admin" "kibana2" "logstash" "beats" "apm_system2")
+usernames=("admin" "kibana_sys" "logstash" "beats" "apm_sys")
 for username in "${usernames[@]}"; do
   log_warn "elasticsearch" "delete user $username"
   docker exec -it $container_name \
@@ -46,9 +46,9 @@ log_info "elasticsearch" "set passwords for admin user role superuser"
 docker exec -it $container_name \
   bin/elasticsearch-users useradd admin -p $es_password -r superuser
 
-log_info "elasticsearch" "set passwords for kibana2 user role kibana_system"
+log_info "elasticsearch" "set passwords for kibana_sys user role kibana_system"
 docker exec -it $container_name \
-  bin/elasticsearch-users useradd kibana2 -p $es_password -r kibana_system
+  bin/elasticsearch-users useradd kibana_sys -p $es_password -r kibana_system
 
 log_info "elasticsearch" "set passwords for logstash user role logstash_system"
 docker exec -it $container_name \
@@ -58,6 +58,6 @@ log_info "elasticsearch" "set passwords for beats user role beats_system"
 docker exec -it $container_name \
   bin/elasticsearch-users useradd beats -p $es_password -r beats_system
 
-log_info "elasticsearch" "set passwords for apm_system user role apm_system"
+log_info "elasticsearch" "set passwords for apm_sys user role apm_system"
 docker exec -it $container_name \
-  bin/elasticsearch-users useradd apm_system -p $es_password -r apm_system
+  bin/elasticsearch-users useradd apm_sys -p $es_password -r apm_system
