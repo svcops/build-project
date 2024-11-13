@@ -62,6 +62,7 @@ fi
 log_info "elasticsearch" "step 2 create ca"
 
 docker run --rm -it -v $target_dir:/usr/share/elasticsearch/config/cert \
+  --user 1000:1000 \
   $es_image \
   bin/elasticsearch-certutil ca --days 3650 -out config/cert/$ca_filename
 
@@ -74,7 +75,9 @@ fi
 
 log_info "elasticsearch" "step 3 create cert"
 
-docker run --rm -it -v $target_dir:/usr/share/elasticsearch/config/cert \
+docker run --rm -it \
+  --user 1000:1000 \
+  -v $target_dir:/usr/share/elasticsearch/config/cert \
   $es_image \
   bin/elasticsearch-certutil cert --ca config/cert/$ca_filename --days 3650 -out config/cert/$cert_filename
 
