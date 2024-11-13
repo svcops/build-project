@@ -97,4 +97,4 @@ fi
 
 log_info "elasticsearch" "step 4 tar cert"
 
-tar -zcvf cert.tar.gz $target_dir
+tar -zcvf cert.tar.gz cert/
