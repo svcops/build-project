@@ -32,13 +32,23 @@ fi
 
 # Set passwords for built-in users
 # ERROR: Invalid username [elastic]... Username [elastic] is reserved and may not be used., with exit code 65
+# ERROR: Invalid username [kibana]... Username [kibana] is reserved and may not be used., with exit code 65
+# ERROR: Invalid username [apm_system]... Username [apm_system] is reserved and may not be used., with exit code 65
+
+usernames=("admin" "kibana2" "logstash" "beats" "apm_system2")
+for username in "${usernames[@]}"; do
+  log_warn "elasticsearch" "delete user $username"
+  docker exec -it $container_name \
+    bin/elasticsearch-users userdel $username
+done
+
 log_info "elasticsearch" "set passwords for admin user role superuser"
 docker exec -it $container_name \
   bin/elasticsearch-users useradd admin -p $es_password -r superuser
 
-log_info "elasticsearch" "set passwords for kibana user role kibana_system"
+log_info "elasticsearch" "set passwords for kibana2 user role kibana_system"
 docker exec -it $container_name \
-  bin/elasticsearch-users useradd kibana -p $es_password -r kibana_system
+  bin/elasticsearch-users useradd kibana2 -p $es_password -r kibana_system
 
 log_info "elasticsearch" "set passwords for logstash user role logstash_system"
 docker exec -it $container_name \

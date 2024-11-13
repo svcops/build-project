@@ -22,7 +22,7 @@ function tips() {
   echo "===> reboot"
   echo ""
 
-  log_info "elasticsearch" "tips: unlimited -n 1048576 -u 65536"
+  log_info "elasticsearch" "tips: ulimit -n 1048576 -u 65536"
   echo "ulimit -n 1048576 -u 65536"
   echo ""
 
