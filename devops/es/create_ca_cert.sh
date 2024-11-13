@@ -14,7 +14,7 @@ log_info "elasticsearch" "step 1 prepare"
 current_dir=$(pwd)
 log_info "elasticsearch" "current_dir=$current_dir"
 
-target_dir=$current_dir/cert
+target_dir="$current_dir/cert"
 
 function prepare() {
   if ! command_exists docker; then
@@ -40,6 +40,8 @@ function prepare() {
 
   chown -R 1000.1000 $target_dir
 }
+
+log_info "elasticsearch" "target_dir is $target_dir"
 
 prepare
 
