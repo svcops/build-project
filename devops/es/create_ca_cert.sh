@@ -26,7 +26,10 @@ function prepare() {
     log_info "elasticsearch" "$target_dir is exist"
     read -p "Do you want to delete it? [y/n]" answer
     if [ $answer == "y" ]; then
+      log_warn "elasticsearch" "delete it rm -rf $target_dir"
       rm -rf $target_dir
+      log_warn "elasticsearch" "delete cert.tar.gz"
+      rm -rf cert.tar.gz
       mkdir -p $target_dir
     else
       log_info "elasticsearch" "exit"
@@ -35,6 +38,8 @@ function prepare() {
   else
     log_info "elasticsearch" "$target_dir is not exist"
     log_info "elasticsearch" "create it mkdir -p $target_dir"
+    log_warn "elasticsearch" "delete cert.tar.gz"
+    rm -rf cert.tar.gz
     mkdir -p $target_dir
   fi
 
@@ -89,3 +94,7 @@ else
   log_error "elasticsearch" "create cert failed"
   exit 1
 fi
+
+log_info "elasticsearch" "step 4 tar cert"
+
+tar -zcvf cert.tar.gz $target_dir
