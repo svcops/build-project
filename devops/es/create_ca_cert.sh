@@ -32,11 +32,55 @@ function prepare() {
       log_info "elasticsearch" "exit"
       exit 0
     fi
+  else
+    log_info "elasticsearch" "$target_dir is not exist"
+    log_info "elasticsearch" "create it mkdir -p $target_dir"
+    mkdir -p $target_dir
   fi
+
+  chown -R 1000.1000 $target_dir
 }
 
 prepare
 
+es_image=$1
+ca_filename=$2
+cert_filename=$3
+
+if [ -z $es_image ]; then
+  es_image=elasticsearch:8.16.0
+fi
+
+if [ -z $ca_filename ]; then
+  ca_filename=elastic-stack-ca.p12
+fi
+
+if [ -z $cert_file_nam ]; then
+  cert_filename=elastic-certificates.p12
+fi
+
 log_info "elasticsearch" "step 2 create ca"
 
+docker run --rm -it -v $target_dir:/usr/share/elasticsearch/config/cert \
+  $es_image \
+  bin/elasticsearch-certutil ca --days 3650 -out config/cert/$ca_filename
+
+if [ -f $target_dir/$ca_filename ]; then
+  log_info "elasticsearch" "create ca success"
+else
+  log_error "elasticsearch" "create ca failed"
+  exit 1
+fi
+
 log_info "elasticsearch" "step 3 create cert"
+
+docker run --rm -it -v $target_dir:/usr/share/elasticsearch/config/cert \
+  $es_image \
+  bin/elasticsearch-certutil cert --ca config/cert/$ca_filename --days 3650 -out config/cert/$cert_filename
+
+if [ -f $target_dir/$cert_filename ]; then
+  log_info "elasticsearch" "create cert success"
+else
+  log_error "elasticsearch" "create cert failed"
+  exit 1
+fi
