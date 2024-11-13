@@ -86,6 +86,7 @@ services:
         soft: -1
         hard: -1
     user: "1000:1000"
+    restart: always
     volumes:
       - "./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
       - "./data:/usr/share/elasticsearch/data"
