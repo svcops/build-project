@@ -7,10 +7,16 @@ source <(curl -SL $ROOT_URI/func/log.sh)
 source <(curl -SL $ROOT_URI/func/date.sh)
 
 registry=$1
+data_root=$2
 
 if [ -z $registry ]; then
   registry="https://docker.mirrors.ustc.edu.cn"
   log_info "registry" "registry is blank.default: $registry "
+fi
+
+if [ -z "$data_root" ]; then
+  data_root="/var/lib/docker"
+  log_info "data_root" "data_root is blank.default: $data_root"
 fi
 
 config_path="/etc/docker/daemon.json"
@@ -31,7 +37,7 @@ function write_docker_config() {
   "exec-opts": [
     "native.cgroupdriver=systemd"
   ],
-  "data-root": "/var/lib/docker",
+  "data-root": "$data_root",
   "log-opts": {
     "max-file": "5",
     "max-size": "20m"

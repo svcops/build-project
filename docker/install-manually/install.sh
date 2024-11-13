@@ -29,13 +29,13 @@ function download_and_move() {
 
 function config_systemd() {
   log_info "systemd" "config docker.service"
-  curl $ROOT_URI/docker/install-manually/systemd/docker.service -o /usr/lib/systemd/system/docker.service
+  curl -sSL $ROOT_URI/docker/install-manually/systemd/docker.service -o /usr/lib/systemd/system/docker.service
 
   log_info "systemd" "config docker.socket"
-  curl $ROOT_URI/docker/install-manually/systemd/docker.socket -o /usr/lib/systemd/system/docker.socket
+  curl -sSL $ROOT_URI/docker/install-manually/systemd/docker.socket -o /usr/lib/systemd/system/docker.socket
 
   log_info "systemd" "config containerd.service"
-  curl $ROOT_URI/docker/install-manually/systemd/containerd.service -o /usr/lib/systemd/system/containerd.service
+  curl -sSL $ROOT_URI/docker/install-manually/systemd/containerd.service -o /usr/lib/systemd/system/containerd.service
 
   log_info "systemd" "mkdir -p /etc/systemd/system/docker.service.d"
   mkdir -p /etc/systemd/system/docker.service.d
