@@ -61,3 +61,6 @@ docker exec -it $container_name \
 log_info "elasticsearch" "set passwords for apm_sys user role apm_system"
 docker exec -it $container_name \
   bin/elasticsearch-users useradd apm_sys -p $es_password -r apm_system
+
+log_info "elasticsearch" "list users"
+docker exec -it $container_name bin/elasticsearch-users list
