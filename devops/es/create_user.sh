@@ -36,31 +36,19 @@ fi
 # ERROR: Invalid username [apm_system]... Username [apm_system] is reserved and may not be used., with exit code 65
 
 usernames=("admin" "kibana_sys" "logstash" "beats" "apm_sys")
+
 for username in "${usernames[@]}"; do
   log_warn "elasticsearch" "delete user $username"
   docker exec -it $container_name \
     bin/elasticsearch-users userdel $username
 done
 
-log_info "elasticsearch" "set passwords for admin user role superuser"
-docker exec -it $container_name \
-  bin/elasticsearch-users useradd admin -p $es_password -r superuser
-
-log_info "elasticsearch" "set passwords for kibana_sys user role kibana_system"
-docker exec -it $container_name \
-  bin/elasticsearch-users useradd kibana_sys -p $es_password -r kibana_system
-
-log_info "elasticsearch" "set passwords for logstash user role logstash_system"
-docker exec -it $container_name \
-  bin/elasticsearch-users useradd logstash -p $es_password -r logstash_system
-
-log_info "elasticsearch" "set passwords for beats user role beats_system"
-docker exec -it $container_name \
-  bin/elasticsearch-users useradd beats -p $es_password -r beats_system
-
-log_info "elasticsearch" "set passwords for apm_sys user role apm_system"
-docker exec -it $container_name \
-  bin/elasticsearch-users useradd apm_sys -p $es_password -r apm_system
+roles=("superuser" "kibana_system" "logstash_system" "beats_system" "apm_system")
+for index in "${!roles[@]}"; do
+  log_info "elasticsearch" "Index: $index, Username: ${usernames[$index]}, Role: ${roles[$index]}"
+  docker exec -it $container_name \
+    bin/elasticsearch-users useradd ${usernames[$index]} -p $es_password -r ${roles[$index]}
+done
 
 log_info "elasticsearch" "list users"
 docker exec -it $container_name bin/elasticsearch-users list
