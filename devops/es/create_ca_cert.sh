@@ -11,9 +11,10 @@ log_info "elasticsearch" "create ca and cert"
 
 log_info "elasticsearch" "step 1 prepare"
 
-SHELL_FOLDER=$(cd "$(dirname "$0")" && pwd)
+current_dir=$(pwd)
+log_info "elasticsearch" "current_dir=$current_dir"
 
-target_dir=$SHELL_FOLDER/cert
+target_dir=$current_dir/cert
 
 function prepare() {
   if ! command_exists docker; then
