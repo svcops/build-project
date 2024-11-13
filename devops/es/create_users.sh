@@ -45,7 +45,7 @@ done
 
 roles=("superuser" "kibana_system" "logstash_system" "beats_system" "apm_system")
 for index in "${!roles[@]}"; do
-  log_info "elasticsearch" "Index: $index, Username: ${usernames[$index]}, Role: ${roles[$index]}"
+  log_info "elasticsearch" "add user|index: $index, username: ${usernames[$index]}, role: ${roles[$index]}"
   docker exec -it $container_name \
     bin/elasticsearch-users useradd ${usernames[$index]} -p $es_password -r ${roles[$index]}
 done
