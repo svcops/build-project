@@ -320,8 +320,8 @@ EOF
   }
 
   function try_soft_link() {
-    # 判断 $path_data_logs 是否以 $current_dir/elasticsearch 开头
-    if [[ $path_data_logs == $current_dir/elasticsearch* ]]; then
+    # 判断 $path_data_logs 是否不以 $current_dir/elasticsearch 开头
+    if [[ $path_data_logs != $current_dir/elasticsearch* ]]; then
       log_info "elasticsearch" "$path_data_logs is start with $current_dir/elasticsearch"
       log_info "elasticsearch" "ln -s $path_data_logs elasticsearch/data"
       ln -s $path_data_logs elasticsearch/data
