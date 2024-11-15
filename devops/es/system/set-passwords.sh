@@ -26,15 +26,23 @@ else
   log_info "elasticsearch" "bin/elasticsearch-setup-passwords is exist"
 
   log_info "elasticsearch" "Switching to user $es_user"
-  sudo -u $es_user bash <<EOF
   read -p "input es password: " es_password
-  if [ -z \$es_password ]; then
-    echo "es_password is empty"
+
+  if [ -z $es_password ]; then
+    log_error "elasticsearch" "es_password is empty"
     exit 1
   fi
-  # Set passwords for built-in users
-  echo -e "y\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n\$es_password\n" |
-    bin/elasticsearch-setup-passwords interactive
-EOF
+
+  sudo -u $es_user bash -c '
+#!/bin/bash
+es_password="$1"
+if [ -z "$es_password" ]; then
+  echo "es_password is empty"
+  exit 1
+fi
+# Set passwords for built-in users
+echo -e "y\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n" |
+  bin/elasticsearch-setup-passwords interactive
+' bash "$es_password"
 
 fi
