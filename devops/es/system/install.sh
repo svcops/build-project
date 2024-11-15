@@ -100,9 +100,10 @@ function prepare_tar_gz() {
     log_info "elasticsearch" "try unzip $file_name"
     if [ -d "elasticsearch-$version" ] || [ -d "elasticsearch" ]; then
       log_warn "elasticsearch" "elasticsearch-$version or elasticsearch is exist"
-      log_warn "elasticsearch" "Are you sure you want to unzip again? It will delete the existing elasticsearch-$version or elasticsearch directory"
-      log_warn "elasticsearch" "Are you sure you want to unzip again? It will delete the existing elasticsearch-$version or elasticsearch directory"
-      log_warn "elasticsearch" "Are you sure you want to unzip again? It will delete the existing elasticsearch-$version or elasticsearch directory"
+      log_warn "elasticsearch" "Are you sure you want to unzip again? It will delete the existing $file_name and elasticsearch/ directory"
+      log_warn "elasticsearch" "Are you sure you want to unzip again? It will delete the existing $file_name and elasticsearch/ directory"
+      log_warn "elasticsearch" "Are you sure you want to unzip again? It will delete the existing $file_name and elasticsearch/ directory"
+      log_warn "elasticsearch" "Are you sure you want to unzip again? It will delete the existing $file_name and elasticsearch/ directory"
       read -p "Are you sure you want to unzip again? [y/n] :" unzip
       if [ "$unzip" != "y" ]; then
         log_info "elasticsearch" "exit"
