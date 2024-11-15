@@ -358,3 +358,5 @@ WantedBy=multi-user.target
 EOF
   systemctl daemon-reload
 }
+
+create_systemd
