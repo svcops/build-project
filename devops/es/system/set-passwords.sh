@@ -29,7 +29,7 @@ else
   sudo -u $es_user bash <<EOF
   read -p "input es password: " es_password
   if [ -z \$es_password ]; then
-    log_error "elasticsearch" "es_password is empty"
+    echo "es_password is empty"
     exit 1
   fi
   # Set passwords for built-in users
