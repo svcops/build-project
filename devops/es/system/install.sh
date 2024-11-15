@@ -110,6 +110,8 @@ function prepare_tar_gz() {
       else
         log_info "elasticsearch" "rm -rf elasticsearch-$version"
         rm -rf elasticsearch-$version
+        log_info "elasticsearch" "rm -rf elasticsearch"
+        rm -rf elasticsearch
         log_info "elasticsearch" "tar -zxvf $file_name"
         tar -zxvf $file_name
       fi
@@ -154,10 +156,10 @@ function prepare_es_env() {
       log_info "elasticsearch" "default jvm_options=$jvm_options"
     fi
 
-    if [ -d "elasticsearch/jvm.options.d" ]; then
-      log_info "elasticsearch" "elasticsearch/jvm.options.d is exist"
-      log_info "elasticsearch" "echo \"$jvm_options\" > elasticsearch/jvm.options.d/jvm.options"
-      echo "$jvm_options" >elasticsearch/jvm.options.d/jvm.options
+    if [ -d "elasticsearch/config/jvm.options.d" ]; then
+      log_info "elasticsearch" "elasticsearch/config/jvm.options.d is exist"
+      log_info "elasticsearch" "echo \"$jvm_options\" > elasticsearch/config/jvm.options.d/jvm.options"
+      echo "$jvm_options" >elasticsearch/jvm.options.d/config/jvm.options
     else
       log_error "elasticsearch" "elasticsearch/jvm.options.d is not exist"
       exit 1
