@@ -180,7 +180,7 @@ function prepare_es_env() {
       cp elasticsearch/config/elasticsearch.yml $backup_file
     fi
 
-    read -p "Enter the cluster name you want to set: (default: es_cluster) :" cluster_name
+    read -p "Enter the cluster name you want to set: (default: es-cluster) :" cluster_name
     if [ -z $cluster_name ]; then
       cluster_name="es-cluster"
       log_info "elasticsearch" "default cluster_name=$cluster_name"
