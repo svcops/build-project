@@ -112,7 +112,7 @@ fi
 
 function write_config_file() {
   read -p "Confirm xpack.security.transport.ssl.enabled? [y/n]" answer
-  transport_ssl=
+  transport_ssl=""
   if [ $answer == "y" ]; then
     answer=""
     transport_ssl="true"
