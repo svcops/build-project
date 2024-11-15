@@ -242,8 +242,8 @@ function prepare_es_env() {
       if [ $answer == "y" ]; then
         log_warn "elasticsearch" "clean it rm -rf $path_data_logs"
         rm -rf $path_data_logs
-        log_warn "elasticsearch" "mkdir -p $path_data_logs"
-        mkdir -p $path_data_logs
+        log_warn "elasticsearch" "mkdir -p $path_data_logs/{data,logs}"
+        mkdir -p $path_data_logs/{data,logs}
       fi
     fi
 
@@ -319,8 +319,18 @@ EOF
 
   }
 
+  function try_soft_link() {
+    # 判断 $path_data_logs 是否以 $current_dir/elasticsearch 开头
+    if [[ $path_data_logs == $current_dir/elasticsearch* ]]; then
+      log_info "elasticsearch" "$path_data_logs is start with $current_dir/elasticsearch"
+      log_info "elasticsearch" "ln -s $path_data_logs elasticsearch/data"
+      ln -s $path_data_logs elasticsearch/data
+    fi
+  }
+
   jvm_options
   config_yml
+  try_soft_link
 
   log_info "elasticsearch" "chown -R $user_name:$user_name elasticsearch $path_data_logs"
   chown -R $user_name:$user_name elasticsearch $path_data_logs
