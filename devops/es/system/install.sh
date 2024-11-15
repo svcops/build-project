@@ -206,7 +206,7 @@ function prepare_es_env() {
       ;;
     esac
 
-    read -p "Confirm xpack.security.transport.ssl.enabled? [y/n]" xpack_security_transport_ssl_enabled
+    read -p "Confirm xpack.security.transport.ssl.enabled? [y/n] :" xpack_security_transport_ssl_enabled
 
     function try_use_local_cert() {
       if [ -f "cert.tar.gz" ]; then
@@ -235,7 +235,10 @@ function prepare_es_env() {
     fi
 
     if [ -d $path_data_logs ]; then
-      read -p "Do you want to delete it? [y/n]" answer
+      log_warn "elasticsearch" "$path_data_logs is exist, it can be deleted.All data will be lost!!!"
+      log_warn "elasticsearch" "$path_data_logs is exist, it can be deleted.All data will be lost!!!"
+      log_warn "elasticsearch" "$path_data_logs is exist, it can be deleted.All data will be lost!!!"
+      read -p "Do you want to delete it? [y/n] :" answer
       if [ $answer == "y" ]; then
         log_warn "elasticsearch" "clean it rm -rf $path_data_logs"
         rm -rf $path_data_logs
