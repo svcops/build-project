@@ -329,10 +329,10 @@ EOF
 prepare_es_env
 
 function create_systemd() {
-  log_info "elasticsearch" "create elasticsearch.service"
+  log_info "elasticsearch" "create elasticsearch.service version=$version"
   cat >/usr/lib/systemd/system/elasticsearch.service <<EOF
 [Unit]
-Description=Elasticsearch ${version}
+Description=Elasticsearch $version
 Documentation=https://www.elastic.co
 Wants=network-online.target
 After=network-online.target
