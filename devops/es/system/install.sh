@@ -55,9 +55,8 @@ fi
 function prepare_tar_gz() {
   log_info "elasticsearch" "prepare tar.gz"
 
-  read -p "Enter the version of elasticsearch you want to install: " version
-
-  function detect_version() {
+  function detect_version_by_file() {
+    log_info "elasticsearch" "detect version by file"
     # 正则匹配 当前目录的文件s是否有 elasticsearch-version-linux-x86_64.tar.gz
     local pattern="elasticsearch-([0-9]+\.[0-9]+\.[0-9]+)-linux-x86_64.tar.gz"
     for file in $(ls); do
@@ -66,11 +65,18 @@ function prepare_tar_gz() {
         break
       fi
     done
+    log_info "elasticsearch" "detect version=$version"
   }
-  detect_version
+  detect_version_by_file
 
   if [ -z $version ]; then
-    version="8.16.0"
+    read -p "Choose other version to install: [y/n] :" answer
+    if [ "$answer" == "y" ]; then
+      read -p "Enter the version of elasticsearch you want to install: " version
+      if [ -z $version ]; then
+        version="8.16.0"
+      fi
+    fi
   fi
 
   log_info "elasticsearch" "version=$version"
