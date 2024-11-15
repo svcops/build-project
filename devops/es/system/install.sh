@@ -6,6 +6,10 @@ echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 
 source <(curl -SL $ROOT_URI/func/log.sh)
 
+log_warn "elasticsearch" "install elasticsearch Three node cluster"
+log_warn "elasticsearch" "install elasticsearch Three node cluster"
+log_warn "elasticsearch" "install elasticsearch Three node cluster"
+
 function tips() {
   log_info "elasticsearch" "tips: prepare elasticsearch docker compose start"
   echo "--- sysctl.conf --"
@@ -37,8 +41,6 @@ function tips() {
 }
 
 tips
-
-log_info "elasticsearch" "install elasticsearch Three node cluster"
 
 current_dir=$(pwd)
 
