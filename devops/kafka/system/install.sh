@@ -383,8 +383,26 @@ bin/kafka-server-start.sh config/kraft/server.properties
 EOF
   }
 
+  function create_status_replica_sh() {
+    echo "create status_replica.sh"
+    cat >kafka/status_replica.sh <<EOF
+#!/bin/bash
+# shellcheck disable=SC2164
+SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
+cd "\$SHELL_FOLDER"
+
+echo "describe --replication"
+bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9092,$node_1_ip:9092,$node_2_ip:9092 describe --replication
+
+echo "describe --status"
+bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9092,$node_1_ip:9092,$node_2_ip:9092 describe --status
+EOF
+  }
+
   create_reinit_sh
   create_start_sh
+  create_status_replica_sh
+
 }
 
 config_properties
@@ -428,7 +446,32 @@ function format_kafka_logs_dir() {
 format_kafka_logs_dir
 
 function create_systemd() {
-  log_info "kafka" "config kafka systemd"
+  log_info "kafka" "create /usr/lib/systemd/system/kafka.service"
+  cat >/usr/lib/systemd/system/kafka.service <<EOF
+[Unit]
+Description=Apache Kafka server (broker)
+Documentation=http://kafka.apache.org/documentation.html
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+
+User=root
+Group=root
+
+Restart=on-failure
+RestartSec=5
+
+WorkingDirectory=/$current_dir/kafka
+ExecStart=/$current_dir/kafka/bin/kafka-server-start.sh /$current_dir/kafka/config/kraft/server.properties
+ExecStop=/$current_dir/kafka/bin/kafka-server-stop.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  log_warn "kafka" "systemctl daemon-reload"
+  systemctl daemon-reload
 }
 
 create_systemd
