@@ -349,6 +349,9 @@ EOF
 SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
 cd "\$SHELL_FOLDER"
 
+rm -rf logs/
+mkdir -p logs/
+
 echo "clear logs directory"
 rm -rf $log_dirs
 mkdir -p $log_dirs
@@ -367,7 +370,19 @@ bin/kafka-storage.sh format -t \$uuid -c config/kraft/server.properties
 EOF
   }
 
+  function create_start_sh() {
+    cat >kafka/start.sh <<EOF
+#!/bin/bash
+# shellcheck disable=SC2164
+SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
+cd "\$SHELL_FOLDER"
+echo "start kafka"
+bin/kafka-server-start.sh config/kraft/server.properties
+EOF
+  }
+
   create_reinit_sh
+  create_start_sh
 }
 
 config_properties
