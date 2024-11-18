@@ -341,6 +341,32 @@ log.retention.check.interval.ms=300000
 
 EOF
 
+  function create_reinit_sh() {
+    log_info "elasticsearch" "create reinit.sh"
+    cat >kafka/reinit.sh <<EOF
+#!/bin/bash
+# shellcheck disable=SC2164
+SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
+cd "\$SHELL_FOLDER"
+
+echo "clear logs directory"
+rm -rf $log_dirs
+mkdir -p $log_dirs
+
+function read_uuid(){
+  read -p "Input uuid :" uuid
+  if [ -z \$uuid ]; then
+    echo "uuid is empty,retry"
+    read_uuid
+  fi
+}
+
+/bin/kafka-storage.sh format -t \$uuid -c config/kraft/server.properties
+
+EOF
+  }
+
+  create_reinit_sh
 }
 
 config_properties
