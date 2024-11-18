@@ -56,22 +56,36 @@ function prepare_tgz() {
 
   if [ -z "$scala_version" ] || [ -z "$kafka_version" ]; then
     log_warn "kafka" "kafka_version or scala_version is empty"
-    read -p "Choose other scala_version to install: [y/n] :" answer
+    read -p "Choose other kafka_full_version to install: [y/n] (default n):" answer
     if [ "$answer" == "y" ]; then
-      read -p "Enter the scala_version of elasticsearch you want to install: " scala_version
+      # read scala_version kafka_version
+      read -p "Enter the scala_version you want to set: " scala_version
+      read -p "Enter the kafka_version you want to set: " kafka_version
       if [ -z $scala_version ]; then
-        scala_version="2.13-3.9.0"
+        scala_version="2.13"
+        log_info "kafka" "default scala_version=2.13"
       fi
+      if [ -z $kafka_version ]; then
+        kafka_version="3.9.0"
+        log_info "kafka" "default kafka_version=3.9.0"
+      fi
+      kafka_full_version="$scala_version-$kafka_version"
+    else
+      log_warn "kafka" "no kafka_full_version input"
+      exit 0
     fi
+  else
+    kafka_full_version="$scala_version-$kafka_version"
+    log_info "kafka" "kafka_full_version=$kafka_full_version"
   fi
 
   log_info "kafka" "scala_version=$scala_version kafka_version=$kafka_version"
 
-  local file_name="kafka_$scala_version-$kafka_version.tgz"
+  local file_name="kafka_$kafka_full_version.tgz"
   if [ -f "$file_name" ]; then
     log_info "kafka" "kafka tgz file exists"
   else
-    read -p "kafka tgz file not exists, download it? [y/n] :" answer
+    read -p "kafka tgz file not exists, download it? [y/n] (default n):" answer
     if [ "$answer" == "y" ]; then
       local url="https://mirrors.tuna.tsinghua.edu.cn/apache/kafka/$kafka_version/kafka_$scala_version-$kafka_version.tgz"
       log_info "kafka" "wget $url"
@@ -93,7 +107,7 @@ function prepare_tgz() {
       log_warn "kafka" "Are you sure to delete it? It will delete all data in it."
       log_warn "kafka" "Are you sure to delete it? It will delete all data in it."
       log_warn "kafka" "Are you sure to delete it? It will delete all data in it."
-      read -p "Are you sure to delete it? [y/n] :" answer
+      read -p "Are you sure to delete it? [y/n] (default n):" answer
       if [ "$answer" == "y" ]; then
         log_warn "kafka" "delete kafka_$scala_version-$kafka_version or kafka directory"
         log_warn "kafka" "rm -rf kafka_$scala_version-$kafka_version"
@@ -135,18 +149,52 @@ function config_properties() {
     cp $kraft_server_properties $backup_file
   fi
 
-  log_info "kafka" "Enter the broker.id  you want to set: [0]"
-  log_info "kafka" "Enter the broker.id  you want to set: [1]"
-  log_info "kafka" "Enter the broker.id  you want to set: [2]"
-
-  # read 获取三个 node 的 ip
+  log_info "kafka" "Enter the broker.id  you want to set: [0/1/2]"
   function read_three_node_ip() {
-    log_info "kafka" "Enter the node-0 ip you want to set"
-    read -p "Enter the node-0 ip you want to set: " node_0_ip
-    log_info "kafka" "Enter the node-1 ip you want to set"
-    read -p "Enter the node-1 ip you want to set: " node_1_ip
-    log_info "kafka" "Enter the node-2 ip you want to set"
-    read -p "Enter the node-2 ip you want to set: " node_2_ip
+    # function validate ipv4
+    function validate_ipv4() {
+      local ip=$1
+      if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        log_info "kafka" "validate ipv4 success"
+        return 0
+      else
+        log_warn "kafka" "validate ipv4 failed"
+        return 1
+      fi
+    }
+
+    function read_node0_ip() {
+      log_info "kafka" "Enter the node-0 ip you want to set"
+      read -p "Enter the node-0 ip you want to set: " node_0_ip
+      if validate_ipv4 $node_0_ip; then
+        log_info "kafka" "node-0 ip=$node_0_ip"
+      else
+        log_warn "kafka" "node-0 ip is invalid"
+        read_node0_ip
+      fi
+    }
+
+    function read_node1_ip() {
+      log_info "kafka" "Enter the node-1 ip you want to set"
+      read -p "Enter the node-1 ip you want to set: " node_1_ip
+      if validate_ipv4 $node_1_ip; then
+        log_info "kafka" "node-1 ip=$node_1_ip"
+      else
+        log_warn "kafka" "node-1 ip is invalid"
+        read_node1_ip
+      fi
+    }
+
+    function read_node2_ip() {
+      log_info "kafka" "Enter the node-2 ip you want to set"
+      read -p "Enter the node-2 ip you want to set: " node_2_ip
+      if validate_ipv4 $node_2_ip; then
+        log_info "kafka" "node-2 ip=$node_2_ip"
+      else
+        log_warn "kafka" "node-2 ip is invalid"
+        read_node2_ip
+      fi
+    }
 
     log_info "kafka" "node-0 ip=$node_0_ip"
     log_info "kafka" "node-1 ip=$node_1_ip"
@@ -176,9 +224,7 @@ function config_properties() {
       node_ip=$node_2_ip
       ;;
     *)
-      broker_id=0
-      log_info "kafka" "default broker.id=0"
-      node_ip=$node_0_ip
+      read_broker_id
       ;;
     esac
   }
@@ -409,10 +455,9 @@ config_properties
 
 function format_kafka_logs_dir() {
   log_info "kafka" "format kafka logs dir"
-  read -p "Are you sure to format kafka logs dir? [y/n] :" answer
+  read -p "Are you sure to format kafka logs dir? [y/n] (default n):" answer
   if [ "$answer" == "y" ]; then
-
-    read -p "Are you sure generate random-uuid? [y/n] :" answer
+    read -p "Are you sure generate random-uuid? [y/n] (default n):" answer
     if [ "$answer" == "y" ]; then
       log_info "kafka" "generate random-uuid"
 
