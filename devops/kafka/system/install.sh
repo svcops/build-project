@@ -361,7 +361,7 @@ function read_uuid(){
   fi
 }
 
-/bin/kafka-storage.sh format -t \$uuid -c config/kraft/server.properties
+bin/kafka-storage.sh format -t \$uuid -c config/kraft/server.properties
 
 EOF
   }
