@@ -88,7 +88,6 @@ function prepare_tgz() {
 
   function try_unzip() {
     log_info "kafka" "try unzip $file_name"
-
     if [ -d "kafka_$scala_version-$kafka_version" ] || [ -d "kafka" ]; then
       log_warn "kafka" "kafka_$scala_version-$kafka_version or kafka directory exists"
       log_warn "kafka" "Are you sure to delete it? It will delete all data in it."
@@ -107,6 +106,9 @@ function prepare_tgz() {
         log_info "kafka" "exit"
         exit 0
       fi
+    else
+      log_warn "kafka" "tar -zxvf $file_name"
+      tar -zxvf $file_name
     fi
 
   }
