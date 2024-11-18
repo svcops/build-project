@@ -59,7 +59,7 @@ function prepare_tar_gz() {
 
   function detect_version_by_file() {
     log_info "elasticsearch" "detect version by file"
-    # 正则匹配 当前目录的文件s是否有 elasticsearch-version-linux-x86_64.tar.gz
+    # 正则匹配 当前目录的文件是否有 elasticsearch-version-linux-x86_64.tar.gz
     local pattern="elasticsearch-([0-9]+\.[0-9]+\.[0-9]+)-linux-x86_64.tar.gz"
     for file in $(ls); do
       if [[ $file =~ $pattern ]]; then
@@ -96,6 +96,12 @@ function prepare_tar_gz() {
     log_info "elasticsearch" "$file_name is not exist"
     log_info "elasticsearch" "download $file_name"
     wget https://artifacts.elastic.co/downloads/elasticsearch/$file_name
+
+    if [ ! -f $file_name ]; then
+      log_warn "elasticsearch" "wget https://artifacts.elastic.co/downloads/elasticsearch/$file_name failed"
+      exit 1
+    fi
+
   fi
 
   function try_unzip() {
