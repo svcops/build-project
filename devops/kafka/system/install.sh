@@ -447,6 +447,30 @@ format_kafka_logs_dir
 
 function create_systemd() {
   log_info "kafka" "create /usr/lib/systemd/system/kafka.service"
+
+  function read_java_home() {
+    if [ -z $JAVA_HOME ]; then
+      log_warn "kafka" "JAVA_HOME is empty"
+      read -p "Enter the JAVA_HOME you want to set: " JAVA_HOME
+      if [ -z $JAVA_HOME ]; then
+        log_warn "kafka" "JAVA_HOME is empty"
+        read_java_home
+      else
+        log_info "kafka" "JAVA_HOME=$JAVA_HOME"
+        if [ ! -f "$JAVA_HOME/bin/java" ]; then
+          log_warn "kafka" "java is not exist"
+          read_java_home
+        else
+          log_info "kafka" "java is exist"
+          $JAVA_HOME/bin/java -version
+        fi
+      fi
+    else
+      log_info "kafka" "JAVA_HOME=$JAVA_HOME"
+    fi
+  }
+  read_java_home
+
   cat >/usr/lib/systemd/system/kafka.service <<EOF
 [Unit]
 Description=Apache Kafka server (broker)
@@ -462,10 +486,10 @@ Group=root
 
 Restart=on-failure
 RestartSec=5
-
+Environment=JAVA_HOME=$JAVA_HOME
 WorkingDirectory=/$current_dir/kafka
-ExecStart=/$current_dir/kafka/bin/kafka-server-start.sh /$current_dir/kafka/config/kraft/server.properties
-ExecStop=/$current_dir/kafka/bin/kafka-server-stop.sh
+ExecStart=$current_dir/kafka/bin/kafka-server-start.sh $current_dir/kafka/config/kraft/server.properties
+ExecStop=$current_dir/kafka/bin/kafka-server-stop.sh
 
 [Install]
 WantedBy=multi-user.target
