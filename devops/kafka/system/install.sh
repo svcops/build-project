@@ -119,16 +119,18 @@ function prepare_tgz() {
 prepare_tgz
 
 function config_properties() {
-  log_info "kafka" "config kafka properties"
+  log_info "kafka" "config kafka kraft properties"
 
-  if [ ! -f "kafka/config/server.properties" ]; then
-    log_error "kafka" "kafka/config/server.properties is not exist"
+  kraft_server_properties="kafka/config/kraft/server.properties"
+
+  if [ ! -f "$kraft_server_properties" ]; then
+    log_error "kafka" "$kraft_server_properties is not exist"
     exit 1
   else
-    log_info "kafka" "kafka/config/server.properties is exist"
-    local backup_file="kafka/config/server.properties.$(date +%Y%m%d%H%M%S)"
-    log_info "kafka" "backup kafka/config/server.properties to $backup_file"
-    cp kafka/config/server.properties $backup_file
+    log_info "kafka" "$kraft_server_properties is exist"
+    local backup_file="$kraft_server_properties.$(date +%Y%m%d%H%M%S)"
+    log_info "kafka" "backup $kraft_server_properties to $backup_file"
+    cp $kraft_server_properties $backup_file
   fi
 
   log_info "kafka" "Enter the broker.id  you want to set: [0]"
@@ -211,7 +213,7 @@ function config_properties() {
 
   prepare_logs_dir
 
-  cat >kafka/config/server.properties <<EOF
+  cat >$kraft_server_properties <<EOF
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -342,6 +344,44 @@ EOF
 }
 
 config_properties
+
+function format_kafka_logs_dir() {
+  log_info "kafka" "format kafka logs dir"
+  read -p "Are you sure to format kafka logs dir? [y/n] :" answer
+  if [ "$answer" == "y" ]; then
+
+    read -p "Are you sure generate random-uuid? [y/n] :" answer
+    if [ "$answer" == "y" ]; then
+      log_info "kafka" "generate random-uuid"
+
+      if [ -f "kafka/bin/kafka-storage.sh" ]; then
+        uuid=$(kafka/bin/kafka-storage.sh random-uuid)
+        log_info "kafka" "uuid=$uuid"
+      else
+        log_error "kafka" "kafka/bin/kafka-storage.sh is not exist"
+        exit 1
+      fi
+
+      log_info "kafka" "kafka-storage.sh format -t $uuid -c $kraft_server_properties"
+      kafka/bin/kafka-storage.sh format -t $uuid -c $kraft_server_properties
+
+    else
+      read -p "Enter the uuid you want to set: " uuid
+      if [ -z $uuid ]; then
+        log_warn "kafka" "uuid is empty"
+        exit 1
+      fi
+      log_info "kafka" "kafka-storage.sh format -t $uuid -c $kraft_server_properties"
+      kafka/bin/kafka-storage.sh format -t $uuid -c $kraft_server_properties
+    fi
+
+  else
+    log_info "kafka" "skip format kafka logs dir"
+  fi
+
+}
+
+format_kafka_logs_dir
 
 function create_systemd() {
   log_info "kafka" "config kafka systemd"
