@@ -487,7 +487,7 @@ Group=root
 Restart=on-failure
 RestartSec=5
 Environment=JAVA_HOME=$JAVA_HOME
-WorkingDirectory=/$current_dir/kafka
+WorkingDirectory=$current_dir/kafka
 ExecStart=$current_dir/kafka/bin/kafka-server-start.sh $current_dir/kafka/config/kraft/server.properties
 ExecStop=$current_dir/kafka/bin/kafka-server-stop.sh
 
