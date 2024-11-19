@@ -203,6 +203,10 @@ function config_properties() {
       fi
     }
 
+    read_node0_ip
+    read_node1_ip
+    read_node2_ip
+
     log_info "kafka" "node-0 ip=$node_0_ip"
     log_info "kafka" "node-1 ip=$node_1_ip"
     log_info "kafka" "node-2 ip=$node_2_ip"
@@ -210,7 +214,6 @@ function config_properties() {
     # 三个 ip 都不为空
     if [ -z $node_0_ip ] || [ -z $node_1_ip ] || [ -z $node_2_ip ]; then
       log_warn "kafka" "node_0_ip or node_1_ip or node_2_ip is empty"
-      read -p "Choose other node ip to set: [y/n] :" answer
       read_three_node_ip
     fi
   }
