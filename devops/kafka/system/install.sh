@@ -157,7 +157,6 @@ function config_properties() {
     log_info "kafka" "default cluster_name=kafka-cluster"
   fi
 
-  log_info "kafka" "Enter the broker.id  you want to set: [0/1/2]"
   function read_three_node_ip() {
     # function validate ipv4
     function validate_ipv4() {
