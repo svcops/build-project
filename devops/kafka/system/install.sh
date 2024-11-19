@@ -149,6 +149,14 @@ function config_properties() {
     cp $kraft_server_properties $backup_file
   fi
 
+  # read kafka cluster name
+  log_info "kafka" "Enter the cluster name you want to set: [e.g. kafka-cluster]"
+  read -p "Enter the cluster name you want to set (default kafka-cluster):" cluster_name
+  if [ -z $cluster_name ]; then
+    cluster_name="kafka-cluster"
+    log_info "kafka" "default cluster_name=kafka-cluster"
+  fi
+
   log_info "kafka" "Enter the broker.id  you want to set: [0/1/2]"
   function read_three_node_ip() {
     # function validate ipv4
@@ -301,17 +309,18 @@ controller.quorum.voters=0@$node_0_ip:9093,1@$node_1_ip:9093,2@$node_2_ip:9093
 #     listeners = PLAINTEXT://your.host.name:9092
 #listeners=PLAINTEXT://:9092
 
-listeners=PLAINTEXT://$node_ip:9092,CONTROLLER://$node_ip:9093
+listeners=PLAINTEXT://$node_ip:9094,CONTROLLER://$node_ip:9093,CLIENT://$node_ip:9092
 
 inter.broker.listener.name=PLAINTEXT
 
 # Modify yourself
-advertised.listeners=PLAINTEXT://$node_ip:9092
+advertised.listeners=PLAINTEXT://$node_ip:9094,CLIENT://$cluster_name:9092
 
 controller.listener.names=CONTROLLER
 
 # Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
 #listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
+listener.security.protocol.map=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,CLIENT:PLAINTEXT
 
 # The number of threads that the server uses for receiving requests from the network and sending responses to the network
 num.network.threads=3
@@ -438,10 +447,10 @@ SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
 cd "\$SHELL_FOLDER"
 
 echo "describe --replication"
-bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9092,$node_1_ip:9092,$node_2_ip:9092 describe --replication
+bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --replication
 
 echo "describe --status"
-bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9092,$node_1_ip:9092,$node_2_ip:9092 describe --status
+bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --status
 EOF
   }
 
