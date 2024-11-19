@@ -527,6 +527,15 @@ function create_systemd() {
   }
   read_java_home
 
+  function read_java_options() {
+    read -p "Enter the JAVA_OPTS you want to set. [default -Xmx2G -Xms2G] :" JAVA_OPTS
+    if [ -z $JAVA_OPTS ]; then
+      JAVA_OPTS="-Xmx2G -Xms2G"
+      log_info "kafka" "default JAVA_OPTS=$JAVA_OPTS"
+    fi
+  }
+  read_java_options
+
   cat >/usr/lib/systemd/system/kafka.service <<EOF
 [Unit]
 Description=Apache Kafka server (broker)
@@ -536,13 +545,12 @@ After=network.target remote-fs.target
 
 [Service]
 Type=simple
-
 User=root
 Group=root
-
 Restart=on-failure
 RestartSec=5
 Environment=JAVA_HOME=$JAVA_HOME
+Environment=KAFKA_HEAP_OPTS=$JAVA_OPTS
 WorkingDirectory=$current_dir/kafka
 ExecStart=$current_dir/kafka/bin/kafka-server-start.sh $current_dir/kafka/config/kraft/server.properties
 ExecStop=$current_dir/kafka/bin/kafka-server-stop.sh
