@@ -408,13 +408,6 @@ EOF
 SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
 cd "\$SHELL_FOLDER"
 
-rm -rf logs/
-mkdir -p logs/
-
-echo "clear logs directory"
-rm -rf $log_dirs
-mkdir -p $log_dirs
-
 function read_uuid(){
   read -p "Input uuid :" uuid
   if [ -z \$uuid ]; then
@@ -423,6 +416,16 @@ function read_uuid(){
   fi
 }
 read_uuid
+
+echo "clear logs directory"
+rm -rf logs/
+
+echo "mkdir logs directory"
+mkdir -p logs/
+
+echo "clear logs directory"
+rm -rf $log_dirs
+mkdir -p $log_dirs
 
 bin/kafka-storage.sh format -t \$uuid -c config/kraft/server.properties
 
@@ -460,6 +463,15 @@ EOF
   create_start_sh
   create_status_replica_sh
 
+  function try_soft_link() {
+    log_info "kafka" "try soft link $log_dirs to kafka/data"
+    # 判断 $path_data_logs 是否不以 $current_dir/elasticsearch 开头
+    if [[ $log_dirs != $current_dir/kafka* ]]; then
+      log_warn "kafka" "soft link $log_dirs to kafka/data"
+      ln -s $log_dirs kafka/data
+    fi
+  }
+  try_soft_link
 }
 
 config_properties
