@@ -458,11 +458,11 @@ EOF
 SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
 cd "\$SHELL_FOLDER"
 
-echo "bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --replication"
-bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --replication
+echo "bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:$internal_port,$node_1_ip:$internal_port,$node_2_ip:$internal_port describe --replication"
+bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:$internal_port,$node_1_ip:$internal_port,$node_2_ip:$internal_port describe --replication
 
-echo "bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --status"
-bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --status
+echo "bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:$internal_port,$node_1_ip:$internal_port,$node_2_ip:$internal_port describe --status"
+bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:$internal_port,$node_1_ip:9094,$node_2_ip:$internal_port describe --status
 EOF
   }
 
