@@ -271,6 +271,13 @@ function config_properties() {
 
   prepare_logs_dir
 
+  log_info "kafka" "config kafka kraft properties"
+
+  local internal_port=9094
+  local controller_port=9093
+  local client_port=9092
+  log_info "kafka" "internal_port=$internal_port controller_port=$controller_port client_port=$client_port"
+
   cat >$kraft_server_properties <<EOF
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -299,7 +306,7 @@ process.roles=broker,controller
 
 broker.id=$broker_id
 
-controller.quorum.voters=0@$node_0_ip:9093,1@$node_1_ip:9093,2@$node_2_ip:9093
+controller.quorum.voters=0@$node_0_ip:$controller_port,1@$node_1_ip:$controller_port,2@$node_2_ip:$controller_port
 
 ############################# Socket Server Settings #############################
 
@@ -311,12 +318,12 @@ controller.quorum.voters=0@$node_0_ip:9093,1@$node_1_ip:9093,2@$node_2_ip:9093
 #     listeners = PLAINTEXT://your.host.name:9092
 #listeners=PLAINTEXT://:9092
 
-listeners=PLAINTEXT://$node_ip:9094,CONTROLLER://$node_ip:9093,CLIENT://$node_ip:9092
+listeners=PLAINTEXT://$node_ip:$internal_port,CONTROLLER://$node_ip:$controller_port,CLIENT://$node_ip:$client_port
 
 inter.broker.listener.name=PLAINTEXT
 
 # Modify yourself
-advertised.listeners=PLAINTEXT://$node_ip:9094,CLIENT://$cluster_name:9092
+advertised.listeners=PLAINTEXT://$node_ip:$internal_port,CLIENT://$cluster_name:$client_port
 
 controller.listener.names=CONTROLLER
 
