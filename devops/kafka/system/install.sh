@@ -443,25 +443,25 @@ bin/kafka-server-start.sh config/kraft/server.properties
 EOF
   }
 
-  function create_status_replica_sh() {
-    echo "create status_replica.sh"
-    cat >kafka/status_replica.sh <<EOF
+  function create_describe_sh() {
+    log_info "kafka" "create describe.sh"
+    cat >kafka/describe.sh <<EOF
 #!/bin/bash
 # shellcheck disable=SC2164
 SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
 cd "\$SHELL_FOLDER"
 
-echo "describe --replication"
+echo "bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --replication"
 bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --replication
 
-echo "describe --status"
+echo "bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --status"
 bin/kafka-metadata-quorum.sh --bootstrap-server $node_0_ip:9094,$node_1_ip:9094,$node_2_ip:9094 describe --status
 EOF
   }
 
   create_reinit_sh
   create_start_sh
-  create_status_replica_sh
+  create_describe_sh
 
   function try_soft_link() {
     log_info "kafka" "try soft link $log_dirs to kafka/data"
