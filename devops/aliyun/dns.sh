@@ -25,7 +25,7 @@ log_info "dns" "dns 操作"
 
 log_info "input" "请选择云解析DNS的相关操作: (输入数字)"
 log_info "input" "  (0) 获取支持的域名列表"
-log_info "input" "  (1) 新增解析记录"
+log_info "input" "  (1) 新增一条解析记录"
 log_info "input" "  (2) 查询子域名的所有解析记录"
 log_info "input" "  (3) 删除子域名的所有解析记录"
 log_info "input" "  (4) 删除子域名的所有解析记录，然后新增解析记录"
@@ -74,7 +74,7 @@ function readRr() {
   if [ -n "$rr" ]; then
     return
   fi
-  read -p "请输入主机记录: " rr
+  read -p "请输入主机记录(Resource Record): " rr
   log_info "dns" "输入的主机记录为 $rr"
 
   if [ -z $rr ]; then
@@ -84,7 +84,7 @@ function readRr() {
 }
 
 function readType() {
-  read -p "请输入记录类型: " type
+  read -p "请输入记录类型(默认为A): " type
   log_info "dns" "输入的记录类型为 $type"
 
   if [ -z $type ]; then
