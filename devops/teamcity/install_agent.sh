@@ -1,96 +1,23 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028  disable=SC2317  disable=SC2164
+# shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028  disable=SC2317  disable=SC2164 disable=SC2004 disable=SC2154
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
 source <(curl -SL $ROOT_URI/func/log.sh)
-source <(curl -SL $ROOT_URI/func/command_exists.sh)
+source <(curl -SL $ROOT_URI/devops/teamcity/install_func.sh)
 
-log_info "teamcity" "init agent"
+log_info "teamcity" "install agent"
 
-function prepare() {
-  if ! command_exists wget; then
-    log_error "prepare" "command curl does not exist"
-    exit 1
-  fi
+if ! prepare; then
+  log_error "teamcity" "prepare failed"
+  exit 1
+fi
 
-  if ! command_exists unzip; then
-    log_error "prepare" "command unzip does not exist"
-    exit 1
-  fi
-
-  source /etc/profile
-  source $HOME/.bashrc
-  if [ -z $JAVA_HOME ]; then
-    log_error "prepare" "JAVA_HOME is not set"
-    exit 1
-  fi
-}
-
-prepare
-
-function download_teamcity_agent() {
-  function download() {
-    read -p "Enter the teamcity server: " teamcity_server
-    if [ -z $teamcity_server ]; then
-      log_error "teamcity" "teamcity server is empty"
-      download
-    else
-      log_info "teamcity" "teamcity server is $teamcity_server"
-    fi
-  }
-  download
-
-  function read_install_path() {
-    read -p "Enter the teamcity agent install path (default is /opt/teamcity-agent) :" teamcity_agent_path
-    if [ -z $teamcity_agent_path ]; then
-      teamcity_agent_path="/opt/teamcity-agent"
-      log_info "teamcity" "default teamcity agent install path is $teamcity_agent_path"
-    else
-      log_info "teamcity" "teamcity agent install path is $teamcity_agent_path"
-    fi
-  }
-  read_install_path
-
-  # 确定安装
-  read -p "Enter y to continue install teamcity agent in $teamcity_agent_path :" confirm
-  if [ $confirm != "y" ]; then
-    log_error "teamcity" "exit install teamcity agent"
-    exit 1
-  fi
-
-  function try_stop_teamcity_agent_systemd() {
-    if [ -f "/usr/lib/systemd/system/teamcity-agent.service" ] || [ -f "/etc/systemd/system/teamcity-agent.service" ]; then
-      log_info "teamcity" "stop teamcity-agent service"
-      systemctl stop teamcity-agent
-      log_info "teamcity" "disable teamcity-agent service"
-      systemctl disable teamcity-agent
-      log_info "teamcity" "reload systemd"
-      systemctl daemon-reload
-
-      log_info "teamcity" "remove teamcity-agent service"
-      rm -rf /usr/lib/systemd/system/teamcity-agent.service
-      rm -rf /etc/systemd/system/teamcity-agent.service
-    fi
-  }
-
-  if [ -d $teamcity_agent_path ]; then
-    log_error "teamcity" "teamcity agent install path $teamcity_agent_path is exist"
-    try_stop_teamcity_agent_systemd
-    rm -rf $teamcity_agent_path
-    mkdir -p $teamcity_agent_path
-  else
-    log_info "teamcity" "create teamcity agent install path $teamcity_agent_path"
-    mkdir -p $teamcity_agent_path
-  fi
-
-  # 下载teamcity-agent
-  wget $teamcity_server/update/buildAgentFull.zip -O $teamcity_agent_path/buildAgentFull.zip
-
-}
-
-download_teamcity_agent
+if ! download_teamcity_agent; then
+  log_error "teamcity" "download teamcity agent failed"
+  exit 1
+fi
 
 function install_teamcity_agent() {
   function try_unzip() {
@@ -99,13 +26,6 @@ function install_teamcity_agent() {
     else
       log_error "teamcity" "download teamcity agent failed"
       exit 1
-    fi
-
-    if unzip -t "$teamcity_agent_path/buildAgentFull.zip" &>/dev/null; then
-      log_info "teamcity" "The file $teamcity_agent_path/buildAgentFull.zip is a valid zip file."
-    else
-      log_error "teamcity" "The file $teamcity_agent_path/buildAgentFull.zip is not a valid zip file."
-      return 1
     fi
 
     log_info "teamcity" "unzip $teamcity_agent_path/buildAgentFull.zip"
