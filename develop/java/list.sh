@@ -24,6 +24,12 @@ processes=$(jps -v)
 while read -r line; do
   pid=$(echo $line | awk '{print $1}')
   name=$(echo $line | awk '{print $2}')
+
+  # Skip the jps process
+  if [ "$name" == "Jps" ]; then
+    continue
+  fi
+
   # Get the memory usage using jstat
   memory_usage_kb=$(jstat -gc $pid | awk 'NR==2 {print $3+$4+$6+$8+$9+$10}')
   memory_usage_mb=$(echo "scale=2; $memory_usage_kb / 1024" | bc)
