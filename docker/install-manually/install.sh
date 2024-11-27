@@ -22,6 +22,14 @@ function download_and_move() {
   rm -rf docker-$version.tgz docker/
   log_info "print" "arch = $arch; version=$version"
   curl https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/static/stable/$arch/docker-$version.tgz -o docker-$version.tgz
+
+  if tar -tzf "docker-$version.tgz" &>/dev/null; then
+    echo "The file docker-$version.tgz is a valid tar.gz file."
+  else
+    echo "The file docker-$version.tgz is not a valid tar.gz file."
+    exit 1
+  fi
+
   tar zxvf docker-$version.tgz
   mv docker/* /usr/bin/
   rm -rf docker docker-$version.tgz

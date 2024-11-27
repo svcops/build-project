@@ -101,6 +101,13 @@ function prepare_tgz() {
   fi
 
   function try_unzip() {
+    if tar -tzf "$file_name" &>/dev/null; then
+      log_info "kafka" "The file $file_name is a valid tar.gz file."
+    else
+      log_error "kafka" "The file $file_name is not a valid tar.gz file."
+      exit 1
+    fi
+
     log_info "kafka" "try unzip $file_name"
     if [ -d "kafka_$scala_version-$kafka_version" ] || [ -d "kafka" ]; then
       log_warn "kafka" "kafka_$scala_version-$kafka_version or kafka directory exists"

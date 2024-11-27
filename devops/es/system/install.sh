@@ -105,6 +105,14 @@ function prepare_tar_gz() {
   fi
 
   function try_unzip() {
+
+    if tar -tzf "$file_name" &>/dev/null; then
+      log_info "elasticsearch" "The file $file_name is a valid tar.gz file."
+    else
+      log_error "elasticsearch" "The file $file_name is not a valid tar.gz file."
+      exit 1
+    fi
+
     log_info "elasticsearch" "try unzip $file_name"
     if [ -d "elasticsearch-$version" ] || [ -d "elasticsearch" ]; then
       log_warn "elasticsearch" "elasticsearch-$version or elasticsearch is exist"
