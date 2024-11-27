@@ -1,0 +1,31 @@
+#!/bin/bash
+# shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028
+[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
+# ROOT_URI=https://dev.kubectl.net
+
+source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/command_exists.sh)
+
+if ! command_exists jps; then
+  log_error "prepare" "command jps does not exist"
+  exit
+fi
+
+if ! command_exists jstat; then
+  log_error "prepare" "command jstat does not exist"
+  exit
+fi
+
+# Get the list of Java processes with their names
+processes=$(jps -v)
+
+# Iterate over each process and get memory usage
+while read -r line; do
+  pid=$(echo $line | awk '{print $1}')
+  name=$(echo $line | awk '{print $2}')
+  # Get the memory usage using jstat
+  memory_usage_kb=$(jstat -gc $pid | awk 'NR==2 {print $3+$4+$6+$8+$9+$10}')
+  memory_usage_mb=$(echo "scale=2; $memory_usage_kb / 1024" | bc)
+  log_info "java" "Process ID: $pid, Name: $name, Memory Usage: ${memory_usage_mb}MB"
+done <<<"$processes"
