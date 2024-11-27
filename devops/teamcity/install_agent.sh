@@ -147,7 +147,7 @@ function start_agent() {
     systemctl start teamcity-agent
 
     log_info "teamcity" "status teamcity-agent@$i"
-    systemctl status teamcity-agent
+    systemctl status --no-pager teamcity-agent
   else
     log_info "teamcity" "do noting"
   fi

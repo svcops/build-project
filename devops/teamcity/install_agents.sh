@@ -173,7 +173,7 @@ function start_agents() {
 
     for ((i = 1; i <= $agent_num; i++)); do
       log_info "teamcity" "status teamcity-agent@$i"
-      systemctl status teamcity-agent@$i
+      systemctl status --no-pager teamcity-agent@$i
     done
   else
     log_info "teamcity" "do noting"
