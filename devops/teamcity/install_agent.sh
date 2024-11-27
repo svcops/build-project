@@ -20,6 +20,8 @@ function prepare() {
     exit 1
   fi
 
+  source /etc/profile
+  source $HOME/.bashrc
   if [ -z $JAVA_HOME ]; then
     log_error "prepare" "JAVA_HOME is not set"
     exit 1
@@ -41,7 +43,7 @@ function download_teamcity_agent() {
   download
 
   function read_install_path() {
-    read -p "Enter the teamcity agent install path (default is /opt/teamcity-agent):" teamcity_agent_path
+    read -p "Enter the teamcity agent install path (default is /opt/teamcity-agent) :" teamcity_agent_path
     if [ -z $teamcity_agent_path ]; then
       log_error "teamcity" "teamcity agent install path is empty"
       teamcity_agent_path="/opt/teamcity-agent"
@@ -52,12 +54,21 @@ function download_teamcity_agent() {
   }
   read_install_path
 
+  # 确定安装
+  read -p "Enter y to continue install teamcity agent in $teamcity_agent_path :" confirm
+  if [ $confirm != "y" ]; then
+    log_error "teamcity" "exit install teamcity agent"
+    exit 1
+  fi
+
   function try_stop_teamcity_agent_systemd() {
     if [ -f "/usr/lib/systemd/system/teamcity-agent.service" ] || [ -f "/etc/systemd/system/teamcity-agent.service" ]; then
       log_info "teamcity" "stop teamcity-agent service"
       systemctl stop teamcity-agent
       log_info "teamcity" "disable teamcity-agent service"
       systemctl disable teamcity-agent
+      log_info "teamcity" "reload systemd"
+      systemctl daemon-reload
 
       log_info "teamcity" "remove teamcity-agent service"
       rm -rf /usr/lib/systemd/system/teamcity-agent.service
