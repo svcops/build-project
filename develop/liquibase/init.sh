@@ -31,7 +31,7 @@ EOF
 EOF
 }
 
-if [ "y" == $confirm ]; then
+if [ "y" == "$confirm" ]; then
   init_liquibase
 else
   log_info "confirm" "No Confirm"

@@ -61,9 +61,9 @@ log_warn "elasticsearch" "current_dir=$current_dir"
 log_warn "elasticsearch" "current_dir=$current_dir"
 log_warn "elasticsearch" "current_dir=$current_dir"
 
-read -p "Confirm prepare es's files in $current_dir [y/n]" answer
+read -p "Confirm prepare elasticsearch's files in $current_dir [y/n]" answer
 
-if [ $answer == "y" ]; then
+if [ "$answer" == "y" ]; then
   answer=""
   log_info "elasticsearch" "prepare elasticsearch docker compose"
 else
@@ -98,7 +98,7 @@ EOF
 
 if [ -f "docker-compose.yml" ]; then
   read -p "Do you want to rewrite it? [y/n]" answer
-  if [ $answer == "y" ]; then
+  if [ "$answer" == "y" ]; then
     answer=""
     log_warn "elasticsearch" "rewrite docker-compose.yml"
     write_docker_compose_yml
@@ -113,7 +113,7 @@ fi
 function write_config_file() {
   read -p "Confirm xpack.security.transport.ssl.enabled? [y/n]" answer
   transport_ssl=""
-  if [ $answer == "y" ]; then
+  if [ "$answer" == "y" ]; then
     answer=""
     transport_ssl="true"
   else
@@ -194,7 +194,7 @@ if [ -d "conf" ] && [ -f "conf/elasticsearch.yml" ]; then
 
   read -p "Do you want to delete config file? [y/n]" answer
 
-  if [ $answer == "y" ]; then
+  if [ "$answer" == "y" ]; then
     answer=""
     log_warn "elasticsearch" "delete config file"
     log_info "elasticsearch" "mkdir -p conf"
@@ -221,7 +221,7 @@ if [ -d "data" ] || [ -d "logs" ] || [ -d "plugins" ]; then
   log_warn "elasticsearch" "Do you want to delete them? Will lost all data!!!"
   log_warn "elasticsearch" "Do you want to delete them? Will lost all data!!!"
   read -p "Do you want to delete them ?[y/n]" answer
-  if [ $answer == "y" ]; then
+  if [ "$answer" == "y" ]; then
     answer=""
     log_warn "elasticsearch" "delete data logs plugins"
     rm -rf data logs plugins

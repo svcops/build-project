@@ -165,7 +165,7 @@ function start_agents() {
     start_agents="n"
   fi
 
-  if [ $start_agents == "y" ]; then
+  if [ "$start_agents" == "y" ]; then
     for ((i = 1; i <= $agent_num; i++)); do
       log_info "teamcity" "start teamcity-agent@$i"
       systemctl start teamcity-agent@$i
@@ -175,6 +175,8 @@ function start_agents() {
       log_info "teamcity" "status teamcity-agent@$i"
       systemctl status teamcity-agent@$i
     done
+  else
+    log_info "teamcity" "do noting"
   fi
 }
 

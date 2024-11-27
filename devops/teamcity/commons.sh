@@ -84,16 +84,15 @@ function download_teamcity_agent() {
     read -p "Enter the teamcity agent install path (default is /opt/teamcity-agent) :" teamcity_agent_path
     if [ -z $teamcity_agent_path ]; then
       teamcity_agent_path="/opt/teamcity-agent"
-      log_info "teamcity" "default teamcity agent install path is $teamcity_agent_path"
+      log_info "teamcity" "use default teamcity agent install path: $teamcity_agent_path"
     else
       log_info "teamcity" "teamcity agent install path is $teamcity_agent_path"
     fi
   }
   read_install_path
 
-  # 确定安装
   read -p "Enter y to continue install teamcity agent in $teamcity_agent_path :" confirm
-  if [ $confirm != "y" ]; then
+  if [ "$confirm" != "y" ]; then
     log_error "teamcity" "exit install teamcity agent"
     return 1
   fi
@@ -103,7 +102,7 @@ function download_teamcity_agent() {
     log_warn "teamcity" "teamcity agent maybe exist, try stop and remove"
 
     read -p "Enter y to continue remove $teamcity_agent_path :" confirm
-    if [ $confirm != "y" ]; then
+    if [ "$confirm" != "y" ]; then
       log_warn "teamcity" "exit remove teamcity agent"
       return 1
     fi

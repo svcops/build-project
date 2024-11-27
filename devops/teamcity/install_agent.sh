@@ -142,12 +142,14 @@ function start_agent() {
     start_agent="n"
   fi
 
-  if [ $start_agent == "y" ]; then
+  if [ "$start_agent" == "y" ]; then
     log_info "teamcity" "start teamcity-agent@$i"
     systemctl start teamcity-agent
 
     log_info "teamcity" "status teamcity-agent@$i"
     systemctl status teamcity-agent
+  else
+    log_info "teamcity" "do noting"
   fi
 
 }
