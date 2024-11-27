@@ -40,6 +40,8 @@ function remove_systemd() {
       log_info "teamcity" "remove teamcity-agent service"
       rm -rf /usr/lib/systemd/system/teamcity-agent.service
       rm -rf /etc/systemd/system/teamcity-agent.service
+    else
+      log_info "teamcity" "teamcity-agent.service is not exist"
     fi
   }
 
@@ -56,7 +58,10 @@ function remove_systemd() {
       log_info "teamcity" "remove teamcity-agent@.service"
       rm -rf /usr/lib/systemd/system/teamcity-agent@.service
       rm -rf /etc/systemd/system/teamcity-agent@.service
+    else
+      log_info "teamcity" "teamcity-agent@.service is not exist"
     fi
+
   }
 
   try_stop_teamcity_agent_systemd
