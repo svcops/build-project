@@ -4,10 +4,8 @@
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
-alias curl='curl -sSL'
-
-source <(curl $ROOT_URI/func/log.sh)
-source <(curl $ROOT_URI/devops/teamcity/commons.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/devops/teamcity/commons.sh)
 
 log_info "teamcity" "install teamcity agent"
 
