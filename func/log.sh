@@ -58,3 +58,7 @@ function log_error() {
   local now=$(date +"%Y-%m-%d %H:%M:%S")
   echo -e "${RED}$now - [ERROR] [ $remark ] $msg${NC}"
 }
+
+function line_break() {
+  echo -e "\n"
+}
