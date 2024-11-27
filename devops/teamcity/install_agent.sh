@@ -132,6 +132,7 @@ EOF
 
   edit_properties
   create_teamcity_agent_systemd
+  systemctl daemon-reload
 }
 
 install_teamcity_agent

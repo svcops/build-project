@@ -145,10 +145,15 @@ ExecStop=$teamcity_agent_path/agent%i/bin/agent.sh stop
 RestartSec=5
 Restart=on-failure
 EOF
+    systemctl daemon-reload
+    for ((i = 1; i <= $agent_num; i++)); do
+      systemctl enable teamcity-agent@$i
+    done
   }
 
   unzip_and_edit_properties
   create_teamcity_agents_systemd
+  systemctl daemon-reload
 }
 
 install_multi_teamcity_agent
