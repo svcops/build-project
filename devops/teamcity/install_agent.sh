@@ -45,9 +45,8 @@ function download_teamcity_agent() {
   function read_install_path() {
     read -p "Enter the teamcity agent install path (default is /opt/teamcity-agent) :" teamcity_agent_path
     if [ -z $teamcity_agent_path ]; then
-      log_error "teamcity" "teamcity agent install path is empty"
       teamcity_agent_path="/opt/teamcity-agent"
-      log_info "teamcity" "teamcity agent install path is $teamcity_agent_path"
+      log_info "teamcity" "default teamcity agent install path is $teamcity_agent_path"
     else
       log_info "teamcity" "teamcity agent install path is $teamcity_agent_path"
     fi
