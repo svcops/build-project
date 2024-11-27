@@ -159,16 +159,21 @@ EOF
 install_multi_teamcity_agent
 
 function start_agents() {
-  # 确认是否启动
   read -p "Do you want to start the agents? [y/n]: " start_agents
   if [ -z $start_agents ]; then
-    log_error "teamcity" "start agents is empty"
+    log_error "teamcity" "start agents is empty.use n"
     start_agents="n"
   fi
 
   if [ $start_agents == "y" ]; then
     for ((i = 1; i <= $agent_num; i++)); do
+      log_info "teamcity" "start teamcity-agent@$i"
       systemctl start teamcity-agent@$i
+    done
+
+    for ((i = 1; i <= $agent_num; i++)); do
+      log_info "teamcity" "status teamcity-agent@$i"
+      systemctl status teamcity-agent@$i
     done
   fi
 }

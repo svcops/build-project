@@ -134,3 +134,22 @@ EOF
 }
 
 install_teamcity_agent
+
+function start_agent() {
+  read -p "Do you want to start the agent? [y/n]: " start_agent
+  if [ -z $start_agent ]; then
+    log_error "teamcity" "start agent is empty. use n"
+    start_agent="n"
+  fi
+
+  if [ $start_agent == "y" ]; then
+    log_info "teamcity" "start teamcity-agent@$i"
+    systemctl start teamcity-agent
+
+    log_info "teamcity" "status teamcity-agent@$i"
+    systemctl status teamcity-agent
+  fi
+
+}
+
+start_agent
