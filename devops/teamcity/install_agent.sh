@@ -20,7 +20,6 @@ function prepare() {
     exit 1
   fi
 
-  # 判断有没有 JAVA_HOME的环境变量
   if [ -z $JAVA_HOME ]; then
     log_error "prepare" "JAVA_HOME is not set"
     exit 1
