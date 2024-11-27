@@ -80,6 +80,9 @@ function download_teamcity_agent() {
     try_stop_teamcity_agent_systemd
     rm -rf $teamcity_agent_path
     mkdir -p $teamcity_agent_path
+  else
+    log_info "teamcity" "create teamcity agent install path $teamcity_agent_path"
+    mkdir -p $teamcity_agent_path
   fi
 
   # 下载teamcity-agent
