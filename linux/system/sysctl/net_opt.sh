@@ -22,6 +22,10 @@ function write_sysctl_conf() {
   log_info "optimize" "write sysctl conf"
   cat >>/etc/sysctl.conf <<EOF
 # OPTIMIZE NETWORK START
+
+# Enable ip forward
+net.ipv4.ip_forward = 1
+
 # Increase the size of the receive buffer
 net.core.rmem_max = 16777216
 net.core.rmem_default = 16777216
@@ -64,6 +68,7 @@ net.ipv4.ip_local_port_range = 1024 65535
 net.ipv4.tcp_keepalive_time = 600
 net.ipv4.tcp_keepalive_intvl = 60
 net.ipv4.tcp_keepalive_probes = 5
+
 # OPTIMIZE NETWORK END
 EOF
 }
