@@ -80,8 +80,8 @@ function download_teamcity_agent() {
         log_info "teamcity" "disable teamcity-agent@$i service"
         systemctl disable teamcity-agent@$i
         log_info "teamcity" "reload systemd"
-        systemctl daemon-reload
       done
+      systemctl daemon-reload
       log_info "teamcity" "remove teamcity-agent@.service"
       rm -rf /usr/lib/systemd/system/teamcity-agent@.service
       rm -rf /etc/systemd/system/teamcity-agent@.service
@@ -100,7 +100,10 @@ function download_teamcity_agent() {
 
     try_stop_teamcity_agent_systemd
     try_stop_teamcity_agents_systemd
+
+    log_info "teamcity" "remove teamcity agent install path $teamcity_agent_path"
     rm -rf $teamcity_agent_path
+    log_info "teamcity" "create teamcity agent install path $teamcity_agent_path"
     mkdir -p $teamcity_agent_path
   else
     log_info "teamcity" "create teamcity agent install path $teamcity_agent_path"
