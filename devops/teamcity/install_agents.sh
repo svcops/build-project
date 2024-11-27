@@ -54,9 +54,9 @@ function install_multi_teamcity_agent() {
 
   function unzip_and_edit_properties() {
     # read name
-    read -p "Enter the teamcity agent name: " agent_name
+    read -p "Enter the teamcity agent name. default is $(hostname):" agent_name
     if [ -z $agent_name ]; then
-      log_warn "teamcity" "teamcity agent name is empty"
+      log_warn "teamcity" "teamcity agent name is empty. use $(hostname)"
       agent_name=$(hostname)
     fi
 
