@@ -18,7 +18,8 @@ function end() {
 # build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:241.16003"
 # build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:241.18775"
 # build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:242.21870"
-build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:243.21565"
+#build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:243.21565"
+build_image="registry.cn-shanghai.aliyuncs.com/iproute/wrs-builder:243.22562"
 
 function tips() {
   log_info "tips" "-d writerside build directory"
