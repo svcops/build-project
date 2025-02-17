@@ -4,6 +4,8 @@ DOMAIN=$1
 DNS_SERVER=$2
 IP_CACHE_FILE=$3
 
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+
 function log() {
   local remark="$1"
   local msg="$2"
@@ -14,7 +16,7 @@ function log() {
     msg="unknown message"
   fi
   local now=$(date +"%Y-%m-%d %H:%M:%S")
-  /usr/bin/echo -e "$now - [INFO ] [ $remark ] $msg"
+  echo -e "$now - [INFO ] [ $remark ] $msg"
 }
 
 function command_exists() {
@@ -58,8 +60,8 @@ function getDomainIp() {
   #** server can't find test.nginx.com: NXDOMAIN
 
   local ip=$(nslookup "$domain" "$dns_server" | grep "Address:")
-  if [ $(/usr/bin/echo "$ip" | wc -l) -ge 2 ]; then
-    domainIp=$(/usr/bin/echo "$ip" | tail -n 1 | awk '{print $2}')
+  if [ $(echo "$ip" | wc -l) -ge 2 ]; then
+    domainIp=$(echo "$ip" | tail -n 1 | awk '{print $2}')
   else
     domainIp=""
   fi
@@ -77,12 +79,12 @@ fi
 function cacheOption() {
 
   if [ ! -f $IP_CACHE_FILE ]; then
-    /usr/bin/echo "$domainIp" >$IP_CACHE_FILE
+    echo "$domainIp" >$IP_CACHE_FILE
     cacheIp=$domainIp
   else
     cacheIp=$(cat $IP_CACHE_FILE)
     if ! validate_ipv4 "$cacheIp"; then
-      /usr/bin/echo "$domainIp" >$IP_CACHE_FILE
+      echo "$domainIp" >$IP_CACHE_FILE
       cacheIp=$domainIp
     fi
   fi
@@ -101,7 +103,7 @@ function cacheOption() {
         log "ufw" "allow:  $allow_result"
       fi
     fi
-    /usr/bin/echo "$domainIp" >$IP_CACHE_FILE
+    echo "$domainIp" >$IP_CACHE_FILE
   else
     log "ufw" "ufw command not found"
   fi
