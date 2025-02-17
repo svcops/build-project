@@ -91,10 +91,13 @@ function cacheOption() {
       log "ufw" "delete: $delete_result"
       log "ufw" "allow:  $allow_result"
     else
-      local allow_result=$(/usr/sbin/ufw allow from "$domainIp" to any port 443)
-      log "ufw" "allow:  $allow_result"
+      if $(/usr/sbin/ufw status | grep "$domainIp" | grep "443" &>/dev/null); then
+        log "ufw" "already allowed: $domainIp"
+      else
+        local allow_result=$(/usr/sbin/ufw allow from "$domainIp" to any port 443)
+        log "ufw" "allow:  $allow_result"
+      fi
     fi
-
     echo "$domainIp" >$IP_CACHE_FILE
   else
     log "ufw" "ufw command not found"
