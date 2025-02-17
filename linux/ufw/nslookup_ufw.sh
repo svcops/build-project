@@ -33,8 +33,11 @@ function validate_ipv4() {
 function prepare() {
   if ! command_exists nslookup; then
     log "nslookup" "nslookup command not found"
+    exit
   fi
 }
+
+prepare
 
 function getDomainIp() {
   local domain=$1
