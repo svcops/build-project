@@ -4,7 +4,7 @@ DOMAIN=$1
 DNS_SERVER=$2
 IP_CACHE_FILE=$3
 
-export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+#export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 
 function log() {
   local remark="$1"
