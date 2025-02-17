@@ -91,7 +91,7 @@ function cacheOption() {
       log "ufw" "delete: $delete_result"
       log "ufw" "allow:  $allow_result"
     else
-      if $(/usr/sbin/ufw status | grep "$domainIp" | grep "443" &>/dev/null); then
+      if [ $(/usr/sbin/ufw status | grep "$domainIp" | grep "443" | wc -l) -ge 1 ]; then
         log "ufw" "already allowed: $domainIp"
       else
         local allow_result=$(/usr/sbin/ufw allow from "$domainIp" to any port 443)
