@@ -147,9 +147,24 @@ function acl() {
   echo $result | jq
 }
 
+function acl_contains() {
+  local inputDomain=$1
+  dnsapi "" "" "" "" "/acl"
+
+  local contains=$(echo "$result" | jq --raw-output --arg input "$inputDomain" '.data[] | select(contains($input))')
+
+  if [ -n "$contains" ]; then
+    log_info "acl" "acl contains $inputDomain"
+  else
+    log_error "acl" "acl does not contain $inputDomain"
+    exit
+  fi
+}
+
 function addRecord() {
   log_info "dns" "新增解析记录"
   readDomainName
+  acl_contains $domainName
   readRr
   readType
   readValue
@@ -161,6 +176,7 @@ function addRecord() {
 function getRecords() {
   log_info "dns" "查询子域名的所有解析记录"
   readDomainName
+  acl_contains $domainName
   readRr
   log_info "dns" "查询子域名的所有解析记录 domainName=$domainName rr=$rr"
   dnsapi $domainName $rr "" "" "/getRecords"
@@ -170,6 +186,7 @@ function getRecords() {
 function deleteRecords() {
   log_warn "dns" "删除子域名的所有解析记录"
   readDomainName
+  acl_contains $domainName
   readRr
   log_warn "dns" "删除子域名的所有解析记录 domainName=$domainName rr=$rr"
   dnsapi $domainName $rr "" "" "/deleteRecords"
