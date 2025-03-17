@@ -47,8 +47,10 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
+# tabby
 export PS1="\$PS1\[\e]1337;CurrentDir="'\$(pwd)\a\]'
 
+TMOUT=0
 # BASHRC CONFIG LS END
 
 EOF
