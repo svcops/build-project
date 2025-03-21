@@ -5,9 +5,26 @@ echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
 source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -SL $ROOT_URI/func/command_exists.sh)
+
+# 判断当前目录是否有docker-compose.yml文件
+if [ ! -f "docker-compose.yml" ]; then
+  log_error "update" "docker-compose.yml not found"
+  exit 1
+fi
+
+# 判断当前目录是否有docker-compose.yaml文件
+if [ ! -f "docker-compose.yaml" ]; then
+  log_error "update" "docker-compose.yaml not found"
+  exit 1
+fi
+
+if ! command_exists docker-compose; then
+  log_error "update" "docker-compose not found, please install docker-compose first"
+  exit 1
+fi
 
 log_info "update" "update docker image"
-
 docker-compose pull
 
 log_info "restart" "docker-compose down"
