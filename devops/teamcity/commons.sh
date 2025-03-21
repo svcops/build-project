@@ -25,6 +25,18 @@ function prepare() {
     retrun 1
   else
     log_info "prepare" "JAVA_HOME is $JAVA_HOME"
+
+    # sure use this JAVA_HOME
+    read -p "Enter y to continue use JAVA_HOME $JAVA_HOME :" confirm
+    if [ "$confirm" != "y" ]; then
+      read -p "Enter the JAVA_HOME path: " JAVA_HOME
+      if [ -z $JAVA_HOME ]; then
+        log_error "prepare" "JAVA_HOME is empty"
+        return 1
+      else
+        log_info "prepare" "JAVA_HOME is $JAVA_HOME"
+      fi
+    fi
   fi
   return 0
 }
