@@ -24,10 +24,10 @@ function apt_upgrade() {
   # l: 只列出需要重启的服务，不实际执行重启。
   # m: 像 i 一样，但在没有终端可用时使用自动方式。
   # n: 不重启任何服务。
-  DEBIAN_FRONTEND=noninteractive \
-    DEBCONF_NONINTERACTIVE_SEEN=true \
-    NEEDRESTART_MODE=a \
-    apt-get upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" --allow-downgrades --allow-remove-essential --allow-change-held-packages
+  export DEBIAN_FRONTEND=noninteractive
+  export DEBCONF_NONINTERACTIVE_SEEN=true
+  export NEEDRESTART_MODE=a
+  apt-get upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" --allow-downgrades --allow-remove-essential --allow-change-held-packages
 
   apt-get install -y sudo vim git wget net-tools jq lsof tree zip unzip
 }
