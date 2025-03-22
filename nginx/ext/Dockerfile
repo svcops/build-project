@@ -91,6 +91,11 @@ RUN cd nginx-${NGINX_VERSION} && \
     --add-dynamic-module=/ngx_brotli \
     && make && make install
 
+RUN ldd /usr/sbin/nginx > /nginx_dependencies.txt && \
+    mkdir -p /nginx_libs && \
+    cat /nginx_dependencies.txt | grep "=> /" | awk '{print $3}' | sort -u | \
+    xargs -I '{}' cp -v '{}' /nginx_libs/
+
 # 最终镜像
 FROM registry.cn-shanghai.aliyuncs.com/iproute/nginx:${NGINX_VERSION}
 USER root
@@ -107,20 +112,21 @@ RUN mkdir -p /etc/nginx.bak && \
 #COPY --from=builder /lib/x86_64-linux-gnu/ /lib/x86_64-linux-gnu/
 #COPY --from=builder /usr/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/
 
-# 只复制 NGINX 运行所需的特定共享库
-COPY --from=builder /lib/x86_64-linux-gnu/libpcre.so.3 /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libz.so.1 /lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libssl.so.3* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libcrypto.so.3* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libGeoIP.so.1* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libmaxminddb.so.0* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libxslt.so.1* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libexslt.so.0* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libgd.so.3* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libjpeg.so.8* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libpng16.so.16* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libfreetype.so.6* /usr/lib/x86_64-linux-gnu/
+## 只复制 NGINX 运行所需的特定共享库
+#COPY --from=builder /lib/x86_64-linux-gnu/libpcre.so.3 /lib/x86_64-linux-gnu/
+#COPY --from=builder /lib/x86_64-linux-gnu/libz.so.1 /lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libssl.so.3* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libcrypto.so.3* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libGeoIP.so.1* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libmaxminddb.so.0* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libxslt.so.1* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libexslt.so.0* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libgd.so.3* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libjpeg.so.8* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libpng16.so.16* /usr/lib/x86_64-linux-gnu/
+#COPY --from=builder /usr/lib/x86_64-linux-gnu/libfreetype.so.6* /usr/lib/x86_64-linux-gnu/
 
+COPY --from=builder /nginx_libs/* /lib/
 
 # 复制编译好的 Nginx 文件
 COPY --from=builder /etc/nginx /etc/nginx
