@@ -1,4 +1,5 @@
 ARG NGINX_VERSION=1.27.4
+ARG BACKUP=false
 
 FROM registry.cn-shanghai.aliyuncs.com/iproute/ubuntu:22.04 AS builder
 ARG NGINX_VERSION
@@ -91,13 +92,27 @@ RUN cd nginx-${NGINX_VERSION} && \
     --add-dynamic-module=/ngx_brotli \
     && make && make install
 
+# nginx_dependencies
 RUN ldd /usr/sbin/nginx > /nginx_dependencies.txt && \
     mkdir -p /nginx_libs && \
     cat /nginx_dependencies.txt | grep "=> /" | awk '{print $3}' | sort -u | \
     xargs -I '{}' cp -v '{}' /nginx_libs/
 
+## geoip2_dependencies
+#RUN ldd /usr/lib/nginx/modules/ngx_http_geoip2_module.so > /geoip2_dependencies.txt && \
+#    cat /geoip2_dependencies.txt | grep "=> /" | awk '{print $3}' | sort -u | \
+#    xargs -I '{}' cp -v '{}' /nginx_libs/
+
+# 提取依赖库
+RUN find /usr/lib/nginx/modules -name "*.so" -type f | \
+    xargs -I {} sh -c 'echo "Processing {}..." && ldd {} >> /nginx_modules_dependencies.txt' && \
+    cat /nginx_modules_dependencies.txt | grep "=> /" | awk '{print $3}' | sort -u | \
+    xargs -I '{}' cp -v '{}' /nginx_libs/
+
+
 # 最终镜像
 FROM registry.cn-shanghai.aliyuncs.com/iproute/nginx:${NGINX_VERSION}
+ARG BACKUP
 USER root
 
 # 创建 nginx 用户和组
@@ -126,12 +141,15 @@ RUN mkdir -p /etc/nginx.bak && \
 #COPY --from=builder /usr/lib/x86_64-linux-gnu/libpng16.so.16* /usr/lib/x86_64-linux-gnu/
 #COPY --from=builder /usr/lib/x86_64-linux-gnu/libfreetype.so.6* /usr/lib/x86_64-linux-gnu/
 
+# 复制所有依赖库
 COPY --from=builder /nginx_libs/* /lib/
 
 # 复制编译好的 Nginx 文件
 COPY --from=builder /etc/nginx /etc/nginx
 COPY --from=builder /usr/sbin/nginx /usr/sbin/
 COPY --from=builder /usr/lib/nginx /usr/lib/nginx
+# 复制 /usr/lib/nginx/modules
+COPY --from=builder /usr/lib/nginx/modules /usr/lib/nginx/modules
 
 # 创建必要的目录
 RUN mkdir -p /var/log/nginx \
@@ -143,7 +161,7 @@ RUN mkdir -p /var/log/nginx \
              /var/run
 
 # 如果存在原始配置，可以选择性恢复
-RUN if [ -d /etc/nginx.bak ]; then \
+RUN if [ -d /etc/nginx.bak ] && [ $BACKUP == "true"] ; then \
       cp -rn /etc/nginx.bak/conf.d /etc/nginx/ 2>/dev/null || true; \
       cp -rn /etc/nginx.bak/templates /etc/nginx/ 2>/dev/null || true; \
       if [ ! -f /etc/nginx/nginx.conf.default ]; then \
@@ -156,18 +174,6 @@ RUN if [ -d /etc/nginx.bak ]; then \
 # 确保目录权限正确
 RUN chown -R nginx:nginx /var/log/nginx /var/cache/nginx /etc/nginx && \
     chmod -R 755 /var/cache/nginx
-
-# 创建转发脚本 (可选：如果您想保持与原镜像的兼容性)
-RUN mkdir -p /opt/bitnami/nginx/bin && \
-    echo '#!/bin/sh' > /opt/bitnami/nginx/bin/nginx && \
-    echo 'exec /usr/sbin/nginx "$@"' >> /opt/bitnami/nginx/bin/nginx && \
-    chmod +x /opt/bitnami/nginx/bin/nginx
-
-# 创建符号链接以保持兼容性 (可选)
-RUN ln -sf /etc/nginx /opt/bitnami/nginx/conf && \
-    ln -sf /var/log/nginx /opt/bitnami/nginx/logs && \
-    ln -sf /var/run /opt/bitnami/nginx/tmp && \
-    ln -sf /usr/lib/nginx/modules /opt/bitnami/nginx/modules
 
 # 验证配置
 RUN nginx -t
