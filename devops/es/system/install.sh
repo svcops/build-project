@@ -161,8 +161,10 @@ function create_user() {
   else
     log_info "elasticsearch" "user $user_name is not exist"
     log_info "elasticsearch" "create user $user_name"
-    groupadd -r $user_name
     # useradd -M $user_name
+    # 当您使用命令如`useradd`创建新用户时，系统通常会：
+    # 1. 创建一个新的用户账户。
+    # 2. 创建一个新的用户组（如果没有指定`-N`选项）。
     useradd -M -r -s /sbin/nologin $user_name
   fi
 }
@@ -268,6 +270,9 @@ function prepare_es_env() {
         log_warn "elasticsearch" "mkdir -p $path_data_logs/{data,logs}"
         mkdir -p $path_data_logs/{data,logs}
       fi
+    else
+      log_info "elasticsearch" "mkdir -p $path_data_logs/{data,logs}"
+      mkdir -p $path_data_logs/{data,logs}
     fi
 
     function create_reinit_sh() {
