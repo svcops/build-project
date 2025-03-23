@@ -106,7 +106,7 @@ function prepare_tar_gz() {
 
   function try_unzip() {
 
-    if tar -xzvf "$file_name" &>/dev/null; then
+    if tar -tzf "$file_name" &>/dev/null; then
       log_info "elasticsearch" "The file $file_name is a valid tar.gz file."
     else
       log_error "elasticsearch" "The file $file_name is not a valid tar.gz file."
@@ -131,13 +131,18 @@ function prepare_tar_gz() {
         log_info "elasticsearch" "tar -zxvf $file_name"
         tar -zxvf $file_name
       fi
+    else
+      log_info "elasticsearch" "tar -zxvf $file_name"
+      tar -zxvf $file_name
     fi
-
   }
   try_unzip
 
-  log_info "elasticsearch" "mv elasticsearch-$version elasticsearch"
-  mv elasticsearch-$version elasticsearch
+  function rename_folders() {
+    log_info "elasticsearch" "mv elasticsearch-$version elasticsearch"
+    mv elasticsearch-$version elasticsearch
+  }
+  rename_folders
 }
 
 prepare_tar_gz
