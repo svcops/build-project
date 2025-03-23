@@ -106,7 +106,7 @@ function prepare_tar_gz() {
 
   function try_unzip() {
 
-    if tar -tzf "$file_name" &>/dev/null; then
+    if tar -xzvf "$file_name" &>/dev/null; then
       log_info "elasticsearch" "The file $file_name is a valid tar.gz file."
     else
       log_error "elasticsearch" "The file $file_name is not a valid tar.gz file."
@@ -156,7 +156,9 @@ function create_user() {
   else
     log_info "elasticsearch" "user $user_name is not exist"
     log_info "elasticsearch" "create user $user_name"
-    useradd -M $user_name
+    groupadd -r $user_name
+    # useradd -M $user_name
+    useradd -M -r -s /sbin/nologin $user_name
   fi
 }
 create_user
