@@ -216,13 +216,13 @@ function prepare_es_env() {
     log_info "elasticsearch" "Enter the node name you want to set: [2] node-2"
     read -p "Enter the node name you want to set: (default: [0] node-0) :" node_name
     case $node_name in
-    0)
+    0|node-0)
       node_name="node-0"
       ;;
-    1)
+    1|node-1)
       node_name="node-1"
       ;;
-    2)
+    2|node-2)
       node_name="node-2"
       ;;
     *)
