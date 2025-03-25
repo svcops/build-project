@@ -173,18 +173,29 @@ create_user
 function prepare_es_env() {
   log_info "elasticsearch" "prepare elasticsearch's environment"
 
-  function jvm_options() {
+  function set_jvm_options() {
     log_info "elasticsearch" "jvm.options"
-    read -p "Enter the jvm.options you want to set: (default: -Xms4g -Xmx4g) :" jvm_options
-    if [ -z $jvm_options ]; then
-      jvm_options="-Xms4g -Xmx4g"
-      log_info "elasticsearch" "default jvm_options=$jvm_options"
+    read -p "Enter the jvm.options (-Xms) you want to set: (default: -Xms4g) :" jvm_options_xms
+    read -p "Enter the jvm.options (-Xmx) you want to set: (default: -Xmx4g) :" jvm_options_xmx
+
+    if [ -z $jvm_options_xms ]; then
+      jvm_options_xms="-Xms4g"
+      log_info "elasticsearch" "default jvm_options (-Xms) $jvm_options_xms"
+    fi
+
+    if [ -z $jvm_options_xmx ]; then
+      jvm_options_xmx="-Xmx4g"
+      log_info "elasticsearch" "default jvm_options (-Xmx) =$jvm_options_xmx"
     fi
 
     if [ -d "elasticsearch/config/jvm.options.d" ]; then
       log_info "elasticsearch" "elasticsearch/config/jvm.options.d is exist"
-      log_info "elasticsearch" "echo \"$jvm_options\" > elasticsearch/config/jvm.options.d/jvm.options"
-      echo "$jvm_options" >elasticsearch/jvm.options.d/config/jvm.options
+      log_info "elasticsearch" "echo $jvm_options_xms > elasticsearch/jvm.options.d/jvm.options"
+      log_info "elasticsearch" "echo $jvm_options_xmx >> elasticsearch/jvm.options.d/jvm.options"
+      # https://www.elastic.co/guide/en/elasticsearch/reference/current/advanced-configuration.html
+      # https://discuss.elastic.co/t/invalid-initial-heap-size/143248/7
+      echo "$jvm_options_xms" >elasticsearch/config/jvm.options.d/jvm.options
+      echo "$jvm_options_xmx" >>elasticsearch/config/jvm.options.d/jvm.options
     else
       log_error "elasticsearch" "elasticsearch/jvm.options.d is not exist"
       exit 1
@@ -216,13 +227,13 @@ function prepare_es_env() {
     log_info "elasticsearch" "Enter the node name you want to set: [2] node-2"
     read -p "Enter the node name you want to set: (default: [0] node-0) :" node_name
     case $node_name in
-    0|node-0)
+    0 | node-0)
       node_name="node-0"
       ;;
-    1|node-1)
+    1 | node-1)
       node_name="node-1"
       ;;
-    2|node-2)
+    2 | node-2)
       node_name="node-2"
       ;;
     *)
@@ -356,7 +367,7 @@ EOF
     fi
   }
 
-  jvm_options
+  set_jvm_options
   config_yml
   try_soft_link
 
