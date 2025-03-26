@@ -167,10 +167,10 @@ if [ -d "agent" ]; then
 fi
 
 for i in {1..10}; do
-  if [ -d "agent$i" ]; then
-    agent$i/bin/agent.sh start
+  if [ -d "agent\$i" ]; then
+    agent\$i/bin/agent.sh start
   else
-    echo "dir agent$i not exist"
+    echo "dir agent\$i not exist"
   fi
 done
 
@@ -188,10 +188,10 @@ if [ -d "agent" ]; then
 fi
 
 for i in {1..10}; do
-  if [ -d "agent$i" ]; then
-    agent$i/bin/agent.sh stop
+  if [ -d "agent\$i" ]; then
+    agent\$i/bin/agent.sh stop
   else
-    echo "dir agent$i not exist"
+    echo "dir agent\$i not stop"
   fi
 done
 EOF
