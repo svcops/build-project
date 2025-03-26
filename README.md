@@ -34,8 +34,8 @@
 ### log func
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
 
 log "hello" "world"
 log_info "hello" "world"
@@ -46,8 +46,8 @@ log_error "hello" "world"
 ### command_exists func
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-source <(curl -SL $ROOT_URI/func/command_exists.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 if command_exists docker ; then
     echo "command docker exists"
@@ -57,17 +57,17 @@ fi
 ### detect ssh port
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-ssh_port="$(bash <(curl -SL $ROOT_URI/func/ssh_port.sh)"
+ssh_port="$(bash <(curl -sSL $ROOT_URI/func/ssh_port.sh)"
 echo "ssh port is $ssh_port"
 ```
 
 ### detect os
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-source <(curl -SL $ROOT_URI/func/detect_os.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+source <(curl -sSL $ROOT_URI/func/detect_os.sh)
 
 echo "$os_name"
 ```
@@ -75,8 +75,8 @@ echo "$os_name"
 ### date format
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
-  source <(curl -SL $ROOT_URI/func/date.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
+  source <(curl -sSL $ROOT_URI/func/date.sh)
 
 echo "$datetime_version"
 ```
@@ -86,8 +86,8 @@ echo "$datetime_version"
 build gradle's project by docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl $ROOT_URI/gradle/build.sh) \
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/gradle/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
   -i <gradle_image> \
@@ -105,8 +105,8 @@ bash <(curl $ROOT_URI/gradle/build.sh) \
 build maven's project by docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl $ROOT_URI/gradle/build.sh) \
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/maven/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
   -i <maven_image> \
@@ -126,8 +126,8 @@ bash <(curl $ROOT_URI/gradle/build.sh) \
 build golang's project by docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl $ROOT_URI/golang/build.sh) \
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/golang/build.sh) \
   -d [build_dir] \
   -c <cache_volume> \
   -i <gradle_image> \
@@ -143,8 +143,8 @@ bash <(curl $ROOT_URI/golang/build.sh) \
 ## build node's project
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl $ROOT_URI/node/build.sh) \
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/node/build.sh) \
   -d [build_dir] \
   -i <gradle_image> \
   -x <gradle_command>
@@ -163,15 +163,15 @@ bash <(curl $ROOT_URI/node/build.sh) \
 install
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl $ROOT_URI/node/nvm/install.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/node/nvm/install.sh)
 ```
 
 uninstall
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl $ROOT_URI/node/nvm/uninstall.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/node/nvm/uninstall.sh)
 ```
 
 ## build writerside's project
@@ -179,9 +179,9 @@ bash <(curl $ROOT_URI/node/nvm/uninstall.sh)
 build writerside's project by docker
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-bash <(curl $ROOT_URI/writerside/build.sh) \
+bash <(curl -sSL $ROOT_URI/writerside/build.sh) \
   -d [build_dir] \
   -i <instance>
 ```
@@ -196,8 +196,8 @@ bash <(curl $ROOT_URI/writerside/build.sh) \
 > by Dockerfile
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl $ROOT_URI/docker/build.sh) \
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/docker/build.sh) \
   -m [multi_platform] \
   -d [build_dir] \
   -f [path/to/Dockerfile] \
@@ -223,9 +223,9 @@ bash <(curl $ROOT_URI/docker/build.sh) \
 ### remove docker's image
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-bash <(curl -SL $ROOT_URI/docker/rmi.sh) \
+bash <(curl -sSL $ROOT_URI/docker/rmi.sh) \
   -i image_name \
   -s strategy
 
@@ -242,8 +242,8 @@ bash <(curl -SL $ROOT_URI/docker/rmi.sh) \
 **debian系 安装docker**
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
-  bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) SRC
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
+  bash <(curl -sSL $ROOT_URI/docker/install/install_apt.sh) SRC
 ````
 
 - SRC: 源 (`docker` 官方源 / `tsinghua` 清华源 / `aliyun` 阿里云)
@@ -251,8 +251,8 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 **手动安装docker**
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
-  bash <(curl -SL $ROOT_URI/docker/install-manually/install.sh) $arch $version
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
+  bash <(curl -sSL $ROOT_URI/docker/install-manually/install.sh) $arch $version
 
 ````
 
@@ -264,8 +264,8 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 > config `/etc/docker/daemon.json`
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
-  bash <(curl -SL $ROOT_URI/docker/config.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
+  bash <(curl -sSL $ROOT_URI/docker/config.sh)
 ```
 
 ## develop
@@ -275,8 +275,8 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 config maven `settings.xml`
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
-  bash <(curl -SL $ROOT_URI/maven/config.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
+  bash <(curl -sSL $ROOT_URI/maven/config.sh)
 ```
 
 ### verify nginx configuration
@@ -284,8 +284,8 @@ source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/b
 验证基于`docker-compose`启动的nginx的配置文件
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-source <(curl -SL $ROOT_URI/nginx/verify_func.sh)
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+source <(curl -sSL $ROOT_URI/nginx/verify_func.sh)
 if verify_nginx_configuration nginx path/to/docker-compose.yml; then
   log "verify" "verify success, then start"
 else
@@ -299,8 +299,8 @@ fi
 快速验证
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl -SL $ROOT_URI/nginx/verify.sh) nginx path/to/docker-compose.yml
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/nginx/verify.sh) nginx path/to/docker-compose.yml
 ```
 
 - `nginx` 是 `docker-compose.yaml`中定义的`service`
@@ -311,8 +311,8 @@ bash <(curl -SL $ROOT_URI/nginx/verify.sh) nginx path/to/docker-compose.yml
 ### bashrc proxy config
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl -SL $ROOT_URI/linux/system/bashrc/config_bashrc_proxy.sh) $PROXY_URL $NO_PROXY_CONTENT
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/linux/system/bashrc/config_bashrc_proxy.sh) $PROXY_URL $NO_PROXY_CONTENT
 ```
 
 - `PROXY_URL`: 代理的地址
@@ -324,8 +324,8 @@ bash <(curl -SL $ROOT_URI/linux/system/bashrc/config_bashrc_proxy.sh) $PROXY_URL
 ### docker daemon proxy config
 
 ```shell
-source <(curl -SL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-bash <(curl -SL $ROOT_URI/docker/config_daemon_proxy.sh) $PROXY_URL $NO_PROXY_CONTENT
+source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+bash <(curl -sSL $ROOT_URI/docker/config_daemon_proxy.sh) $PROXY_URL $NO_PROXY_CONTENT
 ```
 
 - `PROXY_URL`: 代理的地址
