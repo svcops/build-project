@@ -175,9 +175,50 @@ EOF
 
   if [ $create_start_stop == "y" ]; then
     log_info "teamcity" "create start.sh and stop.sh"
-    log_info "teamcity" "create start.sh and stop.sh"
-    curl -sSL $ROOT_URI/devops/teamcity/start.sh -o $teamcity_agent_path/start.sh
-    curl -sSL $ROOT_URI/devops/teamcity/stop.sh -o $teamcity_agent_path/stop.sh
+    #    curl -sSL $ROOT_URI/devops/teamcity/start.sh -o $teamcity_agent_path/start.sh
+    #    curl -sSL $ROOT_URI/devops/teamcity/stop.sh -o $teamcity_agent_path/stop.sh
+
+    cat >$teamcity_agent_path/start.sh <<EOF
+#!/bin/bash
+SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
+cd "\$SHELL_FOLDER"
+
+export JAVA_HOME=$JAVA_HOME
+
+if [ -d "agent" ]; then
+  agent/bin/agent.sh start
+fi
+
+for i in {1..10}; do
+  if [ -d "agent$i" ]; then
+    agent$i/bin/agent.sh start
+  else
+    echo "dir agent$i not exist"
+  fi
+done
+
+EOF
+
+    cat >$teamcity_agent_path/stop.sh <<EOF
+#!/bin/bash
+SHELL_FOLDER=\$(cd "\$(dirname "\$0")" && pwd)
+cd "\$SHELL_FOLDER"
+
+export JAVA_HOME=$JAVA_HOME
+
+if [ -d "agent" ]; then
+  agent/bin/agent.sh stop
+fi
+
+for i in {1..10}; do
+  if [ -d "agent$i" ]; then
+    agent$i/bin/agent.sh stop
+  else
+    echo "dir agent$i not exist"
+  fi
+done
+EOF
+
   fi
 
 }
