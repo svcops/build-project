@@ -152,8 +152,34 @@ EOF
   }
 
   unzip_and_edit_properties
-  create_teamcity_agents_systemd
-  systemctl daemon-reload
+
+  log_warn "teamcity" "try create teamcity-agent systemd service"
+  log_warn "teamcity" "try create teamcity-agent systemd service"
+  log_warn "teamcity" "try create teamcity-agent systemd service"
+
+  read -p "Do you want create teamcity-agent systemd service? [y/n] (default n): " create_systemd
+  if [ -z $create_systemd ]; then
+    create_systemd="n"
+  fi
+
+  if [ $create_systemd == "y" ]; then
+    create_teamcity_agents_systemd
+    systemctl daemon-reload
+  fi
+
+  # 创建 start.sh 和 stop.sh 脚本
+  read -p "Do you want to creat start.sh and stop.sh[y/n] (default n): " create_start_stop
+  if [ -z $create_start_stop ]; then
+    create_start_stop="n"
+  fi
+
+  if [ $create_start_stop == "y" ]; then
+    log_info "teamcity" "create start.sh and stop.sh"
+    log_info "teamcity" "create start.sh and stop.sh"
+    curl -sSL $ROOT_URI/devops/teamcity/start.sh -o $teamcity_agent_path/start.sh
+    curl -sSL $ROOT_URI/devops/teamcity/stop.sh -o $teamcity_agent_path/stop.sh
+  fi
+
 }
 
 install_multi_teamcity_agent
@@ -180,4 +206,4 @@ function start_agents() {
   fi
 }
 
-start_agents
+#start_agents
