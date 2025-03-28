@@ -26,6 +26,9 @@ if [ -z "$to_image" ]; then
   exit 1
 fi
 
+log_info "migrate" "from_image: $from_image"
+log_info "migrate" "to_image: $to_image"
+
 function image_exists() {
   local image_name_tag="$1"
   if [ $(docker image ls $image_name_tag | wc -l) -ge 2 ]; then
