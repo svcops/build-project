@@ -57,6 +57,9 @@ if image_exists $from_image; then
   if [ "$answer" == "y" ]; then
     docker_pull $from_image
   fi
+else
+  log_info "migrate" "Image $from_image not found, pulling..."
+  docker_pull $from_image
 fi
 
 # 再次判断镜像是否存在
