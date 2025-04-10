@@ -15,7 +15,7 @@ if [ -z $arch ]; then
 fi
 
 if [ -z $version ]; then
-  version="27.3.1"
+  version="28.0.4"
 fi
 
 function download_and_move() {
