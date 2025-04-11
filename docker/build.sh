@@ -17,19 +17,21 @@ path_to_dockerfile=""
 build_dir=""
 image_name=""
 image_tag=""
+image_tag_list=()
 re_tag_flag=""
 new_tag=""
 push_flag=""
 build_args=()
 
 unset build_args
+unset image_tag_list
 
 function tips() {
   log_info "tips" "-m multi platform(amd64 arm64), optional"
   log_info "tips" "-d build directory, optional if empty,use Dockerfile's directory"
   log_info "tips" "-f path/to/dockerfile, optional"
   log_info "tips" "-i the name of the image to be built"
-  log_info "tips" "-v the tag of the image to be built"
+  log_info "tips" "-v the tags of the image to be built"
   log_info "tips" "-r re tag flag, default <true>"
   log_info "tips" "-t the new_tag of the image to be built. if empty, use timestamp_tag."
   log_info "tips" "-p push flag, default <false>"
@@ -57,6 +59,7 @@ while getopts ":m:f:d:i:v:r:t:p:a:" opt; do
   v)
     log_info "get opts" "image tag is : $OPTARG"
     image_tag=$OPTARG
+    image_tag_list+=("$image_tag")
     ;;
   r)
     log_info "get opts" "re tag flag is: $OPTARG"
@@ -144,11 +147,27 @@ function prepare_params() {
   }
 
   validate_not_blank "image_name" "$image_name"
-  validate_not_blank "image_tag" "$image_tag"
-  validate_build_args "${build_args[@]}"
-  if ! validate_docker_tag "$image_tag"; then
+
+  # image_tag_list 空项检查
+  for tmp_image_tag in "${image_tag_list[@]}"; do
+    validate_not_blank "tmp_image_tag" $tmp_image_tag
+  done
+
+  # image_tag_list 重复项检查
+  if [[ $(printf "%s\n" "${image_tag_list[@]}" | sort | uniq -d) ]]; then
+    log_error "check_repeat" "image_tag_list has duplicate items"
+    end
     exit 1
   fi
+
+  validate_build_args "${build_args[@]}"
+
+  for tmp_image_tag in "${image_tag_list[@]}"; do
+    if ! validate_docker_tag "$tmp_image_tag"; then
+      end
+      exit 1
+    fi
+  done
 
   # prepare tag and new tag
   if [ "$re_tag_flag" == "true" ]; then
@@ -177,6 +196,13 @@ function prepare_params() {
       end
       exit 1
     else
+      for tmp_image_tag in "${image_tag_list[@]}"; do
+        if [ "$new_tag" == "$tmp_image_tag" ]; then
+          log_error "validate_new_tag" "validate failed , because new_tag == tmp_image_tag "
+          end
+          exit 1
+        fi
+      done
       # set new_tag=$timestamp_tag
       # 新的tag的镜像在 docker image ls 中存在，使用 timestamp_tag
       if docker image ls "$image_name" | grep -q -E "\b$new_tag\b"; then
@@ -284,9 +310,21 @@ function build_push() {
     docker push "$image_name:$image_tag"
   fi
 
+  # tag and push
+  for tmp_image_tag in "${image_tag_list[@]}"; do
+    #    validate_not_blank $tmp_image_tag
+    if [ $image_tag != $tmp_image_tag ]; then
+      docker tag $image_name:$image_tag $image_name:$tmp_image_tag
+      if [ "$push_flag" == "true" ]; then
+        log_info "build_push" "docker push $image_name:$tmp_image_tag"
+        docker push "$image_name:$tmp_image_tag"
+      fi
+    fi
+  done
+
 }
 
-# re tag and push
+# re tag old image and push
 function re_tag_push() {
   if docker image ls "$image_name" | grep -q -E "\b$image_tag\b"; then
     log_info "re_tag" "image exists: $image_name:$image_tag"
