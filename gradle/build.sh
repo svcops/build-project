@@ -101,19 +101,12 @@ fi
 
 log_info "build" "========== build gradle's project in docker =========="
 
-# 适用于Windows的路径转换
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
-  # 转换Windows路径格式
-  build_dir_docker=$(echo "$build_dir" | sed -e 's/^\///' -e 's/\//\\/g' -e 's/^./\0:/')
-  # 确保使用正斜杠而非反斜杠，因为Docker使用正斜杠
-  build_dir_docker=$(echo "$build_dir_docker" | sed 's/\\/\//g')
-else
-  build_dir_docker="$build_dir"
-fi
+# 在脚本开头或 Docker 命令前添加
+export MSYS_NO_PATHCONV=1
 
 docker run --rm -u root \
   --network=host \
-  -v "$build_dir_docker:/home/gradle/project" \
+  -v "$build_dir:/home/gradle/project" \
   -w "/home/gradle/project" \
   -v "$cache:/home/gradle/.gradle" \
   "$image" \
