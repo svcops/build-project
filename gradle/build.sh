@@ -105,11 +105,10 @@ log_info "build" "========== build gradle's project in docker =========="
 export MSYS_NO_PATHCONV=1
 
 docker run --rm -u root \
-  --network=host \
   -v "$build_dir:/home/gradle/project" \
   -w "/home/gradle/project" \
   -v "$cache:/home/gradle/.gradle" \
   "$image" \
-  $build --no-daemon
+  $build
 
 end
