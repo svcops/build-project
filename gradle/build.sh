@@ -77,8 +77,7 @@ validate_not_blank "build" "$build"
 if [ -z "$build_dir" ]; then
   log_warn "build_dir" "build_dir is empty then use current directory"
   build_dir="$(pwd)"
-  log_warn "build_dir" "current directory is $build_dir"
-elif [ ! -d "$build_dir" ]; then
+  log_warn "build_dir" "current directory is $build_dir" elif [ ! -d "$build_dir" ]; then
   log_error "build_dir" "build_dir is not a valid paths"
   exit 1
 fi
