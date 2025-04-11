@@ -103,7 +103,7 @@ log_info "build" "========== build gradle's project in docker =========="
 
 docker run --rm -u root \
   --network=host \
-  -v "$build_dir":/home/gradle/project \
+  -v "$build_dir:/home/gradle/project" \
   -w "/home/gradle/project" \
   -v "$cache:/home/gradle/.gradle" \
   "$image" \
