@@ -121,6 +121,17 @@ function prepare_params() {
     fi
   }
 
+  function validate_docker_tag() {
+    local docker_tag=$1
+    if echo "$docker_tag" | grep -Eq "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"; then
+      log_info "validate_docker_tag" "tag $1 is Valid"
+      return 0
+    else
+      log_error "validate_docker_tag" "tag $1 is Invalid"
+      return 1
+    fi
+  }
+
   function validate_build_args() {
     log_info "validate_build_args" "validate_build_args"
     local v=("$@")
@@ -135,39 +146,38 @@ function prepare_params() {
     done
   }
 
-  function validate_docker_tag() {
-    local docker_tag=$1
-    if echo "$docker_tag" | grep -Eq "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$"; then
-      log_info "validate_docker_tag" "tag $1 is Valid"
-      return 0
-    else
-      log_error "validate_docker_tag" "tag $1 is Invalid"
-      return 1
-    fi
+  function do_validate_image_name() {
+    validate_not_blank "image_name" "$image_name"
   }
 
-  validate_not_blank "image_name" "$image_name"
+  function do_validate_image_tag() {
+    # image_tag_list 空项检查
+    for tmp_image_tag in "${image_tag_list[@]}"; do
+      validate_not_blank "tmp_image_tag" $tmp_image_tag
+    done
 
-  # image_tag_list 空项检查
-  for tmp_image_tag in "${image_tag_list[@]}"; do
-    validate_not_blank "tmp_image_tag" $tmp_image_tag
-  done
-
-  # image_tag_list 重复项检查
-  if [[ $(printf "%s\n" "${image_tag_list[@]}" | sort | uniq -d) ]]; then
-    log_error "check_repeat" "image_tag_list has duplicate items"
-    end
-    exit 1
-  fi
-
-  validate_build_args "${build_args[@]}"
-
-  for tmp_image_tag in "${image_tag_list[@]}"; do
-    if ! validate_docker_tag "$tmp_image_tag"; then
+    # image_tag_list 重复项检查
+    if [[ $(printf "%s\n" "${image_tag_list[@]}" | sort | uniq -d) ]]; then
+      log_error "check_repeat" "image_tag_list has duplicate items"
       end
       exit 1
     fi
-  done
+
+    for tmp_image_tag in "${image_tag_list[@]}"; do
+      if ! validate_docker_tag "$tmp_image_tag"; then
+        end
+        exit 1
+      fi
+    done
+  }
+
+  function do_validate_build_args() {
+    validate_build_args "${build_args[@]}"
+  }
+
+  do_validate_image_name
+  do_validate_image_tag
+  do_validate_build_args
 
   # prepare tag and new tag
   if [ "$re_tag_flag" == "true" ]; then
@@ -179,7 +189,7 @@ function prepare_params() {
   fi
 
   # 如果需要重新tag,验证新的tag
-  function validate_new_tag() {
+  function do_validate_new_tag() {
     log_info "validate_new_tag" "validate_new_tag"
     local timestamp_tag=$(date '+%Y-%m-%d_%H-%M-%S')
     if [ -z "$new_tag" ]; then
@@ -189,6 +199,7 @@ function prepare_params() {
     elif ! validate_docker_tag "$new_tag"; then
       # 传入的 new_tag 不符合docker tag 规范
       log_error "validate_new_tag" "new tag [$new_tag] is Invalid"
+      end
       exit 1
     elif [ "$new_tag" == "$image_tag" ]; then
       # 新的标签的docker build 的标签相同，验证不通过，exit
@@ -196,6 +207,7 @@ function prepare_params() {
       end
       exit 1
     else
+      # 验证 image_tag_list 的所有是否重复
       for tmp_image_tag in "${image_tag_list[@]}"; do
         if [ "$new_tag" == "$tmp_image_tag" ]; then
           log_error "validate_new_tag" "validate failed , because new_tag == tmp_image_tag "
@@ -213,7 +225,7 @@ function prepare_params() {
   }
 
   if [ "$re_tag_flag" == "true" ]; then
-    validate_new_tag
+    do_validate_new_tag
   fi
 
   # handle push_flag
@@ -226,14 +238,14 @@ function prepare_params() {
   fi
 
   # --build-arg foo=bar ...
-  function prepare_build_args_exec() {
+  function generate_build_args_exec() {
     build_args_exec=""
     for build_arg in "${build_args[@]}"; do
       build_args_exec="$build_args_exec --build-arg $build_arg"
     done
     log_info "build_args_exec" "build exec: $build_args_exec"
   }
-  prepare_build_args_exec
+  generate_build_args_exec
 }
 
 prepare_params
