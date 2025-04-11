@@ -110,6 +110,6 @@ docker run --rm -u root \
   -w "/home/gradle/project" \
   -v "$cache:/home/gradle/.gradle" \
   "$image" \
-  $build
+  $build --no-daemon
 
 end
