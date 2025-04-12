@@ -262,10 +262,13 @@ function prepare_dockerfile_and_build_dir() {
     log_info "dockerfile" "path_to_dockerfile is empty, try use default (DOCKERFILE or Dockerfile or dockerfile)"
     if [ -f "DOCKERFILE" ]; then
       path_to_dockerfile="DOCKERFILE"
+      log_info "dockerfile" "path_to_dockerfile is DOCKERFILE"
     elif [ -f "Dockerfile" ]; then
       path_to_dockerfile="Dockerfile"
+      log_info "dockerfile" "path_to_dockerfile is Dockerfile"
     elif [ -f "dockerfile" ]; then
       path_to_dockerfile="dockerfile"
+      log_info "dockerfile" "path_to_dockerfile is dockerfile"
     else
       log_error "dockerfile" "Default Dockerfile does not exit; (DOCKERFILE or Dockerfile or dockerfile)"
       end
