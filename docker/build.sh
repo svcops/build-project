@@ -291,6 +291,12 @@ function prepare_dockerfile_and_build_dir() {
     exit 1
   fi
 
+  # 判断是不是windows
+  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+    log_info "windows" "windows system"
+    build_dir="/$build_dir"
+  fi
+
   log_info "dockerfile" "docker build dir : $build_dir; dockerfile : $path_to_dockerfile"
 }
 prepare_dockerfile_and_build_dir
