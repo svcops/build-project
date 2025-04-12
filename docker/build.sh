@@ -279,9 +279,17 @@ function prepare_dockerfile_and_build_dir() {
     exit 1
   fi
 
-  # 获取dockerfile的目录和文件名称
-  local build_dir_default=$(cd "$(dirname "$path_to_dockerfile")" && pwd)
-  #  DOCKERFILE=$(basename $path_to_dockerfile)
+  # 判断是不是windows
+  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+    log_info "windows" "windows system"
+    export MSYS_NO_PATHCONV=1
+    local build_dir_default=$(cd "$(dirname "$path_to_dockerfile")" && pwd -W)
+  else
+    # 获取dockerfile的目录和文件名称
+    local build_dir_default=$(cd "$(dirname "$path_to_dockerfile")" && pwd)
+    #  DOCKERFILE=$(basename $path_to_dockerfile)
+    log_info "linux" "linux system"
+  fi
 
   if [ -z "$build_dir" ]; then
     log_info "build_dir" "build_dir is empty, then use $path_to_dockerfile's dir"
@@ -289,12 +297,6 @@ function prepare_dockerfile_and_build_dir() {
   elif [ ! -d "$build_dir" ]; then
     log_error "build_dir" "build_dir is not a valid paths"
     exit 1
-  fi
-
-  # 判断是不是windows
-  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-    log_info "windows" "windows system"
-    build_dir="/$build_dir"
   fi
 
   log_info "dockerfile" "docker build dir : $build_dir; dockerfile : $path_to_dockerfile"
