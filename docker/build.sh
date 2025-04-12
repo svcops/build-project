@@ -260,19 +260,35 @@ prepare_params
 function prepare_dockerfile_and_build_dir() {
   if [ -z "$path_to_dockerfile" ]; then # path_to_dockerfile is empty
     log_info "dockerfile" "path_to_dockerfile is empty, try use default (DOCKERFILE or Dockerfile or dockerfile)"
-    if [ -f "DOCKERFILE" ]; then
-      path_to_dockerfile="DOCKERFILE"
-      log_info "dockerfile" "path_to_dockerfile is DOCKERFILE"
-    elif [ -f "Dockerfile" ]; then
-      path_to_dockerfile="Dockerfile"
-      log_info "dockerfile" "path_to_dockerfile is Dockerfile"
-    elif [ -f "dockerfile" ]; then
-      path_to_dockerfile="dockerfile"
-      log_info "dockerfile" "path_to_dockerfile is dockerfile"
+    # 判断是不是windows
+    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+      # shellcheck disable=SC2010
+      if ls | grep -q "^DOCKERFILE$"; then
+        path_to_dockerfile="DOCKERFILE"
+      elif ls | grep -q "^Dockerfile$"; then
+        path_to_dockerfile="Dockerfile"
+      elif ls | grep -q "^dockerfile$"; then
+        path_to_dockerfile="dockerfile"
+      else
+        log_error "dockerfile" "Default Dockerfile does not exit; (DOCKERFILE or Dockerfile or dockerfile)"
+        end
+        exit 1
+      fi
     else
-      log_error "dockerfile" "Default Dockerfile does not exit; (DOCKERFILE or Dockerfile or dockerfile)"
-      end
-      exit 1
+      if [ -f "DOCKERFILE" ]; then
+        path_to_dockerfile="DOCKERFILE"
+        log_info "dockerfile" "path_to_dockerfile is DOCKERFILE"
+      elif [ -f "Dockerfile" ]; then
+        path_to_dockerfile="Dockerfile"
+        log_info "dockerfile" "path_to_dockerfile is Dockerfile"
+      elif [ -f "dockerfile" ]; then
+        path_to_dockerfile="dockerfile"
+        log_info "dockerfile" "path_to_dockerfile is dockerfile"
+      else
+        log_error "dockerfile" "Default Dockerfile does not exit; (DOCKERFILE or Dockerfile or dockerfile)"
+        end
+        exit 1
+      fi
     fi
   elif [ -f "$path_to_dockerfile" ]; then
     log_info "dockerfile" "detect dockerfile: $path_to_dockerfile"
