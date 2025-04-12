@@ -5,6 +5,7 @@ echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/ostype.sh)
 source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 log "go build" ">>> go build start <<<"
@@ -99,6 +100,10 @@ else
 fi
 
 log "build" "========== build golang's project in docker =========="
+
+if is_windows; then
+  export MSYS_NO_PATHCONV=1
+fi
 
 docker run --rm \
   -v "$build_dir:/usr/src/myapp" \
