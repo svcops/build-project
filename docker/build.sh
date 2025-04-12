@@ -4,11 +4,12 @@
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -SL $ROOT_URI/func/log.sh)
-source <(curl -SL $ROOT_URI/func/command_exists.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/ostype.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 # 判断是不是windows
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+if is_windows; then
   log_info "windows" "windows system"
   export MSYS_NO_PATHCONV=1
 fi
@@ -260,8 +261,7 @@ prepare_params
 function prepare_dockerfile_and_build_dir() {
   if [ -z "$path_to_dockerfile" ]; then # path_to_dockerfile is empty
     log_info "dockerfile" "path_to_dockerfile is empty, try use default (DOCKERFILE or Dockerfile or dockerfile)"
-    # 判断是不是windows
-    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+    if is_windows; then
       # shellcheck disable=SC2010
       if ls | grep -q "^DOCKERFILE$"; then
         path_to_dockerfile="DOCKERFILE"
@@ -298,16 +298,14 @@ function prepare_dockerfile_and_build_dir() {
     exit 1
   fi
 
-  # 判断是不是windows
-  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+  # 获取dockerfile的目录和文件名称
+  if is_windows; then
     log_info "windows" "windows system"
     export MSYS_NO_PATHCONV=1
     local build_dir_default=$(cd "$(dirname "$path_to_dockerfile")" && pwd -W)
   else
-    # 获取dockerfile的目录和文件名称
-    local build_dir_default=$(cd "$(dirname "$path_to_dockerfile")" && pwd)
-    #  DOCKERFILE=$(basename $path_to_dockerfile)
     log_info "linux" "linux system"
+    local build_dir_default=$(cd "$(dirname "$path_to_dockerfile")" && pwd)
   fi
 
   if [ -z "$build_dir" ]; then

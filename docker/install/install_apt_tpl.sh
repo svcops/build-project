@@ -4,8 +4,8 @@
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -SL $ROOT_URI/func/log.sh)
-bash <(curl -SL $ROOT_URI/docker/install/uninstall_apt.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
+bash <(curl -sSL $ROOT_URI/docker/install/uninstall_apt.sh)
 
 function install_docker() {
   local os="$1"

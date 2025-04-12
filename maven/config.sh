@@ -4,7 +4,7 @@
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
 
 now=$(date +"%Y-%m-%d_%H-%M-%S")
 
@@ -21,7 +21,7 @@ function backup_settings() {
 backup_settings
 
 function download_settings() {
-  curl -SL $ROOT_URI/maven/settings.xml -o "$HOME/.m2/settings.xml"
+  curl -sSL $ROOT_URI/maven/settings.xml -o "$HOME/.m2/settings.xml"
   log "show settings" "ls -l $HOME/.m2/"
   ls -l "$HOME/.m2/"
 }

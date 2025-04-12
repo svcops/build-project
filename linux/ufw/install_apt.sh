@@ -4,13 +4,13 @@
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -SL $ROOT_URI/func/log.sh)
-source <(curl -SL $ROOT_URI/func/command_exists.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 log_info "ufw" "config ufw"
 
 function detect_ssh_port() {
-  ssh_port=$(bash <(curl -SL $ROOT_URI/func/ssh_port.sh))
+  ssh_port=$(bash <(curl -sSL $ROOT_URI/func/ssh_port.sh))
   log_info "ssh_port" "ssh port is $ssh_port"
 }
 
@@ -51,8 +51,8 @@ function ufw_allow_80_443() {
 
 function tips() {
   log_info "tips" "install strategy: oi (only install and do not config), oics (install and config ssh)"
-  log_info "tips" "e.g.: bash <(curl -SL $ROOT_URI/linux/ufw/install_apt.sh) oi"
-  log_info "tips" "e.g.: bash <(curl -SL $ROOT_URI/linux/ufw/install_apt.sh) oics"
+  log_info "tips" "e.g.: bash <(curl -sSL $ROOT_URI/linux/ufw/install_apt.sh) oi"
+  log_info "tips" "e.g.: bash <(curl -sSL $ROOT_URI/linux/ufw/install_apt.sh) oics"
 }
 
 strategy=$1

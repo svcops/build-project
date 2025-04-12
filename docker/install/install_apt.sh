@@ -4,8 +4,8 @@
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -SL $ROOT_URI/func/log.sh)
-source <(curl -SL $ROOT_URI/func/command_exists.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 # Debian or Ubuntu
 OS=""
@@ -48,10 +48,10 @@ fi
 
 function tips() {
   log_info "tips" "SRC 为脚本的参数,源选择,可选 docker(官方源) tsinghua(清华源) aliyun(阿里云) intellij(镜像)"
-  log_info "tips" "e.g.: bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) tsinghua"
-  log_info "tips" "e.g.: bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) aliyun"
-  log_info "tips" "e.g.: bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) docker"
-  log_info "tips" "e.g.: bash <(curl -SL $ROOT_URI/docker/install/install_apt.sh) intellij"
+  log_info "tips" "e.g.: bash <(curl -sSL $ROOT_URI/docker/install/install_apt.sh) tsinghua"
+  log_info "tips" "e.g.: bash <(curl -sSL $ROOT_URI/docker/install/install_apt.sh) aliyun"
+  log_info "tips" "e.g.: bash <(curl -sSL $ROOT_URI/docker/install/install_apt.sh) docker"
+  log_info "tips" "e.g.: bash <(curl -sSL $ROOT_URI/docker/install/install_apt.sh) intellij"
 }
 
 SRC=$1
@@ -61,7 +61,7 @@ function do_install() {
   if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
     if [ "$SRC" == "docker" ] || [ "$SRC" == "tsinghua" ] || [ "$SRC" == "aliyun" ] || [ "$SRC" == "intellij" ]; then
       log_info "install" "当前的操作系统为 $OS, 选择的安装源为 $SRC"
-      bash <(curl -SL $ROOT_URI/docker/install/$OS/install_$SRC.sh)
+      bash <(curl -sSL $ROOT_URI/docker/install/$OS/install_$SRC.sh)
     else
       tips
       exit 1

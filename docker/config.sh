@@ -3,8 +3,8 @@
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 
-source <(curl -SL $ROOT_URI/func/log.sh)
-source <(curl -SL $ROOT_URI/func/date.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/date.sh)
 
 registry=$1
 data_root=$2

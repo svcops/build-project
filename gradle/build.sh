@@ -4,8 +4,9 @@
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -SL $ROOT_URI/func/log.sh)
-source <(curl -SL $ROOT_URI/func/command_exists.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/ostype.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 log_info "gradle build" ">>> start <<<"
 function end() {
@@ -102,10 +103,10 @@ fi
 log_info "build" "========== build gradle's project in docker =========="
 
 # 判断是不是windows
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+if is_windows; then
   log_info "windows" "windows system"
-  # 在脚本开头或 Docker 命令前添加
   export MSYS_NO_PATHCONV=1
+
   docker run --rm -u root \
     -v "$build_dir:/home/gradle/project" \
     -w "/home/gradle/project" \

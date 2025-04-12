@@ -4,4 +4,4 @@
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -SL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/log.sh)
