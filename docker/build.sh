@@ -7,6 +7,12 @@ echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 source <(curl -SL $ROOT_URI/func/log.sh)
 source <(curl -SL $ROOT_URI/func/command_exists.sh)
 
+# 判断是不是windows
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+  log_info "windows" "windows system"
+  export MSYS_NO_PATHCONV=1
+fi
+
 log_info "docker build" ">>> docker build start <<<"
 function end() {
   log_info "docker build" ">>> docker build end <<<"

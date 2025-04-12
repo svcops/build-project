@@ -111,14 +111,28 @@ else
 fi
 
 log_info "build" "========== build maven's project in docker =========="
-
-docker run -i --rm -u root \
-  --network=host \
-  -v "$build_dir":/usr/src/app \
-  -w /usr/src/app \
-  -v "$cache":/root/.m2/repository \
-  -v "$settings":/usr/share/maven/ref/settings.xml \
-  "$image" \
-  $build
+# 判断是不是windows
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+  log_info "windows" "windows system"
+  # 在脚本开头或 Docker 命令前添加
+  export MSYS_NO_PATHCONV=1
+  docker run -i --rm -u root \
+    -v "$build_dir:/usr/src/app" \
+    -w "/usr/src/app" \
+    -v "$cache:/root/.m2/repository" \
+    -v "$settings:/usr/share/maven/ref/settings.xml" \
+    "$image" \
+    $build
+else
+  log_info "linux" "linux system"
+  docker run -i --rm -u root \
+    --network host \
+    -v "$build_dir:/usr/src/app" \
+    -w "/usr/src/app" \
+    -v "$cache:/root/.m2/repository" \
+    -v "$settings:/usr/share/maven/ref/settings.xml" \
+    "$image" \
+    $build
+fi
 
 end

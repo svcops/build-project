@@ -101,14 +101,26 @@ fi
 
 log_info "build" "========== build gradle's project in docker =========="
 
-# 在脚本开头或 Docker 命令前添加
-export MSYS_NO_PATHCONV=1
-
-docker run --rm -u root \
-  -v "$build_dir:/home/gradle/project" \
-  -w "/home/gradle/project" \
-  -v "$cache:/home/gradle/.gradle" \
-  "$image" \
-  $build
+# 判断是不是windows
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+  log_info "windows" "windows system"
+  # 在脚本开头或 Docker 命令前添加
+  export MSYS_NO_PATHCONV=1
+  docker run --rm -u root \
+    -v "$build_dir:/home/gradle/project" \
+    -w "/home/gradle/project" \
+    -v "$cache:/home/gradle/.gradle" \
+    "$image" \
+    $build
+else
+  log_info "linux" "linux system"
+  docker run --rm -u root \
+    --network host \
+    -v "$build_dir:/home/gradle/project" \
+    -w "/home/gradle/project" \
+    -v "$cache:/home/gradle/.gradle" \
+    "$image" \
+    $build
+fi
 
 end
