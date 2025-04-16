@@ -1,7 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2028
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
-# ROOT_URI=https://dev.kubectl.net
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
 source <(curl -sSL $ROOT_URI/func/ostype.sh)
@@ -85,10 +84,9 @@ fi
 
 log_info "build" "========== build node's project in docker =========="
 
-log_info "build" "docker run --rm -u root --network=host -v $build_dir:/opt/app/node  -w /opt/app/node $image $build"
-
 if is_windows; then
-  log_info "build" "windows system"
+  log_info "build" "build in windows"
+  log_info "build" "docker run --rm -u root -v $build_dir:/opt/app/node  -w /opt/app/node $image $build"
   export MSYS_NO_PATHCONV=1
   docker run --rm -u root \
     -v "$build_dir":/opt/app/node \
@@ -96,7 +94,8 @@ if is_windows; then
     "$image" \
     $build
 else
-  log_info "build" "linux system"
+  log_info "build" "build in linux"
+  log_info "build" "docker run --rm -u root --network=host -v $build_dir:/opt/app/node  -w /opt/app/node $image $build"
   docker run --rm -u root \
     --network=host \
     -v "$build_dir":/opt/app/node \
@@ -104,4 +103,5 @@ else
     "$image" \
     $build
 fi
+
 end

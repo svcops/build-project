@@ -1,7 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2155  disable=SC1090 disable=SC2028
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
-# ROOT_URI=https://dev.kubectl.net
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
 source <(curl -sSL $ROOT_URI/func/ostype.sh)
@@ -103,9 +102,8 @@ log_info "build" "========== build gradle's project in docker =========="
 
 # 判断是不是windows
 if is_windows; then
-  log_info "windows" "windows system"
+  log_info "build" "build in windows"
   export MSYS_NO_PATHCONV=1
-
   docker run --rm -u root \
     -v "$build_dir:/home/gradle/project" \
     -w "/home/gradle/project" \
@@ -113,7 +111,7 @@ if is_windows; then
     "$image" \
     $build
 else
-  log_info "linux" "linux system"
+  log_info "build" "build in linux"
   docker run --rm -u root \
     --network host \
     -v "$build_dir:/home/gradle/project" \

@@ -111,9 +111,9 @@ else
 fi
 
 log_info "build" "========== build maven's project in docker =========="
-# 判断是不是windows
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-  log_info "windows" "windows system"
+
+if is_windows; then
+  log_info "build" "build in windows"
   # 在脚本开头或 Docker 命令前添加
   export MSYS_NO_PATHCONV=1
   docker run -i --rm -u root \
@@ -124,7 +124,7 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
     "$image" \
     $build
 else
-  log_info "linux" "linux system"
+  log_info "build" "build in linux"
   docker run -i --rm -u root \
     --network host \
     -v "$build_dir:/usr/src/app" \

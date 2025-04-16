@@ -1,7 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
-# ROOT_URI=https://dev.kubectl.net
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
 source <(curl -sSL $ROOT_URI/func/ostype.sh)
@@ -9,7 +8,7 @@ source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 # 判断是不是windows
 if is_windows; then
-  log_info "windows" "windows system"
+  log_info "build" "build in windows"
   export MSYS_NO_PATHCONV=1
 fi
 

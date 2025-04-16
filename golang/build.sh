@@ -1,7 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2155 disable=SC2126 disable=SC1090 disable=SC2028
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
-# ROOT_URI=https://dev.kubectl.net
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
 source <(curl -sSL $ROOT_URI/func/ostype.sh)
@@ -101,6 +100,7 @@ fi
 log "build" "========== build golang's project in docker =========="
 
 if is_windows; then
+  log "build" "build in windows"
   export MSYS_NO_PATHCONV=1
 fi
 
