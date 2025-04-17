@@ -103,12 +103,10 @@ function verify_nginx_configuration() {
   #  nginx: configuration file /etc/nginx/nginx.conf test is successful
 
   # 获取 $output 除了最后一行的所有行
-  local reason
-  reason=$(echo "$output" | head -n $((line_count - 1)))
-  local status
+  local reason=$(echo "$output" | head -n $((line_count - 1)))
 
   # 获取 $output 的最后一行
-  status=$(echo "$output" | tail -n -1)
+  local status=$(echo "$output" | tail -n -1)
 
   if echo "$status" | grep -q "successful"; then
     log_info "nginx" "$status"
