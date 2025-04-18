@@ -7,10 +7,10 @@ function log() {
   local remark="$1"
   local msg="$2"
   if [ -z "$remark" ]; then
-    remark="unknown remark"
+    remark="info"
   fi
   if [ -z "$msg" ]; then
-    msg="unknown message"
+    msg="- - - - - - -"
   fi
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
@@ -21,10 +21,10 @@ function log_info() {
   local remark="$1"
   local msg="$2"
   if [ -z "$remark" ]; then
-    remark="unknown remark"
+    remark="info"
   fi
   if [ -z "$msg" ]; then
-    msg="unknown message"
+    msg="- - - - - - -"
   fi
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
@@ -35,10 +35,10 @@ function log_warn() {
   local remark="$1"
   local msg="$2"
   if [ -z "$remark" ]; then
-    remark="unknown remark"
+    remark="warn"
   fi
   if [ -z "$msg" ]; then
-    msg="unknown message"
+    msg="- - - - - - -"
   fi
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
@@ -49,10 +49,10 @@ function log_error() {
   local remark="$1"
   local msg="$2"
   if [ -z "$remark" ]; then
-    remark="unknown remark"
+    remark="error"
   fi
   if [ -z "$msg" ]; then
-    msg="unknown message"
+    msg="- - - - - - -"
   fi
   # shellcheck disable=SC2155
   local now=$(date +"%Y-%m-%d %H:%M:%S")
