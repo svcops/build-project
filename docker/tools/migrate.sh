@@ -67,7 +67,7 @@ if image_exists $from_image; then
     fi
   fi
 else
-  if [ "$skip_pull" == "y" ]; then
+  if [ "$skip_pull" == "skip_pull" ]; then
     log_info "migrate" "Image $from_image not found, exit..."
     exit 0
   fi
