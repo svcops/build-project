@@ -14,6 +14,11 @@ fi
 
 from_image=$1
 to_image=$2
+skip_pull=$3
+
+if [ -z $skip_pull ];then
+  skip_pull="n"
+fi
 
 if [ -z "$from_image" ]; then
   log_error "migrate" "from_image is empty"
@@ -25,8 +30,8 @@ if [ -z "$to_image" ]; then
   exit 1
 fi
 
-log_info "migrate" "from_image: $from_image"
-log_info "migrate" "to_image: $to_image"
+log_info "migrate" "from: $from_image"
+log_info "migrate" " to : $to_image"
 
 function image_exists() {
   local image_name_tag="$1"
@@ -48,15 +53,25 @@ function docker_pull() {
 
 # 如果镜像存在，判断是否要再次pull
 if image_exists $from_image; then
-  # 判断是否要再次pull
-  read -p "Image $from_image already exists, do you want to pull it again?[default: y] (y/n) :" answer
-  if [ -z "$answer" ]; then
-    answer="y"
-  fi
-  if [ "$answer" == "y" ]; then
-    docker_pull $from_image
+  if [ "$skip_pull" == "skip_pull" ]; then
+    log_info "migrate" "Image $from_image already exists, skip re pull"
+  else
+    # 判断是否要再次pull
+    read -p "Image $from_image already exists, do you want to pull it again?[default: y] (y/n) :" answer
+    if [ -z "$answer" ]; then
+      answer="y"
+    fi
+
+    if [ "$answer" == "y" ]; then
+      docker_pull $from_image
+    fi
   fi
 else
+  if [ "$skip_pull" == "y" ]; then
+    log_info "migrate" "Image $from_image not found, exit..."
+    exit 0
+  fi
+
   log_info "migrate" "Image $from_image not found, pulling..."
   docker_pull $from_image
 fi
