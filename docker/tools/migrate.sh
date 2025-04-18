@@ -54,7 +54,7 @@ function docker_pull() {
 # 如果镜像存在，判断是否要再次pull
 if image_exists $from_image; then
   if [ "$skip_pull" == "skip_pull" ]; then
-    log_info "migrate" "Image $from_image already exists, skip re pull"
+    log_info "migrate" "Image $from_image already exists, skip pull"
   else
     # 判断是否要再次pull
     read -p "Image $from_image already exists, do you want to pull it again?[default: y] (y/n) :" answer
@@ -68,7 +68,7 @@ if image_exists $from_image; then
   fi
 else
   if [ "$skip_pull" == "skip_pull" ]; then
-    log_info "migrate" "Image $from_image not found, exit..."
+    log_info "migrate" "Image $from_image not found,skip pull, exit..."
     exit 0
   fi
 
