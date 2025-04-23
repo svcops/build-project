@@ -44,9 +44,9 @@ function image_exists() {
 
 function docker_pull() {
   local image_name_tag="$1"
-  docker pull $image_name_tag
+  docker pull --platform linux/amd64 $image_name_tag
   if [ $? -ne 0 ]; then
-    log_error "migrate" "docker pull $from_image failed"
+    log_error "migrate" "docker pull --platform linux/amd64 $from_image failed"
     exit 1
   fi
 }
