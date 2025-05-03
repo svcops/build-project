@@ -143,7 +143,7 @@ prepare_tgz
 function config_properties() {
   log_info "kafka" "config kafka kraft properties"
 
-  kraft_server_properties="kafka/config/kraft/server.properties"
+  local kraft_server_properties="kafka/config/kraft/server.properties"
 
   if [ ! -f "$kraft_server_properties" ]; then
     log_error "kafka" "$kraft_server_properties is not exist"
@@ -329,7 +329,7 @@ listeners=PLAINTEXT://$node_ip:$internal_port,CONTROLLER://$node_ip:$controller_
 inter.broker.listener.name=PLAINTEXT
 
 # Modify yourself
-advertised.listeners=PLAINTEXT://$node_ip:$internal_port,CLIENT://$cluster_name:$client_port
+advertised.listeners=PLAINTEXT://$node_ip:$internal_port,CLIENT://${cluster_name}-$broker_id:$client_port
 
 controller.listener.names=CONTROLLER
 
