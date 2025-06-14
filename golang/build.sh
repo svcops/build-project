@@ -1,118 +1,110 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC2155 disable=SC2126 disable=SC1090 disable=SC2028
-[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
+set -euo pipefail # 严格模式：遇到错误立即退出，使用未定义变量报错
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
-source <(curl -sSL $ROOT_URI/func/ostype.sh)
-source <(curl -sSL $ROOT_URI/func/command_exists.sh)
+[ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
+source <(curl -sSL "$ROOT_URI/func/log.sh")
+source <(curl -sSL "$ROOT_URI/func/ostype.sh")
+source <(curl -sSL "$ROOT_URI/func/command_exists.sh")
 
-log "go build" ">>> go build start <<<"
-function end() {
-  log "go build" ">>> go build end <<<"
+# 全局变量声明
+declare -g cache=""
+declare -g image=""
+declare -g build_cmd=""
+declare -g build_dir=""
+
+tap_exit() { log_info "go build" ">>> go build end <<<"; }
+trap tap_exit EXIT
+
+# 打印脚本用法
+function show_usage() {
+  cat <<EOF
+Usage: $0 -i IMAGE -x BUILD_CMD [-c CACHE_VOLUME] [-d BUILD_DIR] [-h]
+
+Options:
+  -i  Golang Docker image               (required)
+  -x  Go build command                  (required), e.g.: "go build -o app"
+  -c  Docker volume name for cache      (required)
+  -d  Project build directory           (default: current dir)
+  -h  Show this help message
+EOF
 }
 
-cache=""
-image=""
-build=""
-build_dir=""
-
-function tips() {
-  log "tips" "-d golang's build directory"
-  log "tips" "-c user docker volume's to cache the build process"
-  log "tips" "-i golang's docker image"
-  log "tips" "-x golang's build command"
+function parse_arguments() {
+  while getopts ":c:i:x:d:h" opt; do
+    case $opt in
+    c) cache="$OPTARG" ;;     # 缓存卷
+    i) image="$OPTARG" ;;     # Docker镜像
+    x) build_cmd="$OPTARG" ;; # 构建命令
+    d) build_dir="$OPTARG" ;; # 构建目录
+    h)
+      show_usage
+      exit 0
+      ;;
+    \?)
+      log "get opts" "Invalid option: -$OPTARG"
+      show_usage
+      exit 1
+      ;;
+    :)
+      log "get opts" "Option -$OPTARG requires an argument"
+      show_usage
+      exit 1
+      ;;
+    esac
+  done
 }
 
-while getopts ":c:i:x:d:" opt; do
-  case ${opt} in
-  d)
-    log "get opts" "process's build_dir; build_dir is: $OPTARG"
-    build_dir=$OPTARG
-    ;;
-  c)
-    log "get opts" "process's cache; docker's volume is: $OPTARG"
-    cache=$OPTARG
-    ;;
-  i)
-    log "get opts" "process's image; docker's image is: $OPTARG"
-    image=$OPTARG
-    ;;
-  x)
-    log "get opts" "process's command; golang's command is: $OPTARG"
-    build=$OPTARG
-    ;;
-  \?)
-    log "get opts" "Invalid option: -$OPTARG"
-    tips
-    end
-    exit 1
-    ;;
-  :)
-    log "get opts" "Invalid option: -$OPTARG requires an argument"
-    tips
-    end
-    exit 1
-    ;;
-  esac
-done
+function validate_params() {
+  # 检查必需参数
+  for key in cache image build_cmd; do
+    [[ -z "${!key}" ]] && log "validate" "$key is required" && show_usage && exit 1 || log "validate" "$key=${!key}"
+  done
 
-function validate_not_blank() {
-  local key=$1
-  local value=$2
-  if [ -z "$value" ]; then
-    log "validate_param" "parameter $key is empty, then exit"
-    tips
-    end
+  # 构建目录
+  if [[ -z "$build_dir" ]]; then
+    build_dir="$(pwd)"
+    log_info "build_dir" "Using current directory: $build_dir"
+  elif [[ ! -d "$build_dir" ]]; then
+    log_error "build_dir" "Build directory not found: $build_dir"
     exit 1
-  else
-    log "validate_param" "parameter $key : $value"
   fi
+
+  # 缓存名合法性
+  if [[ ! "$cache" =~ ^[a-zA-Z0-9_.-]+$ ]]; then
+    log_error "validate" "Cache volume name invalid: $cache"
+    exit 1
+  fi
+
+  # Docker命令
+  command_exists docker || (log "docker" "docker not found" && exit 1)
 }
 
-validate_not_blank "cache" "$cache"
-validate_not_blank "image" "$image"
-validate_not_blank "build" "$build"
+function execute_build() {
+  log "build" "Starting Go build in Docker"
 
-if [ -z "$build_dir" ]; then
-  log "build_dir" "build_dir is empty then use current directory"
-  build_dir="$(pwd)"
-elif [ ! -d "$build_dir" ]; then
-  log "build_dir" "build_dir is not a valid paths"
-  exit 1
-fi
+  if is_windows; then
+    log_info "build" "Windows detected, disabling path conversion"
+    export MSYS_NO_PATHCONV=1
+  fi
 
-if [[ $cache =~ ^[a-zA-Z0-9_.-]+$ ]]; then
-  log "cache_str_validate" "cache str validate success"
-else
-  log "cache_str_validate" "cache str contains only English characters, digits, underscores, dots, and hyphens."
-  log "cache_str_validate" "cache str validate failed"
-  exit 1
-fi
+  docker run --rm \
+    -v "$build_dir:/usr/src/myapp" \
+    -w /usr/src/myapp \
+    --network=host \
+    -e CGO_ENABLED=0 \
+    -e GOPROXY=https://goproxy.cn,direct \
+    -e GOPATH=/opt/go \
+    -v "$cache:/opt/go" \
+    "$image" \
+    $build_cmd
+}
 
-if command_exists docker; then
-  log "command_exists" "docker command exists"
-else
-  log "command_exists" "docker command does not exist"
-  end
-  exit 1
-fi
+# 主流程
+target_main() {
+  parse_arguments "$@"
+  validate_params
+  execute_build
+}
 
-log "build" "========== build golang's project in docker =========="
-
-if is_windows; then
-  log "build" "build in windows"
-  export MSYS_NO_PATHCONV=1
-fi
-
-docker run --rm \
-  -v "$build_dir:/usr/src/myapp" \
-  -w /usr/src/myapp \
-  --network=host \
-  -e CGO_ENABLED=0 \
-  -e GOPROXY=https://goproxy.cn,direct \
-  -e GOPATH=/opt/go \
-  -v $cache:/opt/go \
-  "$image" \
-  $build
-
-end
+target_main "$@"
