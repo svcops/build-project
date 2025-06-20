@@ -2,34 +2,44 @@
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028 disable=SC2162
 source <(curl -sSL https://dev.kubectl.net/func/log.sh)
 
-if [ -z "$DNSAPI_ROOT_URI" ]; then
-  log_error "dns" "DNSAPI_ROOT_URI is not set"
-  exit
-fi
+# 检查必要的环境变量
+check_required_vars() {
+  local missing=0
+  for var in "DNSAPI_ROOT_URI" "DNSAPI_ACCESS_TOKEN_KEY" "DNSAPI_ACCESS_TOKEN_VALUE"; do
+    if [ -z "${!var}" ]; then
+      log_error "dns" "$var 未设置"
+      missing=1
+    fi
+  done
 
-if [ -z "$DNSAPI_ACCESS_TOKEN_KEY" ]; then
-  log_error "dns" "DNSAPI_ACCESS_TOKEN_KEY is not set"
-  exit
-fi
+  if [ $missing -eq 1 ]; then
+    exit 1
+  fi
+}
 
-if [ -z "$DNSAPI_ACCESS_TOKEN_VALUE" ]; then
-  log_error "dns" "DNSAPI_ACCESS_TOKEN_VALUE is not set"
-  exit
-fi
+check_required_vars
 
-log_info "dns" "dns 操作"
+log_info "dns" "DNS 操作"
 
-log_info "input" "请选择云解析DNS的相关操作: (输入数字)"
-log_info "input" "  (0) 获取支持的域名列表"
-log_info "input" "  (1) 新增一条解析记录"
-log_info "input" "  (2) 查询子域名的所有解析记录"
-log_info "input" "  (3) 删除子域名的所有解析记录"
-log_info "input" "  (4) 删除子域名的所有解析记录，然后新增解析记录"
-log_info "input" "  (5) 分页查询域名的解析记录"
-log_info "input" "  (*) 退出 exit"
+# 显示操作菜单
+show_menu() {
+  log_info "input" "请选择云解析DNS的相关操作: (输入数字)"
+  log_info "input" "  (0) 获取支持的域名列表"
+  log_info "input" "  (1) 新增一条解析记录"
+  log_info "input" "  (2) 查询子域名的所有解析记录"
+  log_info "input" "  (3) 删除子域名的所有解析记录"
+  log_info "input" "  (4) 删除子域名的所有解析记录，然后新增解析记录"
+  log_info "input" "  (5) 分页查询域名的解析记录"
+  log_info "input" "  (*) 退出 exit"
 
-read -p "> 请输入你的选择: " dns_operate
+  read -p "> 请输入你的选择: " dns_operate
+}
 
+show_menu
+
+# 调用DNS API
+# 参数: $1-域名 $2-主机记录 $3-记录类型 $4-记录值 $5-请求URL
+#       $6-页码 $7-每页数量 $8-主机记录关键字 $9-记录值关键字
 function dnsapi() {
   local domainName=$1
   local rr=$2
@@ -52,6 +62,7 @@ function dnsapi() {
     --data "$json_data")
 }
 
+# 读取用户输入函数，增加输入验证
 function readDomainName() {
   if [ -n "$domainName" ]; then
     return
@@ -73,7 +84,7 @@ function readRr() {
   read -p "请输入主机记录(Resource Record): " rr
   log_info "dns" "输入的主机记录为 $rr"
 
-  if [ -z $rr ]; then
+  if [ -z "$rr" ]; then # 修复了变量引用
     log_error "dns" "主机记录不能为空"
     readRr
   fi
@@ -83,7 +94,7 @@ function readType() {
   read -p "请输入记录类型(默认为A): " type
   log_info "dns" "输入的记录类型为 $type"
 
-  if [ -z $type ]; then
+  if [ -z "$type" ]; then # 修复了变量引用
     type="A"
     log_info "dns" "记录类型默认为 $type"
   fi
@@ -93,7 +104,7 @@ function readValue() {
   read -p "请输入记录值: " value
   log_info "dns" "输入的记录值为 $value"
 
-  if [ -z $value ]; then
+  if [ -z "$value" ]; then # 修复了变量引用
     log_error "dns" "记录值不能为空"
     readValue
   fi
@@ -101,24 +112,36 @@ function readValue() {
 
 function readPageNumber() {
   read -p "请输入 pageNumber(默认为1): " pageNumber
-  log_info "dns" "输入的pageNumber为 $pageNumber"
 
-  if [ -z $pageNumber ]; then
+  if [ -z "$pageNumber" ]; then # 修复了变量引用
     pageNumber=1
-    log_info "dns" "pageNumber默认为 $pageNumber"
   fi
+
+  # 验证输入为数字
+  if ! [[ $pageNumber =~ ^[0-9]+$ ]]; then
+    log_error "dns" "页码必须为数字"
+    readPageNumber
+    return
+  fi
+
+  log_info "dns" "页码为 $pageNumber"
 }
 
 function readPageSize() {
   read -p "请输入 pageSize(默认为20): " pageSize
-  log_info "dns" "输入的pageSize为 $pageSize"
 
-  if [ -z $pageSize ]; then
+  if [ -z "$pageSize" ]; then # 修复了变量引用
     pageSize=20
-    log_info "dns" "pageSize默认为 $pageSize"
-  else
-    log_info "dns" "pageSize为 $pageSize"
   fi
+
+  # 验证输入为数字
+  if ! [[ $pageSize =~ ^[0-9]+$ ]]; then
+    log_error "dns" "每页数量必须为数字"
+    readPageSize
+    return
+  fi
+
+  log_info "dns" "每页数量为 $pageSize"
 }
 
 function readRrKeyWord() {
@@ -132,8 +155,8 @@ function readValueKeyWord() {
 }
 
 function quit() {
-  read -p "是否退出(q) :" q
-  if [ "$q" == "q" ] || [ -z $q ]; then
+  read -p "是否退出(q|Enter): " q
+  if [ "$q" == "q" ] || [ -z "$q" ]; then # 修复了变量引用
     log_warn "dns" "退出分页查询域名的解析记录"
     exit 0
   else
@@ -141,12 +164,14 @@ function quit() {
   fi
 }
 
+# 获取支持的域名列表
 function acl() {
   log_info "dns" "获取支持的域名列表"
   dnsapi "" "" "" "" "/acl"
   echo $result | jq
 }
 
+# 检查域名是否在支持列表中
 function acl_contains() {
   local inputDomain=$1
   dnsapi "" "" "" "" "/acl"
@@ -157,10 +182,11 @@ function acl_contains() {
     log_info "acl" "acl contains $inputDomain"
   else
     log_error "acl" "acl does not contain $inputDomain"
-    exit
+    exit 1 # 添加错误码
   fi
 }
 
+# 新增解析记录
 function addRecord() {
   log_info "dns" "新增解析记录"
   readDomainName
@@ -173,6 +199,7 @@ function addRecord() {
   echo $result | jq
 }
 
+# 查询子域名的所有解析记录
 function getRecords() {
   log_info "dns" "查询子域名的所有解析记录"
   readDomainName
@@ -183,6 +210,7 @@ function getRecords() {
   echo $result | jq
 }
 
+# 删除子域名的所有解析记录
 function deleteRecords() {
   log_warn "dns" "删除子域名的所有解析记录"
   readDomainName
@@ -193,15 +221,23 @@ function deleteRecords() {
   echo $result | jq
 }
 
+# 删除并新增解析记录
 function deleteThenAddRecord() {
   log_info "dns" "删除子域名的所有解析记录，然后新增解析记录"
   deleteRecords
   addRecord
 }
 
+# 分页查询域名解析记录
+# 参数：$1-页码 $2-每页数量 $3-主机记录关键字 $4-记录值关键字
 function getDomainRecords() {
-  log_info "dns" "分页查询域名的解析记录 domainName=$domainName pageNumber=$pageNumber pageSize=$pageSize"
-  dnsapi $domainName "" "" "" "/getDomainRecords" $1 $2 $3 $4
+  local pageNum=$1
+  local pageSz=$2
+  local rrKw=$3
+  local valueKw=$4
+
+  log_info "dns" "分页查询域名的解析记录 domainName=$domainName pageNumber=$pageNum pageSize=$pageSz"
+  dnsapi $domainName "" "" "" "/getDomainRecords" $pageNum $pageSz $rrKw $valueKw
 
   local code=$(echo $result | jq -r ".code")
 
@@ -210,12 +246,12 @@ function getDomainRecords() {
     sleep 1
     local data=$(echo $result | jq -r ".data")
     local totalCount=$(echo $result | jq -r ".totalCount")
-    log_info "dns" "分页查询域名的解析记录 domainName=$domainName pageNumber=$1 pageSize=$2 totalCount=$totalCount \n"
+    log_info "dns" "分页查询域名的解析记录 domainName=$domainName pageNumber=$1 pageSize=$2 totalCount=$totalCount"
     echo $data | jq -c '.[]'
   }
 
   if [ $code -eq 200 ]; then
-    clearAndList $1 $2
+    clearAndList $pageNum $pageSz
     local rtPageNumber=$(echo $result | jq -r ".pageNumber")
     local totalPage=$(echo $result | jq -r ".totalPage")
 
@@ -224,32 +260,37 @@ function getDomainRecords() {
     fi
 
     while true; do
-      read -p "查询上一页(p) 查询下一页(n|Enter) 退出(q) :" pn
-      if [ "$pn" == "q" ]; then
+      read -p "查询上一���(p) 查询下一页(n|Enter) 退出(q): " pn
+      case "$pn" in
+      q)
         log_warn "dns" "退出分页查询域名的解析记录"
         exit 0
-      elif [ "$pn" == "n" ] || [ -z "$pn" ]; then
+        ;;
+      n | "")
         if [ $rtPageNumber -ge $totalPage ]; then
-          getDomainRecords 1 $pageSize $3 $4
-          continue
+          getDomainRecords 1 $pageSz $rrKw $valueKw
         else
-          getDomainRecords $((rtPageNumber + 1)) $pageSize $3 $4
+          getDomainRecords $((rtPageNumber + 1)) $pageSz $rrKw $valueKw
         fi
-      elif [ "$pn" == "p" ]; then
+        ;;
+      p)
         if [ $rtPageNumber -eq 1 ]; then
-          getDomainRecords $totalPage $pageSize $3 $4
-          continue
+          getDomainRecords $totalPage $pageSz $rrKw $valueKw
+        else
+          getDomainRecords $((rtPageNumber - 1)) $pageSz $rrKw $valueKw
         fi
-        getDomainRecords $((rtPageNumber - 1)) $pageSize $3 $4
-      fi
+        ;;
+      *)
+        log_warn "dns" "无效的输入，请重新选择"
+        ;;
+      esac
     done
-
   else
     log_error "dns" "分页查询域名的解析记录失败"
   fi
-
 }
 
+# 主程序处理逻辑
 case $dns_operate in
 0)
   acl
