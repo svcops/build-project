@@ -1,107 +1,146 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2028
-[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
-source <(curl -sSL $ROOT_URI/func/ostype.sh)
-source <(curl -sSL $ROOT_URI/func/command_exists.sh)
+set -euo pipefail  # 严格模式：遇到错误立即退出，未定义变量报错
+
+# 初始化根URI和依赖
+[ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
+
+source <(curl -sSL "$ROOT_URI/func/log.sh")
+source <(curl -sSL "$ROOT_URI/func/ostype.sh")
+source <(curl -sSL "$ROOT_URI/func/command_exists.sh")
+
+# 全局变量初始化
+declare -g image=""
+declare -g build_cmd=""
+declare -g build_dir=""
 
 log "node build" ">>> start <<<"
-function end() {
+
+function cleanup() {
   log "node build" ">>> end <<<"
 }
+trap cleanup EXIT
 
-image=""
-build=""
-build_dir=""
+function show_usage() {
+  cat << EOF
+Node.js Build Script Usage:
+  -i  Node.js Docker image (required)
+  -x  Node.js build command (required), e.g.: "npm install && npm run build"
+  -d  Project build directory (optional, default: current directory)
+  -h  Show this help message
 
-function tips() {
-  log_info "tips" "-d node's build directory"
-  log_info "tips" "-i node's docker image"
-  log_info "tips" "-x node's build command"
+Examples:
+  $0 -i node:18-alpine -x "npm install && npm run build"
+  $0 -i node:16 -x "npm ci && npm run test" -d /path/to/project
+  $0 -i node:latest -x "yarn install && yarn build"
+EOF
 }
 
-while getopts ":i:x:d:" opt; do
-  case ${opt} in
-  d)
-    log_info "get opts" "process's build_dir; build_dir is: $OPTARG"
-    build_dir=$OPTARG
-    ;;
-  i)
-    log_info "get opts" "process's image; docker's image is: $OPTARG"
-    image=$OPTARG
-    ;;
-  x)
-    log_info "get opts" "process's command; node's command is: $OPTARG"
-    build=$OPTARG
-    ;;
-  \?)
-    log_info "get opts" "Invalid option: -$OPTARG"
-    tips
-    end
-    exit 1
-    ;;
-  :)
-    log_info "get opts" "Invalid option: -$OPTARG requires an argument"
-    tips
-    end
-    exit 1
-    ;;
-  esac
-done
+function parse_arguments() {
+  while getopts ":i:x:d:h" opt; do
+    case ${opt} in
+    d)
+      log_info "get opts" "build_dir: $OPTARG"
+      build_dir="$OPTARG"
+      ;;
+    i)
+      log_info "get opts" "docker image: $OPTARG"
+      image="$OPTARG"
+      ;;
+    x)
+      log_info "get opts" "node command: $OPTARG"
+      build_cmd="$OPTARG"
+      ;;
+    h)
+      show_usage
+      exit 0
+      ;;
+    \?)
+      log_error "get opts" "Invalid option: -$OPTARG"
+      show_usage
+      exit 1
+      ;;
+    :)
+      log_error "get opts" "Option -$OPTARG requires an argument"
+      show_usage
+      exit 1
+      ;;
+    esac
+  done
+}
 
-function validate_param() {
-  local key=$1
-  local value=$2
-  if [ -z "$value" ]; then
-    log_error "validate_param" "parameter $key is empty, then exit"
-    tips
-    end
+function validate_params() {
+  local required_params=("image" "build_cmd")
+  
+  # 验证必需参数
+  for param in "${required_params[@]}"; do
+    if [ -z "${!param}" ]; then
+      log_error "validation" "Parameter '$param' is required"
+      show_usage
+      exit 1
+    fi
+    log_info "validation" "$param: ${!param}"
+  done
+
+  # 验证构建目录
+  if [ -z "$build_dir" ]; then
+    build_dir="$(pwd)"
+    log_info "build_dir" "Using current directory: $build_dir"
+  elif [ ! -d "$build_dir" ]; then
+    log_error "build_dir" "Build directory not found: $build_dir"
     exit 1
+  fi
+
+  # 验证Docker命令
+  if ! command_exists docker; then
+    log_error "docker" "Docker command not found. Please install Docker first."
+    exit 1
+  fi
+  log_info "docker" "Docker command available"
+}
+
+function execute_node_build() {
+  log_info "build" "=== Starting Node.js build in Docker ==="
+  log_info "build" "Image: $image"
+  log_info "build" "Command: $build_cmd"
+  log_info "build" "Build directory: $build_dir"
+
+  local docker_args=(
+    "--rm"
+    "-u" "root"
+    "-v" "$build_dir:/opt/app/node"
+    "-w" "/opt/app/node"
+  )
+
+  # Windows环境特殊处理
+  if is_windows; then
+    log_info "build" "Windows environment detected"
+    export MSYS_NO_PATHCONV=1
   else
-    log_info "validate_param" "parameter $key : $value"
+    log_info "build" "Linux environment detected"
+    docker_args+=("--network=host")
+  fi
+
+  log_info "build" "Executing: docker run ${docker_args[*]} $image $build_cmd"
+  
+  docker run "${docker_args[@]}" "$image" $build_cmd
+  
+  if [ $? -eq 0 ]; then
+    log_info "build" "Node.js build completed successfully"
+  else
+    log_error "build" "Node.js build failed"
+    exit 1
   fi
 }
 
-validate_param "image" "$image"
-validate_param "build" "$build"
+# 主执行流程
+function main() {
+  parse_arguments "$@"
+  validate_params
+  execute_node_build
+  log_info "build" "All operations completed successfully"
+}
 
-if [ -z "$build_dir" ]; then
-  log_info "build_dir" "build_dir is empty then use current directory"
-  build_dir="$(pwd)"
-elif [ ! -d "$build_dir" ]; then
-  log_error "build_dir" "build_dir is not a valid paths"
-  exit 1
-fi
-
-if command_exists docker; then
-  log_info "command_exists" "docker command exists"
-else
-  log_error "command_exists" "docker command does not exist"
-  end
-  exit 1
-fi
-
-log_info "build" "========== build node's project in docker =========="
-
-if is_windows; then
-  log_info "build" "build in windows"
-  log_info "build" "docker run --rm -u root -v $build_dir:/opt/app/node  -w /opt/app/node $image $build"
-  export MSYS_NO_PATHCONV=1
-  docker run --rm -u root \
-    -v "$build_dir":/opt/app/node \
-    -w /opt/app/node \
-    "$image" \
-    $build
-else
-  log_info "build" "build in linux"
-  log_info "build" "docker run --rm -u root --network=host -v $build_dir:/opt/app/node  -w /opt/app/node $image $build"
-  docker run --rm -u root \
-    --network=host \
-    -v "$build_dir":/opt/app/node \
-    -w /opt/app/node \
-    "$image" \
-    $build
-fi
-
-end
+# 执行主函数
+main "$@"
