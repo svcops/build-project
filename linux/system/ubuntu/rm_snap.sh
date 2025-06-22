@@ -1,6 +1,8 @@
 #!/bin/bash
 # shellcheck disable=SC2164 disable=SC2086 disable=SC1090
-source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+export ROOT_URI=$ROOT_URI
+
 source <(curl -sSL $ROOT_URI/func/log.sh)
 source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
@@ -41,11 +43,11 @@ function remove_snap() {
   }
 
   function reject_apt_install() {
-    sudo sh -c "cat > /etc/apt/preferences.d/no-snapd.pref" <<EOL
+    sudo sh -c "cat > /etc/apt/preferences.d/no-snapd.pref" <<EOF
 Package: snapd
 Pin: release a=*
 Pin-Priority: -10
-EOL
+EOF
   }
 
   function validate() {
