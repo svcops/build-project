@@ -1,22 +1,26 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028 disable=SC2181 disable=SC2046 disable=SC2162
-[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
+set -euo pipefail
+
+[ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
+  export ROOT_URI=$ROOT_URI
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
-source <(curl -sSL $ROOT_URI/func/command_exists.sh)
+source <(curl -sSL "$ROOT_URI/func/log.sh")
+source <(curl -sSL "$ROOT_URI/func/command_exists.sh")
 
 log_info "migrate" "migrate docker's image"
 
 if ! command_exists docker; then
   log_error "migrate" "docker not found, please install docker first"
+  exit 1
 fi
 
-from_image=$1
-to_image=$2
-skip_pull=$3
+from_image="${1:-}"
+to_image="${2:-}"
+skip_pull="${3:-n}"
 
-if [ -z $skip_pull ];then
+if [ -z $skip_pull ]; then
   skip_pull="n"
 fi
 
@@ -25,7 +29,7 @@ if [ -z "$from_image" ]; then
   exit 1
 fi
 
-if [ -z "$to_image" ]; then
+if [[ -z "$to_image" ]]; then
   log_error "migrate" "to_image is empty"
   exit 1
 fi
@@ -33,20 +37,16 @@ fi
 log_info "migrate" "from: $from_image"
 log_info "migrate" " to : $to_image"
 
-function image_exists() {
+image_exists() {
   local image_name_tag="$1"
-  if [ $(docker image ls $image_name_tag | wc -l) -ge 2 ]; then
-    return 0
-  else
-    return 1
-  fi
+  docker image inspect "$image_name_tag" &>/dev/null
+  return $?
 }
 
-function docker_pull() {
+docker_pull() {
   local image_name_tag="$1"
-  docker pull --platform linux/amd64 $image_name_tag
-  if [ $? -ne 0 ]; then
-    log_error "migrate" "docker pull --platform linux/amd64 $from_image failed"
+  if ! docker pull --platform linux/amd64 "$image_name_tag"; then
+    log_error "migrate" "docker pull --platform linux/amd64 $image_name_tag failed"
     exit 1
   fi
 }
@@ -55,6 +55,9 @@ function docker_pull() {
 if image_exists $from_image; then
   if [ "$skip_pull" == "skip_pull" ]; then
     log_info "migrate" "Image $from_image already exists, skip pull"
+  elif [ "$skip_pull" == "re_pull" ]; then
+    log_info "migrate" "Image $from_image already exists, re-pulling..."
+    docker_pull $from_image
   else
     # 判断是否要再次pull
     read -p "Image $from_image already exists, do you want to pull it again?[default: y] (y/n) :" answer
