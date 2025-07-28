@@ -42,12 +42,12 @@ function parse_arguments() {
       exit 0
       ;;
     \?)
-      log "get opts" "Invalid option: -$OPTARG"
+      log_info "get opts" "Invalid option: -$OPTARG"
       show_usage
       exit 1
       ;;
     :)
-      log "get opts" "Option -$OPTARG requires an argument"
+      log_info "get opts" "Option -$OPTARG requires an argument"
       show_usage
       exit 1
       ;;
@@ -58,7 +58,12 @@ function parse_arguments() {
 function validate_params() {
   # 检查必需参数
   for key in cache image build_cmd; do
-    [[ -z "${!key}" ]] && log "validate" "$key is required" && show_usage && exit 1 || log "validate" "$key=${!key}"
+    if [[ -z "${!key}" ]]; then
+      log_error "validate" "$key is required"
+      show_usage
+      exit 1
+    fi
+    log_info "validate" "$key=${!key}"
   done
 
   # 构建目录
@@ -77,11 +82,11 @@ function validate_params() {
   fi
 
   # Docker命令
-  command_exists docker || (log "docker" "docker not found" && exit 1)
+  command_exists docker || (log_error "docker" "docker not found" && exit 1)
 }
 
 function execute_build() {
-  log "build" "Starting Go build in Docker"
+  log_info "build" "Starting Go build in Docker"
 
   if is_windows; then
     log_info "build" "Windows detected, disabling path conversion"
@@ -101,10 +106,10 @@ function execute_build() {
 }
 
 # 主流程
-target_main() {
+function main() {
   parse_arguments "$@"
   validate_params
   execute_build
 }
 
-target_main "$@"
+main "$@"
