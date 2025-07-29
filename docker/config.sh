@@ -2,7 +2,6 @@
 # shellcheck disable=SC1090 disable=SC2154 disable=SC2086 disable=SC2028
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
 
-
 source <(curl -sSL $ROOT_URI/func/log.sh)
 source <(curl -sSL $ROOT_URI/func/date.sh)
 
@@ -36,6 +35,13 @@ function write_docker_config() {
   ],
   "exec-opts": [
     "native.cgroupdriver=systemd"
+  ],
+  "bip": "172.10.0.1/16",
+  "default-address-pools": [
+    {
+      "base": "172.11.0.0/16",
+      "size": 24
+    }
   ],
   "data-root": "$data_root",
   "log-opts": {
