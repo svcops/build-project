@@ -1,10 +1,7 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028 disable=SC2181 disable=SC2046 disable=SC2162
+# shellcheck disable=SC1090 disable=SC2162
 set -euo pipefail
-
-[ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) &&
-  export ROOT_URI=$ROOT_URI
-# ROOT_URI=https://dev.kubectl.net
+export ROOT_URI="https://gitlab.com/svcops/build-project/-/raw/main"
 
 source <(curl -sSL "$ROOT_URI/func/log.sh")
 source <(curl -sSL "$ROOT_URI/func/command_exists.sh")
@@ -20,7 +17,7 @@ from_image="${1:-}"
 to_image="${2:-}"
 skip_pull="${3:-n}"
 
-if [ -z $skip_pull ]; then
+if [ -z "$skip_pull" ]; then
   skip_pull="n"
 fi
 
@@ -66,7 +63,7 @@ if image_exists $from_image; then
     fi
 
     if [ "$answer" == "y" ]; then
-      docker_pull $from_image
+      docker_pull "$from_image"
     fi
   fi
 else
@@ -76,11 +73,11 @@ else
   fi
 
   log_info "migrate" "Image $from_image not found, pulling..."
-  docker_pull $from_image
+  docker_pull "$from_image"
 fi
 
 # 再次判断镜像是否存在
-if image_exists $from_image; then
+if image_exists "$from_image"; then
   docker tag "$from_image" "$to_image"
   docker push --platform linux/amd64 "$to_image"
 fi
