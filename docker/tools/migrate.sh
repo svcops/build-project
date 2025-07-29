@@ -82,5 +82,5 @@ fi
 # 再次判断镜像是否存在
 if image_exists $from_image; then
   docker tag "$from_image" "$to_image"
-  docker push "$to_image"
+  docker push --platform linux/amd64 "$to_image"
 fi
