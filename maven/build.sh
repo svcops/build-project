@@ -156,14 +156,13 @@ function execute_maven_build() {
 
   log_info "build" "Executing: docker run ${docker_args[*]} $image $build_cmd"
 
-  docker run "${docker_args[@]}" "$image" $build_cmd
-
-  if [ $? -eq 0 ]; then
+  if docker run "${docker_args[@]}" "$image" $build_cmd; then
     log_info "build" "Maven build completed successfully"
   else
     log_error "build" "Maven build failed"
     exit 1
   fi
+
 }
 
 # 主执行流程
