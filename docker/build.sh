@@ -50,8 +50,8 @@ Docker Build Script Usage:
   -a  Build arg (can be used multiple times), format: KEY=VALUE
 
 Examples:
-  $0 -i myapp -v latest -v v1.0
-  $0 -i myapp -v latest -p true -a ENV=prod -a VERSION=1.0
+  build.sh -i myapp -v latest -v v1.0
+  build.sh -i myapp -v latest -p true -a ENV=prod -a VERSION=1.0
 EOF
 }
 

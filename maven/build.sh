@@ -36,8 +36,8 @@ Maven Build Script Usage:
   -h  Show this help message
 
 Examples:
-  $0 -i maven:3.8-openjdk-17 -x "mvn clean install" -c maven-cache -s ./settings.xml
-  $0 -i maven:3.8-openjdk-17 -x "mvn package" -c maven-cache -s ./settings.xml -d /path/to/project
+  build.sh -i maven:3.8-openjdk-17 -x "mvn clean install" -c maven-cache -s ./settings.xml
+  build.sh -i maven:3.8-openjdk-17 -x "mvn package" -c maven-cache -s ./settings.xml -d /path/to/project
 EOF
 }
 

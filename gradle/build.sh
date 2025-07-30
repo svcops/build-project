@@ -33,8 +33,8 @@ Gradle Build Script Usage:
   -h  Show this help message
 
 Examples:
-  $0 -i gradle:7.6-jdk17 -x "gradle build" -c gradle-cache
-  $0 -i gradle:7.6-jdk17 -x "gradlew clean build" -c gradle-cache -d /path/to/project
+  build.sh -i gradle:7.6-jdk17 -x "gradle build" -c gradle-cache
+  build.sh -i gradle:7.6-jdk17 -x "gradlew clean build" -c gradle-cache -d /path/to/project
 EOF
 }
 

@@ -19,7 +19,7 @@ trap tap_exit EXIT
 # 打印脚本用法
 function show_usage() {
   cat <<EOF
-Usage: $0 -i IMAGE -x BUILD_CMD [-c CACHE_VOLUME] [-d BUILD_DIR] [-h]
+Usage: build.sh -i IMAGE -x BUILD_CMD [-c CACHE_VOLUME] [-d BUILD_DIR] [-h]
 
 Options:
   -i  Golang Docker image               (required)
