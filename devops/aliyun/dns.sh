@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028 disable=SC2162
+# shellcheck disable=SC1090,SC2086,SC2155,SC2128,SC2028,SC2162
 source <(curl -sSL https://dev.kubectl.net/func/log.sh)
 
 # 检查必要的环境变量

@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2115  disable=SC2162  disable=SC2086
+# shellcheck disable=SC2115 disable=SC2162 disable=SC2086
 read -p "use taos default dir config? (y/n): " useDefault
 
 if [ "$useDefault" == "y" ]; then

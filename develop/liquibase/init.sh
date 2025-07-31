@@ -1,12 +1,11 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2086 disable=SC2028
+# shellcheck disable=SC1090,SC2086,SC2028,SC2162
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
 
 current_dir=$(pwd)
 
-# shellcheck disable=SC2162
 read -p "Confirm init liquibase in [$current_dir] (y/n)" confirm
 
 function init_liquibase() {
