@@ -1,6 +1,7 @@
 # build project
 
 <!-- TOC -->
+
 * [build project](#build-project)
   * [basic variables](#basic-variables)
   * [functions](#functions)
@@ -26,6 +27,7 @@
   * [proxy config](#proxy-config)
     * [bashrc proxy config](#bashrc-proxy-config)
     * [docker daemon proxy config](#docker-daemon-proxy-config)
+
 <!-- TOC -->
 
 ## basic variables
@@ -216,12 +218,12 @@ bash <(curl -sSL $ROOT_URI/docker/build.sh) \
 - `-t`: 对于存在的镜像，重新tag的版本
 - `-p`: 是否push到仓库中
 
-[example (build goland' project and push)](https://github.com/iprt/ifconfig/blob/main/build.sh)
+[example (build goland' project and push)](https://github.com/svcops/ifconfig/blob/main/build.sh)
 
 ### remove docker's image
 
 ```shell
-bash <(curl -sSL $ROOT_URI/docker/rmi.sh) \
+bash <(curl -sSL $ROOT_URI/docker/tools/rmi.sh) \
   -i image_name \
   -s strategy
 
