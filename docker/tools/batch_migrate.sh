@@ -6,11 +6,30 @@ echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
 source <(curl -sSL $ROOT_URI/func/ostype.sh)
+source <(curl -sSL $ROOT_URI/func/command_exists.sh)
 
 if is_windows; then
   log_info "build" "build in windows"
   export MSYS_NO_PATHCONV=1
 fi
+
+function prepare() {
+  if command_exists docker; then
+    log_info "docker" "found"
+  else
+    log_error "docker" "not found, please install docker first"
+    exit 1
+  fi
+
+  if command_exists jq; then
+    log_info "jq" "found"
+  else
+    log_error "jq" "not found, please install jq first"
+    exit 1
+  fi
+}
+
+prepare
 
 declare -g config_json="$1"
 declare -g test_mode=${2:-false}
