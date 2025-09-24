@@ -99,6 +99,11 @@ function migrate() {
       local platforms
 
       target_name=$(jq -r '.image_name' <<<"$target")
+      if [[ -z $target_name ]]; then
+        log_warn "to entry" "skip invalid entry: $target"
+        continue
+      fi
+
       mapfile -t platforms < <(jq -r '.platforms[]?' <<<"$target" | tr -d '\r')
 
       # 如果 platforms 为空，默认 linux/amd64
@@ -132,10 +137,10 @@ function migrate() {
 }
 
 function main() {
-  log_info "mirror" "start migrate from docker hub to other registry"
+  log_info "batch_migrate" "start batch migrate from docker hub to other registry"
   read_config_json
   migrate
-  log_info "mirror" "migrate completed"
+  log_info "batch_migrate" "batch migrate completed"
 }
 
 main "$@"
