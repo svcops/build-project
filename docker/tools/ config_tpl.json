@@ -1,0 +1,26 @@
+{
+  "from": {
+    "image_name": "node",
+    "tags": [
+      "16",
+      "18",
+      "20",
+      "22"
+    ]
+  },
+  "to": [
+    {
+      "image_name": "registry.cn-shanghai.aliyuncs.com/iproute/node",
+      "platforms": [
+        "linux/amd64"
+      ]
+    },
+    {
+      "image_name": "cr.nginx.co/node",
+      "platforms": [
+        "linux/amd64",
+        "linux/arm64"
+      ]
+    }
+  ]
+}
