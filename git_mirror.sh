@@ -1,10 +1,8 @@
 #!/bin/bash
-# shellcheck disable=SC2164
-SHELL_FOLDER=$(cd "$(dirname "$0")" && pwd)
-cd "$SHELL_FOLDER"
+# shellcheck disable=SC2164,SC2086,SC1090
+SHELL_FOLDER=$(cd "$(dirname "$0")" && pwd) && cd "$SHELL_FOLDER"
+source <(curl -sSL https://dev.kubectl.net/git/mirrors.sh)
 
-echo "mirror to gitlab"
-git push git@gitlab.com:svcops/build-project main
-
-echo "mirror to github"
-git push --mirror git@github.com:svcops/build-project
+mirror_to_code "devops/build-project"
+mirror_to_gitlab "svcops/build-project"
+mirror_to_github "svcops/build-project"
