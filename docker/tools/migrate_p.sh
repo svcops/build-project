@@ -20,7 +20,7 @@ declare -g pull_action=""
 
 function show_usage() {
   cat <<EOF
-Usage: migrate_new.sh [options]
+Usage: migrate_p.sh [options]
 Options:
   -s <from>       Source image name (e.g., openjdk:8-jdk)
   -t <to>         Target image name (e.g., registry.cn-shanghai.aliyuncs.com/iproute/openjdk:8-jdk)
@@ -68,27 +68,27 @@ function parse_params() {
 }
 
 function validate_params() {
-  if [ -z "$from" ]; then
+  [[ -z "$from" ]] && {
     log_error "validate params" "Source image name (-s) is required"
     show_usage
     exit 1
-  fi
+  }
 
-  if [ ${#to_list[@]} -eq 0 ]; then
+  [[ ${#to_list[@]} -eq 0 ]] && {
     log_error "validate params" "Target image name (-t) is required"
     show_usage
     exit 1
-  fi
+  }
 
-  if [ ${#platforms[@]} -eq 0 ]; then
+  [[ ${#platforms[@]} -eq 0 ]] && {
     log_info "validate params" "No platforms specified, defaulting to linux/amd64"
     platforms=("linux/amd64")
-  fi
+  }
 
-  if [ -z "$pull_action" ]; then
+  [[ -z "$pull_action" ]] && {
     log_info "validate params" "No pull action specified, defaulting to other"
     pull_action="other"
-  fi
+  }
 
   log_info "validate params" "from: $from, to_list: ${to_list[*]}, platforms: ${platforms[*]}, pull_action: $pull_action"
 }

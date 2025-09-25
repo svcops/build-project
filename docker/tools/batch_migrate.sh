@@ -17,7 +17,6 @@ fi
 
 [ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 echo -e "\033[0;32mROOT_URI=$ROOT_URI\033[0m"
-# export ROOT_URI=https://dev.kubectl.net
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
 source <(curl -sSL $ROOT_URI/func/ostype.sh)
@@ -28,23 +27,15 @@ if is_windows; then
   export MSYS_NO_PATHCONV=1
 fi
 
-function prepare() {
-  if command_exists docker; then
-    log_info "docker" "found"
-  else
-    log_error "docker" "not found, please install docker first"
-    exit 1
-  fi
-
-  if command_exists jq; then
-    log_info "jq" "found"
-  else
-    log_error "jq" "not found, please install jq first"
-    exit 1
-  fi
+command_exists docker || {
+  log_error "prepare" "docker not found, please install docker first"
+  exit 1
 }
 
-prepare
+command_exists jq || {
+  log_error "prepare" "jq not found, please install jq first"
+  exit 1
+}
 
 from_image_name=""
 tags=()
@@ -102,22 +93,22 @@ function migrate() {
       local platforms
 
       target_name=$(jq -r '.image_name' <<<"$target")
-      if [[ -z $target_name ]]; then
+      [[ -z $target_name ]] && {
         log_warn "to entry" "skip invalid entry: $target"
         continue
-      fi
+      }
 
       mapfile -t platforms < <(jq -r '.platforms[]?' <<<"$target" | tr -d '\r')
 
       # 如果 platforms 为空，默认 linux/amd64
-      if [[ ${#platforms[@]} -eq 0 ]]; then
+      [[ ${#platforms[@]} -eq 0 ]] && {
         platforms=("linux/amd64")
-      fi
+      }
 
-      if [[ -z $target_name || "$target_name" == "null" ]]; then
+      [[ -z $target_name || "$target_name" == "null" ]] && {
         log_warn "to entry" "skip invalid entry: $target"
         continue
-      fi
+      }
 
       local to="$target_name:$tag"
 
