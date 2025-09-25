@@ -16,13 +16,13 @@ function show_usage() {
   cat <<EOF
 GitHub Tag Download Script Usage:
   -r  GitHub repository name (required), e.g.: "openresty/lua-nginx-module"
-  -o  Target directory name (optional, default: derived from repo name)
+  -o  Target file name (optional, default: repo name's basename) with version tag, e.g.: "lua-nginx-module-v0.10.28.tar.gz"
   -x  Proxy server (optional, default: no proxy)
   -v  Specific version tag to download (optional, default: latest tag)
   -h  Show this help message
 Examples:
-  $0 -r openresty/lua-nginx-module -o lua-nginx-module -x http://
-  $0 -r openresty/lua-resty-core -v v0.1.20
+  ./dl_archive.sh -r openresty/lua-nginx-module -o lua-nginx-module -x http://
+  ./dl_archive.sh -r openresty/lua-resty-core -v v0.1.20
 EOF
 
 }
