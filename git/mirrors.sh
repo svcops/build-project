@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2086
 
 function is_same_repo() {
   local repo_url=$1
@@ -41,8 +42,7 @@ function mirror_to_code() {
     return 1
   }
 
-  echo "mirror to code repo: $code_repo"
-  echo "             branch: $branch"
+  echo "mirror to code repo: $code_repo, branch: $branch"
   git push --mirror $code_repo
 }
 
@@ -64,8 +64,7 @@ function mirror_to_gitlab() {
     echo "cannot get current branch"
     return 1
   }
-  echo "mirror to gitlab repo: $gitlab_repo"
-  echo "               branch: $branch"
+  echo "mirror to gitlab repo: $gitlab_repo, branch: $branch"
   git push $gitlab_repo $branch
 }
 
