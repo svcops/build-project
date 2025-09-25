@@ -1,86 +1,107 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2034 disable=SC2086 disable=SC2028
-[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
+
+[ -z "$ROOT_URI" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
-source <(curl -sSL $ROOT_URI/func/command_exists.sh)
+source <(curl -sSL "$ROOT_URI/func/log.sh")
+source <(curl -sSL "$ROOT_URI/func/command_exists.sh")
 
 log_info "ufw" "config ufw"
 
-function detect_ssh_port() {
-  ssh_port=$(bash <(curl -sSL $ROOT_URI/func/ssh_port.sh))
+# -------------------------------
+# Detect SSH port
+# -------------------------------
+detect_ssh_port() {
+  ssh_port=$(bash <(curl -sSL "$ROOT_URI/func/ssh_port.sh"))
   log_info "ssh_port" "ssh port is $ssh_port"
 }
 
-detect_ssh_port
-
-function install_ufw() {
-  apt-get install -y ufw
+# -------------------------------
+# Install UFW
+# -------------------------------
+install_ufw() {
+  log_info "ufw" "install ufw"
+  apt-get update -y && apt-get install -y ufw
 }
 
-function config_ufw() {
-  log_info "ufw_config" "IPV6=no"
-  if [ -f "/etc/default/ufw" ]; then
-    sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
+# -------------------------------
+# Config UFW
+# -------------------------------
+config_ufw() {
+  log_info "ufw_config" "set IPV6=no"
+  if [[ -f "/etc/default/ufw" ]]; then
+    sed -i 's/^IPV6=yes/IPV6=no/' /etc/default/ufw
   fi
 }
 
-function enable_ufw() {
-  log_info "ufw" "enable_ufw"
+# -------------------------------
+# Enable UFW
+# -------------------------------
+enable_ufw() {
+  log_info "ufw" "enable ufw"
   systemctl enable ufw
-  echo -e "y\n" | ufw enable
-  ufw status
+  ufw --force enable
+  ufw status verbose
 }
 
-function ufw_allow_ssh() {
-  log_info "ufw" "ufw_allow_ssh"
-  ufw allow $ssh_port
+# -------------------------------
+# Allow Rules
+# -------------------------------
+ufw_allow_ssh() {
+  log_info "ufw" "allow ssh on port $ssh_port"
+  ufw allow "$ssh_port"
   ufw reload
-  ufw status
+  ufw status verbose
 }
 
-function ufw_allow_80_443() {
-  log_info "ufw" "ufw_allow_ssh"
-  #  ufw allow 80
-  #  ufw allow 443
-  #  ufw reload
-  #  ufw status
+ufw_allow_web() {
+  log_info "ufw" "allow http/https"
+  ufw allow 80
+  ufw allow 443
+  ufw reload
+  ufw status verbose
 }
 
-function tips() {
-  log_info "tips" "install strategy: oi (only install and do not config), oics (install and config ssh)"
+# -------------------------------
+# Tips
+# -------------------------------
+tips() {
+  log_info "tips" "install strategy:"
+  log_info "tips" "  oi   = only install (do not config)"
+  log_info "tips" "  oics = install, config ssh & web"
   log_info "tips" "e.g.: bash <(curl -sSL $ROOT_URI/linux/ufw/install_apt.sh) oi"
   log_info "tips" "e.g.: bash <(curl -sSL $ROOT_URI/linux/ufw/install_apt.sh) oics"
 }
 
-strategy=$1
+# -------------------------------
+# Main
+# -------------------------------
+main() {
+  local strategy=$1
+  detect_ssh_port
 
-if command_exists ufw; then
-
-  echo "ufw is installed."
-  if [ "$strategy" == "oics" ]; then
-    enable_ufw
-    config_ufw
-    ufw_allow_ssh
-    ufw_allow_80_443
+  if command_exists ufw; then
+    log_info "ufw" "ufw is already installed"
   else
-    tips
+    log_info "ufw" "ufw is NOT installed"
+    [[ "$strategy" =~ ^(oi|oics)$ ]] && install_ufw
   fi
 
-else
+  case "$strategy" in
+    oics)
+      enable_ufw
+      config_ufw
+      ufw_allow_ssh
+      ufw_allow_web
+      ;;
+    oi)
+      log_info "ufw" "only installed, no config"
+      ;;
+    *)
+      tips
+      ;;
+  esac
+}
 
-  echo "ufw is NOT installed."
-  if [ "$strategy" == "oi" ]; then
-    install_ufw
-  elif [ "$strategy" == "oics" ]; then
-    install_ufw
-    enable_ufw
-    config_ufw
-    ufw_allow_ssh
-    ufw_allow_80_443
-  else
-    tips
-  fi
-
-fi
+main "$1"
