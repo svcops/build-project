@@ -36,13 +36,24 @@ EOF
 function parse_arguments() {
   while getopts ":r:o:x:v:h" opt; do
     case ${opt} in
-      r) repo="$OPTARG";;
-      o) target_name="$OPTARG";;
-      x) proxy="$OPTARG";;
-      v) specified_version="$OPTARG";;
-      h) show_usage; exit 0;;
-      \?) log_error "opts" "Invalid option: -$OPTARG"; show_usage; exit 1;;
-      :)  log_error "opts" "Option -$OPTARG requires an argument"; show_usage; exit 1;;
+      r) repo="$OPTARG" ;;
+      o) target_name="$OPTARG" ;;
+      x) proxy="$OPTARG" ;;
+      v) specified_version="$OPTARG" ;;
+      h)
+        show_usage
+        exit 0
+        ;;
+      \?)
+        log_error "opts" "Invalid option: -$OPTARG"
+        show_usage
+        exit 1
+        ;;
+      :)
+        log_error "opts" "Option -$OPTARG requires an argument"
+        show_usage
+        exit 1
+        ;;
     esac
   done
 }
@@ -80,8 +91,10 @@ function validate_params() {
   fi
 
   if [ -z "$specified_version" ]; then
+    log_info "validate" "No version specified, fetching latest tag"
     version=$(fetch_latest_tag)
   else
+    log_info "validate" "Using specified version: $specified_version"
     version="$specified_version"
   fi
 
