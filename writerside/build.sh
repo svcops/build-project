@@ -34,8 +34,8 @@ Description:
   The build requires a 'Writerside' directory in the project root.
 
 Examples:
-  $0 -i my-docs
-  $0 -i my-docs -d /path/to/project
+  ./build.sh -i my-docs
+  ./build.sh -i my-docs -d /path/to/project
   
 Build Image: $BUILD_IMAGE
 EOF

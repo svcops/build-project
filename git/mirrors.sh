@@ -1,93 +1,103 @@
 #!/bin/bash
 # shellcheck disable=SC2086 disable=SC1090 disable=SC2181
+
 [ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 export ROOT_URI=$ROOT_URI
 source <(curl -sSL "$ROOT_URI/func/log.sh")
 
+# 归一化仓库 URL
+function normalize_repo_url() {
+  local url=$1
+
+  # 去掉结尾 .git
+  url=${url%.git}
+  # 去掉结尾 /
+  url=${url%/}
+
+  # ssh => https 格式统一
+  url=$(echo "$url" |
+    sed -E 's#^git@([^:]+):#https://\1/#')
+
+  echo "$url"
+}
+
+# 判断是否相同仓库
 function is_same_repo() {
   local repo_url=$1
   local curr_origin=$2
+
   [[ -z "$curr_origin" ]] && {
-    log_info "origin" "get current origin from git command"
-    curr_origin=$(git remote get-url origin)
-    curr_origin=${curr_origin%.git}
+    curr_origin=$(git remote get-url origin 2>/dev/null || echo "")
   }
 
   if [[ -z "$curr_origin" ]]; then
     log_error "origin" "cannot get current origin"
-    exit 1
+    return 2
   fi
 
-  [[ "$repo_url" == "$curr_origin" ]] && {
+  local n1 n2
+  n1=$(normalize_repo_url "$repo_url")
+  n2=$(normalize_repo_url "$curr_origin")
+
+  [[ "$n1" == "$n2" ]]
+}
+
+# 获取当前分支（若未传入）
+function get_branch() {
+  local branch=$1
+  if [[ -z "$branch" ]]; then
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  fi
+  [[ -z "$branch" ]] && {
+    log_error "branch" "cannot determine branch"
+    return 1
+  }
+  echo "$branch"
+}
+
+# 通用 mirror 函数
+function mirror_repo() {
+  local repo_url=$1
+  local branch=$2
+  local mode=$3 # "mirror" 或 "branch"
+
+  is_same_repo "$repo_url" && {
+    log_warn "mirror" "same repo, skip: $repo_url"
     return 0
   }
-  return 1
+
+  branch=$(get_branch "$branch") || return 1
+
+  case "$mode" in
+    mirror)
+      log_info "mirror" "pushing --mirror to $repo_url"
+      git push --mirror "$repo_url"
+      ;;
+    branch)
+      log_info "mirror" "pushing branch '$branch' to $repo_url"
+      git push "$repo_url" "$branch"
+      ;;
+    *)
+      log_error "mirror" "unknown mode: $mode"
+      return 1
+      ;;
+  esac
 }
 
+# code.kubectl.net: 完整镜像
 function mirror_to_code() {
-  local repo=$1
-  local branch=$2
-  local code_repo="https://code.kubectl.net/$1"
-  is_same_repo "$code_repo" && {
-    log_warn "mirror" "same repo, skip mirror to : $code_repo"
-    return
-  }
-
-  [[ -z "$branch" ]] && {
-    log_info "mirror" "get current branch from git command"
-    branch=$(git rev-parse --abbrev-ref HEAD)
-  }
-
-  [[ -z "$branch" ]] && {
-    log_error "mirror" "cannot get current branch"
-    return 1
-  }
-
-  log_info "mirror" "mirror to code repo: $code_repo, branch: $branch"
-  git push --mirror $code_repo
+  local repo=$1 branch=$2
+  mirror_repo "https://code.kubectl.net/$repo" "$branch" mirror
 }
 
-function mirror_to_gitlab() {
-  local repo=$1
-  local branch=$2
-  local gitlab_repo="git@gitlab.com:$repo"
-  is_same_repo "$gitlab_repo" && {
-    log_error "mirror" "same repo, skip mirror to : $gitlab_repo"
-    return
-  }
-
-  [[ -z "$branch" ]] && {
-    log_info "mirror" "get current branch from git command"
-    branch=$(git rev-parse --abbrev-ref HEAD)
-  }
-
-  [[ -z "$branch" ]] && {
-    log_error "mirror" "cannot get current branch"
-    return 1
-  }
-  log_info "mirror" "mirror to gitlab repo: $gitlab_repo, branch: $branch"
-  git push $gitlab_repo $branch
-}
-
+# github: 完整镜像
 function mirror_to_github() {
-  local repo=$1
-  local branch=$2
+  local repo=$1 branch=$2
+  mirror_repo "git@github.com:$repo" "$branch" mirror
+}
 
-  local github_repo="git@github.com:$repo"
-  is_same_repo "$github_repo" && {
-    log_info "mirror" "same repo, skip mirror to : $github_repo"
-    return
-  }
-
-  [[ -z "$branch" ]] && {
-    log_info "mirror" "get current branch from git command"
-    branch=$(git rev-parse --abbrev-ref HEAD)
-  }
-
-  [[ -z "$branch" ]] && {
-    log_error "mirror" "cannot get current branch"
-    return 1
-  }
-  log_info "mirror" "mirror to github repo: $github_repo, branch: $branch"
-  git push --mirror $github_repo
+# gitlab: 仅按分支推
+function mirror_to_gitlab() {
+  local repo=$1 branch=$2
+  mirror_repo "git@gitlab.com:$repo" "$branch" branch
 }

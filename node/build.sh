@@ -31,9 +31,9 @@ Node.js Build Script Usage:
   -h  Show this help message
 
 Examples:
-  $0 -i node:18-alpine -x "npm install && npm run build"
-  $0 -i node:16 -x "npm ci && npm run test" -d /path/to/project
-  $0 -i node:latest -x "yarn install && yarn build"
+  ./build.sh -i node:18-alpine -x "npm install && npm run build"
+  ./build.sh -i node:16 -x "npm ci && npm run test" -d /path/to/project
+  ./build.sh -i node:latest -x "yarn install && yarn build"
 EOF
 }
 
