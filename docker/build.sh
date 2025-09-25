@@ -59,57 +59,57 @@ EOF
 function parse_arguments() {
   while getopts ":m:f:d:i:v:r:t:p:a:h" opt; do
     case ${opt} in
-    m)
-      log_info "get opts" "multi_platform: $OPTARG"
-      multi_platform="$OPTARG"
-      ;;
-    d)
-      log_info "get opts" "build_dir: $OPTARG"
-      build_dir="$OPTARG"
-      ;;
-    f)
-      log_info "get opts" "path_to_dockerfile: $OPTARG"
-      path_to_dockerfile="$OPTARG"
-      ;;
-    i)
-      log_info "get opts" "image_name: $OPTARG"
-      image_name="$OPTARG"
-      ;;
-    v)
-      log_info "get opts" "image_tag: $OPTARG"
-      image_tag="$OPTARG"
-      image_tag_list+=("$OPTARG")
-      ;;
-    r)
-      log_info "get opts" "re_tag_flag: $OPTARG"
-      re_tag_flag="$OPTARG"
-      ;;
-    t)
-      log_info "get opts" "new_tag: $OPTARG"
-      new_tag="$OPTARG"
-      ;;
-    p)
-      log_info "get opts" "push_flag: $OPTARG"
-      push_flag="$OPTARG"
-      ;;
-    a)
-      log_info "get opts" "build_arg: $OPTARG"
-      build_args+=("$OPTARG")
-      ;;
-    h)
-      show_usage
-      exit 0
-      ;;
-    \?)
-      log_error "get opts" "Invalid option: -$OPTARG"
-      show_usage
-      exit 1
-      ;;
-    :)
-      log_error "get opts" "Option -$OPTARG requires an argument"
-      show_usage
-      exit 1
-      ;;
+      m)
+        log_info "get opts" "multi_platform: $OPTARG"
+        multi_platform="$OPTARG"
+        ;;
+      d)
+        log_info "get opts" "build_dir: $OPTARG"
+        build_dir="$OPTARG"
+        ;;
+      f)
+        log_info "get opts" "path_to_dockerfile: $OPTARG"
+        path_to_dockerfile="$OPTARG"
+        ;;
+      i)
+        log_info "get opts" "image_name: $OPTARG"
+        image_name="$OPTARG"
+        ;;
+      v)
+        log_info "get opts" "image_tag: $OPTARG"
+        image_tag="$OPTARG"
+        image_tag_list+=("$OPTARG")
+        ;;
+      r)
+        log_info "get opts" "re_tag_flag: $OPTARG"
+        re_tag_flag="$OPTARG"
+        ;;
+      t)
+        log_info "get opts" "new_tag: $OPTARG"
+        new_tag="$OPTARG"
+        ;;
+      p)
+        log_info "get opts" "push_flag: $OPTARG"
+        push_flag="$OPTARG"
+        ;;
+      a)
+        log_info "get opts" "build_arg: $OPTARG"
+        build_args+=("$OPTARG")
+        ;;
+      h)
+        show_usage
+        exit 0
+        ;;
+      \?)
+        log_error "get opts" "Invalid option: -$OPTARG"
+        show_usage
+        exit 1
+        ;;
+      :)
+        log_error "get opts" "Option -$OPTARG requires an argument"
+        show_usage
+        exit 1
+        ;;
     esac
   done
 }
@@ -201,18 +201,18 @@ function prepare_params() {
 
   # 标准化布尔值
   case "${re_tag_flag,,}" in
-  true | yes | 1) re_tag_flag="true" ;;
-  *) re_tag_flag="false" ;;
+    true | yes | 1) re_tag_flag="true" ;;
+    *) re_tag_flag="false" ;;
   esac
 
   case "${push_flag,,}" in
-  true | yes | 1) push_flag="true" ;;
-  *) push_flag="false" ;;
+    true | yes | 1) push_flag="true" ;;
+    *) push_flag="false" ;;
   esac
 
   case "${multi_platform,,}" in
-  true | yes | 1) multi_platform="true" ;;
-  *) multi_platform="false" ;;
+    true | yes | 1) multi_platform="true" ;;
+    *) multi_platform="false" ;;
   esac
 
   # 处理新标签

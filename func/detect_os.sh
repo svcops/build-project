@@ -32,10 +32,10 @@ source /etc/os-release
 if ! command_exists lsb_release; then
   log "detect_os" "try install lsb-release"
   case "$ID" in
-    debian|ubuntu|devuan)
+    debian | ubuntu | devuan)
       sudo apt-get install -y lsb-release
       ;;
-    centos|fedora|rhel)
+    centos | fedora | rhel)
       pkg_mgr="yum"
       if [ "$(echo "$VERSION_ID >= 22" | bc)" -ne 0 ]; then
         pkg_mgr="dnf"

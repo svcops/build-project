@@ -33,36 +33,36 @@ EOF
 function parse_params() {
   while getopts ":s:t:p:x:h" opt; do
     case ${opt} in
-    s)
-      log_info "get opts" "from: $OPTARG"
-      from=$OPTARG
-      ;;
-    t)
-      log_info "get opts" "to: $OPTARG"
-      to_list+=("$OPTARG")
-      ;;
-    p)
-      log_info "get opts" "platforms: $OPTARG"
-      platforms+=("$OPTARG")
-      ;;
-    x)
-      log_info "get opts" "pull_action: $OPTARG"
-      pull_action=$OPTARG
-      ;;
-    h)
-      show_usage
-      exit 0
-      ;;
-    \?)
-      log_error "get opts" "Invalid option: -$OPTARG"
-      show_usage
-      exit 1
-      ;;
-    :)
-      log_error "get opts" "Option -$OPTARG requires an argument"
-      show_usage
-      exit 1
-      ;;
+      s)
+        log_info "get opts" "from: $OPTARG"
+        from=$OPTARG
+        ;;
+      t)
+        log_info "get opts" "to: $OPTARG"
+        to_list+=("$OPTARG")
+        ;;
+      p)
+        log_info "get opts" "platforms: $OPTARG"
+        platforms+=("$OPTARG")
+        ;;
+      x)
+        log_info "get opts" "pull_action: $OPTARG"
+        pull_action=$OPTARG
+        ;;
+      h)
+        show_usage
+        exit 0
+        ;;
+      \?)
+        log_error "get opts" "Invalid option: -$OPTARG"
+        show_usage
+        exit 1
+        ;;
+      :)
+        log_error "get opts" "Option -$OPTARG requires an argument"
+        show_usage
+        exit 1
+        ;;
     esac
   done
 }

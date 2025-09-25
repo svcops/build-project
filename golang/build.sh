@@ -33,24 +33,24 @@ EOF
 function parse_arguments() {
   while getopts ":c:i:x:d:h" opt; do
     case $opt in
-    c) cache="$OPTARG" ;;     # 缓存卷
-    i) image="$OPTARG" ;;     # Docker镜像
-    x) build_cmd="$OPTARG" ;; # 构建命令
-    d) build_dir="$OPTARG" ;; # 构建目录
-    h)
-      show_usage
-      exit 0
-      ;;
-    \?)
-      log_info "get opts" "Invalid option: -$OPTARG"
-      show_usage
-      exit 1
-      ;;
-    :)
-      log_info "get opts" "Option -$OPTARG requires an argument"
-      show_usage
-      exit 1
-      ;;
+      c) cache="$OPTARG" ;;     # 缓存卷
+      i) image="$OPTARG" ;;     # Docker镜像
+      x) build_cmd="$OPTARG" ;; # 构建命令
+      d) build_dir="$OPTARG" ;; # 构建目录
+      h)
+        show_usage
+        exit 0
+        ;;
+      \?)
+        log_info "get opts" "Invalid option: -$OPTARG"
+        show_usage
+        exit 1
+        ;;
+      :)
+        log_info "get opts" "Option -$OPTARG requires an argument"
+        show_usage
+        exit 1
+        ;;
     esac
   done
 }

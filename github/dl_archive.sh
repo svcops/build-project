@@ -30,36 +30,36 @@ EOF
 function parse_arguments() {
   while getopts ":r:o:x:v:h" opt; do
     case ${opt} in
-    r)
-      log_info "get opts" "repo name: $OPTARG"
-      repo="$OPTARG"
-      ;;
-    o)
-      log_info "get opts" "target name: $OPTARG"
-      target_name="$OPTARG"
-      ;;
-    x)
-      log_info "get opts" "proxy: $OPTARG"
-      proxy="$OPTARG"
-      ;;
-    v)
-      log_info "get opts" "specified version: $OPTARG"
-      specified_version="$OPTARG"
-      ;;
-    h)
-      show_usage
-      exit 0
-      ;;
-    \?)
-      log_error "get opts" "Invalid option: -$OPTARG"
-      show_usage
-      exit 1
-      ;;
-    :)
-      log_error "get opts" "Option -$OPTARG requires an argument"
-      show_usage
-      exit 1
-      ;;
+      r)
+        log_info "get opts" "repo name: $OPTARG"
+        repo="$OPTARG"
+        ;;
+      o)
+        log_info "get opts" "target name: $OPTARG"
+        target_name="$OPTARG"
+        ;;
+      x)
+        log_info "get opts" "proxy: $OPTARG"
+        proxy="$OPTARG"
+        ;;
+      v)
+        log_info "get opts" "specified version: $OPTARG"
+        specified_version="$OPTARG"
+        ;;
+      h)
+        show_usage
+        exit 0
+        ;;
+      \?)
+        log_error "get opts" "Invalid option: -$OPTARG"
+        show_usage
+        exit 1
+        ;;
+      :)
+        log_error "get opts" "Option -$OPTARG requires an argument"
+        show_usage
+        exit 1
+        ;;
     esac
   done
 }

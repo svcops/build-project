@@ -41,36 +41,36 @@ EOF
 function parse_arguments() {
   while getopts ":c:i:x:d:h" opt; do
     case ${opt} in
-    d)
-      log_info "get opts" "build_dir: $OPTARG"
-      build_dir="$OPTARG"
-      ;;
-    c)
-      log_info "get opts" "cache volume: $OPTARG"
-      cache="$OPTARG"
-      ;;
-    i)
-      log_info "get opts" "docker image: $OPTARG"
-      image="$OPTARG"
-      ;;
-    x)
-      log_info "get opts" "gradle command: $OPTARG"
-      build_cmd="$OPTARG"
-      ;;
-    h)
-      show_usage
-      exit 0
-      ;;
-    \?)
-      log_error "get opts" "Invalid option: -$OPTARG"
-      show_usage
-      exit 1
-      ;;
-    :)
-      log_error "get opts" "Option -$OPTARG requires an argument"
-      show_usage
-      exit 1
-      ;;
+      d)
+        log_info "get opts" "build_dir: $OPTARG"
+        build_dir="$OPTARG"
+        ;;
+      c)
+        log_info "get opts" "cache volume: $OPTARG"
+        cache="$OPTARG"
+        ;;
+      i)
+        log_info "get opts" "docker image: $OPTARG"
+        image="$OPTARG"
+        ;;
+      x)
+        log_info "get opts" "gradle command: $OPTARG"
+        build_cmd="$OPTARG"
+        ;;
+      h)
+        show_usage
+        exit 0
+        ;;
+      \?)
+        log_error "get opts" "Invalid option: -$OPTARG"
+        show_usage
+        exit 1
+        ;;
+      :)
+        log_error "get opts" "Option -$OPTARG requires an argument"
+        show_usage
+        exit 1
+        ;;
     esac
   done
 }

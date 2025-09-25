@@ -1,6 +1,7 @@
 # build project
 
 <!-- TOC -->
+
 * [build project](#build-project)
   * [basic variables](#basic-variables)
   * [functions](#functions)
@@ -26,6 +27,7 @@
   * [proxy config](#proxy-config)
     * [bashrc proxy config](#bashrc-proxy-config)
     * [docker daemon proxy config](#docker-daemon-proxy-config)
+
 <!-- TOC -->
 
 ## basic variables
@@ -238,7 +240,7 @@ bash <(curl -sSL $ROOT_URI/docker/tools/rmi.sh) \
 **debian系 安装docker**
 
 ```shell
-bash <(curl -sSL $ROOT_URI/docker/install/install_apt.sh) SRC
+bash <(curl -sSL $ROOT_URI/docker/install.sh) SRC
 ````
 
 - SRC: 源 (`docker` 官方源 / `tsinghua` 清华源 / `aliyun` 阿里云)

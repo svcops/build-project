@@ -32,19 +32,19 @@ else
     exit 1
   fi
 
-#  sudo -u $es_user bash -c '
-##!/bin/bash
-#es_password="$1"
-#if [ -z "$es_password" ]; then
-#  echo "es_password is empty"
-#  exit 1
-#fi
-## Set passwords for built-in users
-#echo -e "y\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n" |
-#  bin/elasticsearch-setup-passwords interactive
-#' bash "$es_password"
+  #  sudo -u $es_user bash -c '
+  ##!/bin/bash
+  #es_password="$1"
+  #if [ -z "$es_password" ]; then
+  #  echo "es_password is empty"
+  #  exit 1
+  #fi
+  ## Set passwords for built-in users
+  #echo -e "y\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n$es_password\n" |
+  #  bin/elasticsearch-setup-passwords interactive
+  #' bash "$es_password"
 
-# 高版本多了一个确定密码的步骤
+  # 高版本多了一个确定密码的步骤
   sudo -u $es_user bash -c '
 #!/bin/bash
 es_password="$1"

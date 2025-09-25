@@ -8,20 +8,20 @@ copy_reference_files() {
   local log="$MAVEN_CONFIG/copy_reference_file.log"
   local ref="/usr/share/maven/ref"
 
-  if mkdir -p "${MAVEN_CONFIG}/repository" && touch "${log}" > /dev/null 2>&1 ; then
-      cd "${ref}"
-      local reflink=""
-      if cp --help 2>&1 | grep -q reflink ; then
-          reflink="--reflink=auto"
-      fi
-      if [ -n "$(find "${MAVEN_CONFIG}/repository" -maxdepth 0 -type d -empty 2>/dev/null)" ] ; then
-          # destination is empty...
-          echo "--- Copying all files to ${MAVEN_CONFIG} at $(date)" >> "${log}"
-          cp -rv ${reflink} . "${MAVEN_CONFIG}" >> "${log}"
-      else
-          # destination is non-empty, copy file-by-file
-          echo "--- Copying individual files to ${MAVEN_CONFIG} at $(date)" >> "${log}"
-          find . -type f -exec sh -eu -c '
+  if mkdir -p "${MAVEN_CONFIG}/repository" && touch "${log}" >/dev/null 2>&1; then
+    cd "${ref}"
+    local reflink=""
+    if cp --help 2>&1 | grep -q reflink; then
+      reflink="--reflink=auto"
+    fi
+    if [ -n "$(find "${MAVEN_CONFIG}/repository" -maxdepth 0 -type d -empty 2>/dev/null)" ]; then
+      # destination is empty...
+      echo "--- Copying all files to ${MAVEN_CONFIG} at $(date)" >>"${log}"
+      cp -rv ${reflink} . "${MAVEN_CONFIG}" >>"${log}"
+    else
+      # destination is non-empty, copy file-by-file
+      echo "--- Copying individual files to ${MAVEN_CONFIG} at $(date)" >>"${log}"
+      find . -type f -exec sh -eu -c '
               log="${1}"
               shift
               reflink="${1}"
@@ -33,8 +33,8 @@ copy_reference_files() {
                   fi
               done
           ' _ "${log}" "${reflink}" {} +
-      fi
-      echo >> "${log}"
+    fi
+    echo >>"${log}"
   else
     echo "Can not write to ${log}. Wrong volume permissions? Carrying on ..."
   fi

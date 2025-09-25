@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2028 disable=SC2155 disable=SC2181
 
-set -euo pipefail  # 严格模式：遇到错误立即退出，未定义变量报错
+set -euo pipefail # 严格模式：遇到错误立即退出，未定义变量报错
 
 # 初始化根URI和依赖
 [ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
@@ -23,7 +23,7 @@ function cleanup() {
 trap cleanup EXIT
 
 function show_usage() {
-  cat << EOF
+  cat <<EOF
 Writerside Build Script Usage:
   -i  Writerside instance name (required)
   -d  Writerside project directory (optional, default: current directory)
@@ -137,12 +137,12 @@ function execute_writerside_build() {
   )
 
   log_info "build" "Executing: docker run ${docker_args[*]} $BUILD_IMAGE"
-  
+
   docker run "${docker_args[@]}" "$BUILD_IMAGE"
-  
+
   if [ $? -eq 0 ]; then
     log_info "build" "Writerside build completed successfully"
-    
+
     # 检查输出目录
     local output_dir="$build_dir/output"
     if [ -d "$output_dir" ]; then

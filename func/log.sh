@@ -20,7 +20,6 @@ _log() {
   fi
 }
 
-
 log() {
   local ts
   ts=$(date +"%Y-%m-%d %H:%M:%S")

@@ -26,26 +26,26 @@ declare -g strategy=""
 function parse_params() {
   while getopts ":i:s:" opt; do
     case ${opt} in
-    i)
-      log_info "get opts" "image name is : $OPTARG"
-      image_name=$OPTARG
-      ;;
-    s)
-      log_info "get opts" "remove strategy is : $OPTARG"
-      strategy=$OPTARG
-      ;;
-    \?)
-      log_error "get opts" "Invalid option: -$OPTARG"
-      show_usage
-      end
-      exit 1
-      ;;
-    :)
-      log_info "get opts" "Invalid option: -$OPTARG requires an argument"
-      show_usage
-      end
-      exit 1
-      ;;
+      i)
+        log_info "get opts" "image name is : $OPTARG"
+        image_name=$OPTARG
+        ;;
+      s)
+        log_info "get opts" "remove strategy is : $OPTARG"
+        strategy=$OPTARG
+        ;;
+      \?)
+        log_error "get opts" "Invalid option: -$OPTARG"
+        show_usage
+        end
+        exit 1
+        ;;
+      :)
+        log_info "get opts" "Invalid option: -$OPTARG requires an argument"
+        show_usage
+        end
+        exit 1
+        ;;
     esac
   done
 }
