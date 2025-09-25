@@ -6,18 +6,32 @@ declare -r NC='\033[0m'            # reset
 
 # 通用日志函数
 _log() {
-  local level="$1" color="$2" remark="${3:-$level}" msg="${4:-- - - - - - -}"
-  local ts=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "${color}${ts} - [${level^^}] [ ${remark} ] ${msg}${NC}"
+  local level="$1" color="$2" remark="$3" msg="$4"
+  local ts
+  ts=$(date +"%Y-%m-%d %H:%M:%S")
+
+  # 判断参数组合
+  if [[ -n "$remark" && -n "$msg" ]]; then
+    echo -e "${color}${ts} - [${level^^}] [ ${remark} ] ${msg}${NC}"
+  elif [[ -n "$remark" ]]; then
+    echo -e "${color}${ts} - [${level^^}] ${remark}${NC}"
+  else
+    echo -e "${color}${ts} - [${level^^}]${NC}"
+  fi
 }
 
+
 log() {
-  local remark="$1"
-  local msg="$2"
-  [[ -z "$remark" ]] && remark="info"
-  [[ -z "$msg" ]] && msg="- - - - - - -"
-  local ts=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "$ts - [INFO ] [ $remark ] $msg"
+  local ts
+  ts=$(date +"%Y-%m-%d %H:%M:%S")
+
+  if [[ -n "$1" && -n "$2" ]]; then
+    echo -e "$ts - [INFO ] [ $1 ] $2"
+  elif [[ -n "$1" ]]; then
+    echo -e "$ts - [INFO ] $1"
+  else
+    echo -e "$ts - [INFO ]"
+  fi
 }
 
 # 具体封装
