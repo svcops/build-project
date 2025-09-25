@@ -58,18 +58,7 @@ function parse_arguments() {
   done
 }
 
-function fetch_latest_tag() {
-  local url="https://api.github.com/repos/$repo/tags"
-  local curl_opts=(-sSL)
-  [ -n "$proxy" ] && curl_opts+=(-x "$proxy")
-  local latest
-  latest=$(curl "${curl_opts[@]}" "$url" | jq -r '.[0].name // empty')
-  if [ -z "$latest" ]; then
-    log_error "fetch tag" "Failed to fetch latest tag"
-    exit 1
-  fi
-  echo "$latest"
-}
+source <(curl -sSL "$ROOT_URI/github/api.sh")
 
 function validate_params() {
   if [ -z "$repo" ]; then
@@ -92,7 +81,13 @@ function validate_params() {
 
   if [ -z "$specified_version" ]; then
     log_info "validate" "No version specified, fetching latest tag"
-    version=$(fetch_latest_tag)
+    version=$(fetch_latest_tag "$repo" "$proxy")
+
+    [[ -z "$version" ]] && {
+      log_error "validate" "Failed to fetch latest tag for $repo"
+      exit 1
+    }
+
   else
     log_info "validate" "Using specified version: $specified_version"
     version="$specified_version"
