@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2028
-
-set -euo pipefail  # 严格模式：遇到错误立即退出，未定义变量报错
+# 严格模式：遇到错误立即退出，未定义变量报错
+set -euo pipefail
 
 # 初始化根URI和依赖
 [ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
@@ -23,7 +23,7 @@ function cleanup() {
 trap cleanup EXIT
 
 function show_usage() {
-  cat << EOF
+  cat <<EOF
 Node.js Build Script Usage:
   -i  Node.js Docker image (required)
   -x  Node.js build command (required), e.g.: "npm install && npm run build"
@@ -72,7 +72,7 @@ function parse_arguments() {
 
 function validate_params() {
   local required_params=("image" "build_cmd")
-  
+
   # 验证必需参数
   for param in "${required_params[@]}"; do
     if [ -z "${!param}" ]; then
@@ -123,9 +123,9 @@ function execute_node_build() {
   fi
 
   log_info "build" "Executing: docker run ${docker_args[*]} $image $build_cmd"
-  
+
   docker run "${docker_args[@]}" "$image" $build_cmd
-  
+
   if [ $? -eq 0 ]; then
     log_info "build" "Node.js build completed successfully"
   else

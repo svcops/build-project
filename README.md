@@ -1,7 +1,6 @@
 # build project
 
 <!-- TOC -->
-
 * [build project](#build-project)
   * [basic variables](#basic-variables)
   * [functions](#functions)
@@ -27,7 +26,6 @@
   * [proxy config](#proxy-config)
     * [bashrc proxy config](#bashrc-proxy-config)
     * [docker daemon proxy config](#docker-daemon-proxy-config)
-
 <!-- TOC -->
 
 ## basic variables
@@ -35,11 +33,11 @@
 > get basic variables
 
 ```shell
+# export ROOT_URI automatically
 source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-export ROOT_URI="$ROOT_URI"
-# cn network
-# export ROOT_URI=https://dev.kubectl.net
 
+# or set manually
+# export ROOT_URI=https://dev.kubectl.net
 ```
 
 ## functions
