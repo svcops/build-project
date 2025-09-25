@@ -1,17 +1,21 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2028 disable=SC2086
-[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
+[ -z "$ROOT_URI" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh) && export ROOT_URI=$ROOT_URI
+source <(curl -sSL "$ROOT_URI/func/log.sh")
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
+# 定义日期格式列表
+declare -A date_formats=(
+  [date_general]='+%Y-%m-%d %H:%M:%S'
+  [datetime_version]='+%Y-%m-%d_%H-%M-%S'
+  [datetime_tight_version]='+%Y%m%d%H%M%S'
+  [date_version]='+%Y-%m-%d'
+  [date_tight_version]='+%Y%m%d'
+)
 
-date_general=$(date '+%Y-%m-%d %H:%M:%S')
-datetime_version=$(date '+%Y-%m-%d_%H-%M-%S')
-datetime_tight_version=$(date '+%Y%m%d%H%M%S')
-date_version=$(date '+%Y-%m-%d')
-date_tight_version=$(date '+%Y%m%d')
-
-log_info "print data version" "data_general:           $date_general"
-log_info "print data version" "datetime_version:       $datetime_version"
-log_info "print data version" "datetime_tight_version: $datetime_tight_version"
-log_info "print data version" "date_version:           $date_version"
-log_info "print data version" "date_tight_version:     $date_tight_version"
+# 循环生成变量并打印
+for var in "${!date_formats[@]}"; do
+  value=$(date "${date_formats[$var]}")
+  # 使用 declare -g 保证在函数外也可访问
+  declare -g "$var=$value"
+  log_info "version" "$var : $value"
+done
