@@ -3,9 +3,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# 初始化根URI和依赖
-[ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-export ROOT_URI=$ROOT_URI
+# 初始化 ROOT_URI
+[ -z "${ROOT_URI:-}" ] && ROOT_URI="https://gitlab.com/iprt/shell-basic/-/raw/main/build-project"
 source <(curl -sSL "$ROOT_URI/func/log.sh")
 
 declare -g repo=""
@@ -16,46 +15,34 @@ declare -g version=""
 
 function show_usage() {
   cat <<EOF
-GitHub Tag Download Script
+GitHub Repo Downloader & Unpacker
 
 Usage:
-  ./dl_archive.sh -r <repo> [-o <output>] [-x <proxy>] [-v <version>] [-h]
+  $(basename "$0") -r <repo> [-o <dir>] [-x <proxy>] [-v <version>] [-h]
 
 Options:
   -r  GitHub repository (必填)，如 "openresty/lua-nginx-module"
-  -o  输出文件前缀 (可选)，默认为仓库名最后一段
+  -o  解压后的目录名 (可选)，默认与 repo 最后一级同名
   -x  代理 (可选)，支持 http:// https:// socks5:// socks5h://
-  -v  指定版本号 (可选)，默认使用最新 tag
+  -v  指定 tag 版本 (可选)，默认使用最新 tag
   -h  显示帮助信息
 
 Examples:
-  ./dl_archive.sh -r openresty/lua-nginx-module
-  ./dl_archive.sh -r openresty/lua-resty-core -v v0.1.20
-  ./dl_archive.sh -r openresty/lua-nginx-module -o lua-nginx -x http://127.0.0.1:7890
+  bash <(curl -sSL https://yourdomain/dl_unpack.sh) -r openresty/lua-nginx-module
+  bash <(curl -sSL https://yourdomain/dl_unpack.sh) -r openresty/lua-resty-core -v v0.1.20
 EOF
 }
 
 function parse_arguments() {
   while getopts ":r:o:x:v:h" opt; do
     case ${opt} in
-      r) repo="$OPTARG" ;;
-      o) target_name="$OPTARG" ;;
-      x) proxy="$OPTARG" ;;
-      v) specified_version="$OPTARG" ;;
-      h)
-        show_usage
-        exit 0
-        ;;
-      \?)
-        log_error "opts" "Invalid option: -$OPTARG"
-        show_usage
-        exit 1
-        ;;
-      :)
-        log_error "opts" "Option -$OPTARG requires an argument"
-        show_usage
-        exit 1
-        ;;
+      r) repo="$OPTARG";;
+      o) target_name="$OPTARG";;
+      x) proxy="$OPTARG";;
+      v) specified_version="$OPTARG";;
+      h) show_usage; exit 0;;
+      \?) log_error "opts" "Invalid option: -$OPTARG"; show_usage; exit 1;;
+      :)  log_error "opts" "Option -$OPTARG requires an argument"; show_usage; exit 1;;
     esac
   done
 }
@@ -64,12 +51,10 @@ function fetch_latest_tag() {
   local url="https://api.github.com/repos/$repo/tags"
   local curl_opts=(-sSL)
   [ -n "$proxy" ] && curl_opts+=(-x "$proxy")
-
   local latest
   latest=$(curl "${curl_opts[@]}" "$url" | jq -r '.[0].name // empty')
-
   if [ -z "$latest" ]; then
-    log_error "fetch tag" "Failed to get latest tag from $url"
+    log_error "fetch tag" "Failed to fetch latest tag"
     exit 1
   fi
   echo "$latest"
@@ -77,14 +62,14 @@ function fetch_latest_tag() {
 
 function validate_params() {
   if [ -z "$repo" ]; then
-    log_error "validate" "Repository name is required"
+    log_error "validate" "Repository is required"
     show_usage
     exit 1
   fi
 
   if [ -z "$target_name" ]; then
     target_name=$(basename "$repo")
-    log_warn "validate" "Target name not specified, using default: $target_name"
+    log_warn "validate" "Target dir not specified, using default: $target_name"
   fi
 
   if [ -n "$proxy" ]; then
@@ -103,7 +88,7 @@ function validate_params() {
   log_info "validate" "repo=$repo, target_name=$target_name, proxy=$proxy, version=$version"
 }
 
-function download_archive() {
+function download_and_unpack() {
   local download_url="https://github.com/$repo/archive/refs/tags/$version.tar.gz"
   local output_file="${target_name}-${version}.tar.gz"
 
@@ -111,19 +96,28 @@ function download_archive() {
   log_info "download" "output=$output_file"
 
   rm -f "$output_file"
-
   local curl_opts=(-SL -o "$output_file")
   [ -n "$proxy" ] && curl_opts+=(-x "$proxy")
-
   curl "${curl_opts[@]}" "$download_url"
 
-  log_info "download" "Download completed: $output_file"
+  # 解压
+  tar zxvf "$output_file"
+
+  # 自动推断解压目录
+  local unpacked_dir
+  unpacked_dir=$(tar -tzf "$output_file" | head -1 | cut -f1 -d"/")
+
+  if [ -n "$target_name" ]; then
+    rm -rf "$target_name"
+    mv "$unpacked_dir" "$target_name"
+    log_info "unpack" "Directory renamed to: $target_name"
+  fi
 }
 
 function main() {
   parse_arguments "$@"
   validate_params
-  download_archive
+  download_and_unpack
 }
 
 main "$@"
