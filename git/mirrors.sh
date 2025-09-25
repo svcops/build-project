@@ -102,3 +102,15 @@ function mirror_to_gitlab() {
   local repo=$1 branch=$2
   mirror_repo "git@gitlab.com:$repo" "$branch" branch
 }
+
+# 批量镜像
+function batch_mirror() {
+  local repo=$1 branch=$2
+  [[ -z "$repo" ]] && {
+    log_error "batch_mirror" "repository not specified"
+    return 1
+  }
+  mirror_to_code "$repo" "$branch"
+  mirror_to_gitlab "$repo" "$branch"
+  mirror_to_github "$repo" "$branch"
+}
