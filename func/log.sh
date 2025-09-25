@@ -1,64 +1,30 @@
-GREEN='\033[0;32m'      # 绿色
-ORANGE='\033[38;5;208m' # 橙色
-RED='\033[0;31m'        # 红色
-NC='\033[0m'            # reset
+# shellcheck disable=SC2155,SC2318
+declare -r GREEN='\033[0;32m'      # 绿色
+declare -r ORANGE='\033[38;5;208m' # 橙色
+declare -r RED='\033[0;31m'        # 红色
+declare -r NC='\033[0m'            # reset
 
-function log() {
-  local remark="$1"
-  local msg="$2"
-  if [ -z "$remark" ]; then
-    remark="info"
-  fi
-  if [ -z "$msg" ]; then
-    msg="- - - - - - -"
-  fi
-  # shellcheck disable=SC2155
-  local now=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "$now - [INFO ] [ $remark ] $msg"
+# 通用日志函数
+_log() {
+  local level="$1" color="$2" remark="${3:-$level}" msg="${4:-- - - - - - -}"
+  local ts=$(date +"%Y-%m-%d %H:%M:%S")
+  echo -e "${color}${ts} - [${level^^}] [ ${remark} ] ${msg}${NC}"
 }
 
-function log_info() {
+log() {
   local remark="$1"
   local msg="$2"
-  if [ -z "$remark" ]; then
-    remark="info"
-  fi
-  if [ -z "$msg" ]; then
-    msg="- - - - - - -"
-  fi
-  # shellcheck disable=SC2155
-  local now=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "${GREEN}$now - [INFO ] [ $remark ] $msg${NC}"
+  [[ -z "$remark" ]] && remark="info"
+  [[ -z "$msg" ]] && msg="- - - - - - -"
+  local ts=$(date +"%Y-%m-%d %H:%M:%S")
+  echo -e "$ts - [INFO ] [ $remark ] $msg"
 }
 
-function log_warn() {
-  local remark="$1"
-  local msg="$2"
-  if [ -z "$remark" ]; then
-    remark="warn"
-  fi
-  if [ -z "$msg" ]; then
-    msg="- - - - - - -"
-  fi
-  # shellcheck disable=SC2155
-  local now=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "${ORANGE}$now - [WARN ] [ $remark ] $msg${NC}"
-}
+# 具体封装
+log_info() { _log "INFO " "$GREEN" "$@"; }
+log_warn() { _log "WARN " "$ORANGE" "$@"; }
+log_error() { _log "ERROR" "$RED" "$@"; }
 
-function log_error() {
-  local remark="$1"
-  local msg="$2"
-  if [ -z "$remark" ]; then
-    remark="error"
-  fi
-  if [ -z "$msg" ]; then
-    msg="- - - - - - -"
-  fi
-  # shellcheck disable=SC2155
-  local now=$(date +"%Y-%m-%d %H:%M:%S")
-  echo -e "${RED}$now - [ERROR] [ $remark ] $msg${NC}"
-}
-
-function line_break() {
+line_break() {
   echo -e "\n"
 }
