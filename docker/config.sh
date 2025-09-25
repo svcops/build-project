@@ -7,25 +7,27 @@ source <(curl -sSL $ROOT_URI/func/date.sh)
 
 registry=$1
 data_root=$2
+bip=$3
+default_address_pools_base=$4
 
-if [ -z $registry ]; then
-  registry="https://docker.mirrors.ustc.edu.cn"
-  log_info "registry" "registry is blank.default: $registry "
-fi
+[[ -z $registry ]] && registry="https://docker.mirrors.ustc.edu.cn"
+[[ -z "$data_root" ]] && data_root="/var/lib/docker"
+[[ -z "$bip" ]] && bip="172.10.0.1/16"
+[[ -z "$default_address_pools_base" ]] && default_address_pools_base="172.11.0.0/16"
 
-if [ -z "$data_root" ]; then
-  data_root="/var/lib/docker"
-  log_info "data_root" "data_root is blank.default: $data_root"
-fi
+log_info "config" "docker registry: $registry"
+log_info "config" "docker data root: $data_root"
+log_info "config" "docker bip: $bip"
+log_info "config" "docker default address pools base: $default_address_pools_base"
 
-config_path="/etc/docker/daemon.json"
+readonly config_path="/etc/docker/daemon.json"
 
-if [ -f "$config_path" ]; then
+[[ -f "$config_path" ]] && {
   log "backup" "cp $config_path ${config_path}_${datetime_version}"
   cp "$config_path" "${config_path}_${datetime_version}"
-fi
+}
 
-function write_docker_config() {
+function write_to_daemon_json() {
   log "config" "write docker config"
   cat >"$config_path" <<EOF
 {
@@ -36,10 +38,10 @@ function write_docker_config() {
   "exec-opts": [
     "native.cgroupdriver=systemd"
   ],
-  "bip": "172.10.0.1/16",
+  "bip": "$bip",
   "default-address-pools": [
     {
-      "base": "172.11.0.0/16",
+      "base": "$default_address_pools_base",
       "size": 24
     }
   ],
@@ -52,5 +54,4 @@ function write_docker_config() {
 EOF
 }
 
-mkdir -p "/etc/docker/"
-write_docker_config
+mkdir -p "/etc/docker/" && write_to_daemon_json
