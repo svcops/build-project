@@ -9,14 +9,15 @@ source <(curl -sSL "$ROOT_URI/func/log.sh")
 function normalize_repo_url() {
   local url=$1
 
-  # 去掉结尾 .git
+  # 去掉结尾 .git 和 /
   url=${url%.git}
-  # 去掉结尾 /
   url=${url%/}
 
   # ssh => https 格式统一
-  url=$(echo "$url" |
-    sed -E 's#^git@([^:]+):#https://\1/#')
+  url=$(echo "$url" | sed -E 's#^git@([^:]+):#https://\1/#')
+
+  # 去掉 https://user@host -> https://host
+  url=$(echo "$url" | sed -E 's#^(https?://)[^@]+@#\1#')
 
   echo "$url"
 }
