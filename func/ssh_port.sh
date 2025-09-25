@@ -2,19 +2,21 @@
 # shellcheck disable=SC2034
 sshd_config_file="/etc/ssh/sshd_config"
 
-if [ ! -f $sshd_config_file ]; then
-  echo "22"
-  exit
-fi
-
-output=$(grep '^Port' /etc/ssh/sshd_config)
-
-if [ -z "$output" ]; then
-  ssh_port="22"
+# 检查配置文件是否存在
+if [ ! -f "$sshd_config_file" ]; then
+  ssh_port_list=(22)
 else
-  ssh_port=$(echo "$output" | cut -d ' ' -f 2)
+  # 提取所有 Port 行的端口号
+  mapfile -t ssh_port_list < <(awk '/^Port[[:space:]]+/{print $2}' "$sshd_config_file")
+  # 如果没有配置 Port，则默认 22
+  ssh_port_list=("${ssh_port_list[@]:-22}")
 fi
+
+# 单独保留第一个端口作为默认
+ssh_port=${ssh_port_list[0]}
+
+# 输出
+# echo "Default port: $ssh_port"
+# echo "All ports: ${ssh_port_list[*]}"
 
 echo "$ssh_port"
-
-# use $?

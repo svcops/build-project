@@ -6,7 +6,6 @@ source <(curl -sSL "$ROOT_URI/func/log.sh")
 
 function is_same_repo() {
   local repo_url=$1
-
   local curr_origin=$2
   [[ -z "$curr_origin" ]] && {
     log_info "origin" "get current origin from git command"
