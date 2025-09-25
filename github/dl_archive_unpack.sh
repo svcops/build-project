@@ -61,11 +61,11 @@ function parse_arguments() {
 source <(curl -sSL "$ROOT_URI/github/api.sh")
 
 function validate_params() {
-  if [ -z "$repo" ]; then
-    log_error "validate" "Repository is required"
+  [[ -z $repo ]] && {
+    log_error "validate" "Repository cannot be empty"
     show_usage
     exit 1
-  fi
+  }
 
   if [ -z "$target_name" ]; then
     target_name=$(basename "$repo")
@@ -82,12 +82,10 @@ function validate_params() {
   if [ -z "$specified_version" ]; then
     log_info "validate" "No version specified, fetching latest tag"
     version=$(fetch_latest_tag "$repo" "$proxy")
-
     [[ -z "$version" ]] && {
       log_error "validate" "Failed to fetch latest tag for $repo"
       exit 1
     }
-
   else
     log_info "validate" "Using specified version: $specified_version"
     version="$specified_version"
