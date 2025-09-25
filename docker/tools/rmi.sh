@@ -1,49 +1,55 @@
 #!/bin/bash
-# shellcheck disable=SC2086 disable=SC2046 disable=SC2126 disable=SC2155 disable=SC1090 disable=SC2028
-[ -z $ROOT_URI ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
-# ROOT_URI=https://dev.kubectl.net
+# shellcheck disable=SC2086,SC2046,SC2126,SC2155,SC1090,SC2028
+set -euo pipefail
+IFS=$'\n\t'
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
+[ -z "${ROOT_URI:-}" ] && source <(curl -sSL https://gitlab.com/iprt/shell-basic/-/raw/main/build-project/basic.sh)
 
-log "docker rmi" ">>> docker rmi start <<<"
+source <(curl -sSL "$ROOT_URI/func/log.sh")
+
+log_info "docker rmi" ">>> docker rmi start <<<"
+
 function end() {
-  log "docker rmi" ">>> docker rmi end <<<"
+  log_info "docker rmi" ">>> docker rmi end <<<"
 }
 
 function show_usage() {
-  echo "Usage: rmi.sh -i <image_name> [-s <strategy>]"
-  echo "Options:"
-  echo "  -i <image_name>   Specify the name of the Docker image to clean."
-  echo "  -s <strategy>     Specify the removal strategy (contain_latest, remove_none, all). Default is contain_latest."
-  echo "Example:"
-  echo "  rmi.sh -i my_image -s contain_latest"
+  cat >&2 <<EOF
+Usage: rmi.sh -i <image_name> [-s <strategy>]
+Options:
+  -i <image_name>   Docker 镜像名 (必填)
+  -s <strategy>     删除策略，可选:
+                      contain_latest (默认)  - 删除除 latest 外的镜像
+                      remove_none           - 删除 <none> 镜像
+                      all                   - 删除该镜像的所有版本
+Example:
+  rmi.sh -i my_image -s contain_latest
+EOF
   end
 }
 
 declare -g image_name=""
-declare -g strategy=""
+declare -g strategy="contain_latest"
 
 function parse_params() {
   while getopts ":i:s:" opt; do
     case ${opt} in
       i)
-        log_info "get opts" "image name is : $OPTARG"
+        log_info "get opts" "image name: $OPTARG"
         image_name=$OPTARG
         ;;
       s)
-        log_info "get opts" "remove strategy is : $OPTARG"
+        log_info "get opts" "remove strategy: $OPTARG"
         strategy=$OPTARG
         ;;
       \?)
         log_error "get opts" "Invalid option: -$OPTARG"
         show_usage
-        end
         exit 1
         ;;
       :)
-        log_info "get opts" "Invalid option: -$OPTARG requires an argument"
+        log_error "get opts" "Option -$OPTARG requires an argument"
         show_usage
-        end
         exit 1
         ;;
     esac
@@ -51,52 +57,42 @@ function parse_params() {
 }
 
 function validate_params() {
-  if [ -z "$image_name" ]; then
-    log_error "validate_param" "parameter image_name is empty, then exit"
+  if [[ -z "$image_name" ]]; then
+    log_error "validate" "parameter image_name is empty"
     show_usage
-    end
     exit 1
-  else
-    log_info "validate_param" "parameter image_name : $image_name"
   fi
-
-  if [ -z "$strategy" ]; then
-    log_warn "strategy" "strategy is empty use default contain_latest"
-    strategy="contain_latest"
-  fi
+  log_info "validate" "image_name: $image_name"
+  log_info "validate" "strategy: $strategy"
 }
 
 function clean_image() {
+  # 跳过表头 NR>1
+  local images
+  case "$strategy" in
+    contain_latest)
+      images=$(docker image ls "$image_name" | awk 'NR>1 && $2!="latest" {print $3}')
+      ;;
+    remove_none)
+      images=$(docker image ls "$image_name" | awk 'NR>1 && $2=="<none>" {print $3}')
+      ;;
+    all)
+      images=$(docker image ls "$image_name" | awk 'NR>1 {print $3}')
+      ;;
+    *)
+      log_error "clean_image" "Unknown strategy: $strategy"
+      show_usage
+      exit 1
+      ;;
+  esac
 
-  local title_reg="^REPOSITORY\s*TAG\s*IMAGE\s*\ID\s*CREATED\s*SIZE$"
-
-  if [ "$strategy" == "contain_latest" ]; then
-    con=$(docker image ls $image_name | grep -v $title_reg | grep -v "latest" | wc -l)
-    if [ $con -eq 0 ]; then
-      log_warn "contain_latest" "image doesn't exit ,then exit"
-      end
-      exit
-    fi
-    docker image rm -f $(docker image ls $image_name | grep -v $title_reg | grep -v "latest" | awk '{print $3}')
-  elif [ "$strategy" == "remove_none" ]; then
-    con=$(docker image ls $image_name | grep -v $title_reg | grep "<none>" | wc -l)
-    if [ $con -eq 0 ]; then
-      log_info "remove_none" "image doesn't exit ,then exit"
-      end
-      exit
-    fi
-    docker image rm -f $(docker image ls $image_name | grep -v $title_reg | grep "<none>" | awk '{print $3}')
-  elif [ "$strategy" == "all" ]; then
-    con=$(docker image ls $image_name | grep -v $title_reg | wc -l)
-    if [ $con -eq 0 ]; then
-      log_info "all" "image doesn't exit ,then exit"
-      end
-      exit
-    fi
-    docker image rm -f $(docker image ls $image_name | grep -v $title_reg | awk '{print $3}')
+  if [[ -z "${images:-}" ]]; then
+    log_warn "$strategy" "no images matched, nothing to remove"
+  else
+    log_info "$strategy" "removing images: $images"
+    docker image rm -f $images
   fi
   end
-
 }
 
 function main() {
