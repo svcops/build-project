@@ -99,6 +99,7 @@ function download_and_unpack() {
   local curl_opts=(-SL -o "$output_file")
   [ -n "$proxy" ] && curl_opts+=(-x "$proxy")
   curl "${curl_opts[@]}" "$download_url"
+  log_info "command" "curl ${curl_opts[*]} $download_url"
 
   # 解压
   tar zxvf "$output_file"
