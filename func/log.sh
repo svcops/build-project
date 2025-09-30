@@ -28,7 +28,7 @@ log() {
 }
 
 # 具体封装
-log_info() { _log "INFO " "\033[0;32m" "$@"; }
+log_info() { _log "INFO " "\033[0;34m" "$@"; }
 log_warn() { _log "WARN " "\033[38;5;208m" "$@"; }
 log_error() { _log "ERROR" "\033[0;31m" "$@"; }
 
