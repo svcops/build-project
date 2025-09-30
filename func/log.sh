@@ -1,15 +1,10 @@
+#!/bin/bash
 # shellcheck disable=SC2155,SC2318
-declare -r GREEN='\033[0;32m'      # 绿色
-declare -r ORANGE='\033[38;5;208m' # 橙色
-declare -r RED='\033[0;31m'        # 红色
-declare -r NC='\033[0m'            # reset
-
-# 通用日志函数
 _log() {
   local level="$1" color="$2" remark="$3" msg="$4"
-  local ts
-  ts=$(date +"%Y-%m-%d %H:%M:%S")
+  local ts=$(date +"%Y-%m-%d %H:%M:%S")
 
+  local NC='\033[0m' # reset
   # 判断参数组合
   if [[ -n "$remark" && -n "$msg" ]]; then
     echo -e "${color}${ts} - [${level^^}] [ ${remark} ] ${msg}${NC}"
@@ -21,8 +16,7 @@ _log() {
 }
 
 log() {
-  local ts
-  ts=$(date +"%Y-%m-%d %H:%M:%S")
+  local ts=$(date +"%Y-%m-%d %H:%M:%S")
 
   if [[ -n "$1" && -n "$2" ]]; then
     echo -e "$ts - [INFO ] [ $1 ] $2"
@@ -34,9 +28,9 @@ log() {
 }
 
 # 具体封装
-log_info() { _log "INFO " "$GREEN" "$@"; }
-log_warn() { _log "WARN " "$ORANGE" "$@"; }
-log_error() { _log "ERROR" "$RED" "$@"; }
+log_info() { _log "INFO " "\033[0;32m" "$@"; }
+log_warn() { _log "WARN " "\033[38;5;208m" "$@"; }
+log_error() { _log "ERROR" "\033[0;31m" "$@"; }
 
 line_break() {
   echo -e "\n"
