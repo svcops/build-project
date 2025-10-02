@@ -126,6 +126,7 @@ function migrate() {
         log_info "pull" "Image $image_name_tag not found, pulling for platform $platform"
       fi
 
+      log_info "pull" "docker pull --platform $platform $image_name_tag"
       if docker pull --platform "$platform" "$image_name_tag"; then
         log_info "pull" "Successfully pulled image $image_name_tag for platform $platform"
         return 0
@@ -181,17 +182,17 @@ function migrate() {
   function do_migrate() {
 
     for platform in "${platforms[@]}"; do
-      log_info "do_migrate" "Processing platform: $platform"
+      log_info "migrate" "Processing platform: $platform"
       if ! docker_pull "$from" "$platform" "$pull_action"; then
-        log_error "do_migrate" "Failed to pull image $from for platform $platform"
+        log_error "migrate" "Failed to pull image $from for platform $platform"
         continue
       else
-        log_info "do_migrate" "Successfully pulled image $from for platform $platform"
+        log_info "migrate" "Successfully pulled image $from for platform $platform"
         for to in "${to_list[@]}"; do
           if docker_push "$from" "$to" "$platform"; then
-            log_info "do_migrate" "Successfully pushed $from to $to for platform $platform"
+            log_info "migrate" "Successfully pushed $from to $to for platform $platform"
           else
-            log_error "do_migrate" "Failed to push $from to $to for platform $platform"
+            log_error "migrate" "Failed to push $from to $to for platform $platform"
           fi
         done
       fi
