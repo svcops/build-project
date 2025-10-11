@@ -59,7 +59,7 @@ function parse_arguments() {
 }
 
 source <(curl -sSL "$ROOT_URI/github/api.sh")
-
+tmp_target_name=""
 function validate_params() {
   [[ -z $repo ]] && {
     log_error "validate" "Repository cannot be empty"
@@ -68,8 +68,11 @@ function validate_params() {
   }
 
   if [ -z "$target_name" ]; then
-    target_name=$(basename "$repo")
+    tmp_target_name=$(basename "$repo")
     log_warn "validate" "Target dir not specified, using default: $target_name"
+  else
+    tmp_target_name="$target_name"
+    log_info "validate" "Using specified target dir: $target_name"
   fi
 
   if [ -n "$proxy" ]; then
@@ -91,12 +94,12 @@ function validate_params() {
     version="$specified_version"
   fi
 
-  log_info "validate" "repo=$repo, target_name=$target_name, proxy=$proxy, version=$version"
+  log_info "validate" "repo=$repo, target_name=$tmp_target_name, proxy=$proxy, version=$version"
 }
 
 function download_and_unpack() {
   local download_url="https://github.com/$repo/archive/refs/tags/$version.tar.gz"
-  local output_file="${target_name}-${version}.tar.gz"
+  local output_file="${tmp_target_name}-${version}.tar.gz"
 
   log_info "download" "url=$download_url"
   log_info "download" "output=$output_file"
@@ -105,7 +108,6 @@ function download_and_unpack() {
   local curl_opts=(-SL -o "$output_file")
   [ -n "$proxy" ] && curl_opts+=(-x "$proxy")
   curl "${curl_opts[@]}" "$download_url"
-  log_info "command" "curl ${curl_opts[*]} $download_url"
 
   # 解压
   tar zxvf "$output_file"
