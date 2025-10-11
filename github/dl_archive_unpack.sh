@@ -110,9 +110,28 @@ function download_and_unpack() {
   # 解压
   tar zxvf "$output_file"
 
+  get_top_dir() {
+    local archive="$1"
+
+    # 使用 GNU tar，并只取第一行
+    local first_line
+    first_line=$(/usr/bin/tar -tzf "$archive" 2>/dev/null | head -1)
+
+    # 如果 /usr/bin/tar 不存在（Windows Git Bash 环境），尝试使用系统 tar
+    if [ -z "$first_line" ]; then
+      first_line=$(tar -tzf "$archive" 2>/dev/null | head -1)
+    fi
+
+    # 替换反斜杠为斜杠，去除回车符
+    first_line=$(echo "$first_line" | sed 's|\\|/|g' | tr -d '\r')
+
+    # 提取第一层目录名
+    echo "$first_line" | cut -f1 -d"/"
+  }
+
   # 自动推断解压目录
   local unpacked_dir
-  unpacked_dir=$(tar -tzf "$output_file" | head -1 | cut -f1 -d"/")
+  unpacked_dir=$(get_top_dir "$output_file")
 
   if [ -n "$target_name" ]; then
     rm -rf "$target_name"
