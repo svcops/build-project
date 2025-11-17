@@ -5,6 +5,14 @@ DOMAIN=$1
 DNS_SERVER=$2
 IP_CACHE_FILE=$3
 
+shift 3
+PORTS=("$@") # 剩余参数：端口列表
+
+# 默认端口：如果没有端口输入，则只开放 443
+if [[ ${#PORTS[@]} -eq 0 ]]; then
+  PORTS=(443)
+fi
+
 # -------------------------------
 # 日志函数
 # -------------------------------
@@ -80,27 +88,37 @@ update_ufw() {
     return
   fi
 
-  # IP 变更时更新规则
-  if [[ "$cache_ip" != "$domain_ip" ]]; then
-    if [[ -n "$cache_ip" ]]; then
-      local delete_result
-      delete_result=$(/usr/sbin/ufw --force delete allow from "$cache_ip" to any port 443 2>&1)
-      log "ufw" "delete [$cache_ip]: $delete_result"
-    fi
-    local allow_result
-    allow_result=$(/usr/sbin/ufw allow from "$domain_ip" to any port 443 2>&1)
-    log "ufw" "allow  [$domain_ip]: $allow_result"
-  else
-    # 如果规则已存在就跳过
-    if /usr/sbin/ufw status | grep -q "$domain_ip.*443"; then
-      log "ufw" "already allowed: $domain_ip"
-    else
-      local allow_result
-      allow_result=$(/usr/sbin/ufw allow from "$domain_ip" to any port 443 2>&1)
-      log "ufw" "re-allow [$domain_ip]: $allow_result"
-    fi
-  fi
+  # ------ 循环处理多端口 ------
+  for port in "${PORTS[@]}"; do
 
+    if [[ "$cache_ip" != "$domain_ip" ]]; then
+
+      # 删除旧规则
+      if [[ -n "$cache_ip" ]]; then
+        local del_output
+        del_output=$(/usr/sbin/ufw --force delete allow from "$cache_ip" to any port "$port" 2>&1)
+        log "ufw" "delete [$cache_ip:$port]: $del_output"
+      fi
+
+      # 添加新规则
+      local add_output
+      add_output=$(/usr/sbin/ufw allow from "$domain_ip" to any port "$port" 2>&1)
+      log "ufw" "allow  [$domain_ip:$port]: $add_output"
+
+    else
+      # IP 未变 → 检查规则是否存在，不存在则补齐
+      if /usr/sbin/ufw status | grep -q "$domain_ip.*$port"; then
+        log "ufw" "already allowed: $domain_ip:$port"
+      else
+        local add_output
+        add_output=$(/usr/sbin/ufw allow from "$domain_ip" to any port "$port" 2>&1)
+        log "ufw" "re-allow [$domain_ip:$port]: $add_output"
+      fi
+    fi
+
+  done
+
+  # 写入最新 IP
   echo "$domain_ip" >"$IP_CACHE_FILE"
 }
 
@@ -113,10 +131,10 @@ main() {
   local domain_ip
   domain_ip=$(get_domain_ip "$DOMAIN" "$DNS_SERVER")
 
-  log "dns" "domain=$DOMAIN, ip=$domain_ip"
+  log "dns" "domain=$DOMAIN, ip=$domain_ip, ports=${PORTS[*]}"
 
   if ! validate_ipv4 "$domain_ip"; then
-    log "validate" "domain ip is not valid"
+    log "validate" "invalid domain ip"
     exit 1
   fi
 
@@ -125,4 +143,4 @@ main() {
 
 main "$@"
 
-# update to doh https://doh.pub/dns-query?name=google.com&type=A
+# End
