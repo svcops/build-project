@@ -253,6 +253,11 @@ function prepare_new_tag() {
 
 function generate_build_args_exec() {
   build_args_exec=""
+  if [ ${#build_args[@]} -eq 0 ]; then
+    log_info "build_args" "No build arguments provided"
+    return
+  fi
+
   for build_arg in "${build_args[@]}"; do
     build_args_exec="$build_args_exec --build-arg $build_arg"
   done
