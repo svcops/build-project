@@ -5,4 +5,4 @@ source git/mirrors.sh
 
 mirror_to_code "devops/build-project"
 mirror_to_gitlab "svcops/build-project"
-mirror_to_github "svcops/build-project"
+mirror_to_github "vscoding/build-project"
