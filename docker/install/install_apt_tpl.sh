@@ -47,6 +47,9 @@ function install_docker() {
     sudo apt-get install -y $pkg_string
   }
 
+  add_gpg_key
+  apt_install_docker
+
 }
 # os source
 install_docker "$1" "$2"
