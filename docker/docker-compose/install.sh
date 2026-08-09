@@ -23,7 +23,7 @@ else
   exit 1
 fi
 
-DOCKER_COMPOSE_VERSION="v5.1.3"
+DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION:-"5.4.0"}
 DOCKER_COMPOSE_DOWNLOAD_URL="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${ARCH}"
 TARGET_FILE='/usr/local/bin/docker-compose'
 
