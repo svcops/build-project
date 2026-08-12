@@ -19,18 +19,18 @@ check_required_vars() {
 
 check_required_vars
 
-log_info "dns" "DNS 操作"
-
 # 显示操作菜单
 show_menu() {
-  log_info "input" "请选择云解析DNS的相关操作: (输入数字)"
-  log_info "input" "  (0) 获取支持的域名列表"
-  log_info "input" "  (1) 新增一条解析记录"
-  log_info "input" "  (2) 查询子域名的所有解析记录"
-  log_info "input" "  (3) 删除子域名的所有解析记录"
-  log_info "input" "  (4) 删除子域名的所有解析记录，然后新增解析记录"
-  log_info "input" "  (5) 分页查询域名的解析记录"
-  log_info "input" "  (*) 退出 exit"
+  printf '\n%s\n' "========== DNS 操作 =========="
+  printf '%s\n' \
+    "  0) 获取支持的域名列表" \
+    "  1) 新增一条解析记录" \
+    "  2) 查询子域名的所有解析记录" \
+    "  3) 删除子域名的所有解析记录" \
+    "  4) 删除子域名的所有解析记录，然后新增解析记录" \
+    "  5) 分页查询域名的解析记录" \
+    "  *) 退出"
+  printf '%s\n\n' "================================"
 
   read -r -p "> 请输入你的选择: " dns_operate
 }
@@ -71,6 +71,28 @@ function dnsapi() {
     --data "$json_data")
 }
 
+# 输出 API 响应：成功时突出数据，失败时保留完整响应便于排查
+function print_api_response() {
+  local action=$1
+  local code
+
+  if ! printf '%s\n' "$result" | jq -e . >/dev/null 2>&1; then
+    log_error "dns" "$action 失败：API 返回的不是有效 JSON"
+    printf '%s\n' "$result"
+    return 1
+  fi
+
+  code=$(printf '%s\n' "$result" | jq -r '.code // empty')
+  if [ -n "$code" ] && [ "$code" != "200" ]; then
+    log_error "dns" "$action 失败（code=$code）"
+    printf '%s\n' "$result" | jq
+    return
+  fi
+
+  log_success "dns" "$action 完成"
+  printf '%s\n' "$result" | jq 'if type == "object" and has("data") then .data else . end'
+}
+
 # 读取用户输入函数，增加输入验证
 function readDomainName() {
   if [ -n "$domainName" ]; then
@@ -78,7 +100,6 @@ function readDomainName() {
   fi
 
   read -r -p "请输入域名: " domainName
-  log_info "dns" "输入的域名为 $domainName"
 
   if [ -z "$domainName" ]; then
     log_error "dns" "域名不能为空"
@@ -91,7 +112,6 @@ function readRr() {
     return
   fi
   read -r -p "请输入主机记录(Resource Record): " rr
-  log_info "dns" "输入的主机记录为 $rr"
 
   if [ -z "$rr" ]; then # 修复了变量引用
     log_error "dns" "主机记录不能为空"
@@ -101,17 +121,14 @@ function readRr() {
 
 function readType() {
   read -r -p "请输入记录类型(默认为A): " type
-  log_info "dns" "输入的记录类型为 $type"
 
   if [ -z "$type" ]; then # 修复了变量引用
     type="A"
-    log_info "dns" "记录类型默认为 $type"
   fi
 }
 
 function readValue() {
   read -r -p "请输入记录值: " value
-  log_info "dns" "输入的记录值为 $value"
 
   if [ -z "$value" ]; then # 修复了变量引用
     log_error "dns" "记录值不能为空"
@@ -132,8 +149,6 @@ function readPageNumber() {
     readPageNumber
     return
   fi
-
-  log_info "dns" "页码为 $pageNumber"
 }
 
 function readPageSize() {
@@ -149,18 +164,14 @@ function readPageSize() {
     readPageSize
     return
   fi
-
-  log_info "dns" "每页数量为 $pageSize"
 }
 
 function readRrKeyWord() {
   read -r -p "请输入主机记录(RR)关键字: " rrKeyWord
-  log_info "dns" "输入的主机记录(RR)关键字为 $rrKeyWord"
 }
 
 function readValueKeyWord() {
   read -r -p "请输入记录值(value)关键字: " valueKeyWord
-  log_info "dns" "输入的记录值(value)关键字为 $valueKeyWord"
 }
 
 function quit() {
@@ -177,7 +188,7 @@ function quit() {
 function acl() {
   log_info "dns" "获取支持的域名列表"
   dnsapi "" "" "" "" "/acl"
-  echo $result | jq
+  print_api_response "获取支持的域名列表"
 }
 
 # 检查域名是否在支持列表中
@@ -187,47 +198,42 @@ function acl_contains() {
 
   local contains=$(echo "$result" | jq --raw-output --arg input "$inputDomain" '.data[] | select(contains($input))')
 
-  if [ -n "$contains" ]; then
-    log_info "acl" "acl contains $inputDomain"
-  else
-    log_error "acl" "acl does not contain $inputDomain"
+  if [ -z "$contains" ]; then
+    log_error "acl" "不支持域名 $inputDomain"
     exit 1 # 添加错误码
   fi
 }
 
 # 新增解析记录
 function addRecord() {
-  log_info "dns" "新增解析记录"
   readDomainName
   acl_contains $domainName
   readRr
   readType
   readValue
-  log_info "dns" "新增解析记录 domainName=$domainName rr=$rr type=$type value=$value"
+  log_info "dns" "新增解析记录：domain=$domainName rr=$rr type=$type value=$value"
   dnsapi $domainName $rr $type $value "/addRecord"
-  echo $result | jq
+  print_api_response "新增解析记录"
 }
 
 # 查询子域名的所有解析记录
 function getRecords() {
-  log_info "dns" "查询子域名的所有解析记录"
   readDomainName
   acl_contains $domainName
   readRr
-  log_info "dns" "查询子域名的所有解析记录 domainName=$domainName rr=$rr"
+  log_info "dns" "查询解析记录：domain=$domainName rr=$rr"
   dnsapi $domainName $rr "" "" "/getRecords"
-  echo $result | jq
+  print_api_response "查询解析记录"
 }
 
 # 删除子域名的所有解析记录
 function deleteRecords() {
-  log_warn "dns" "删除子域名的所有解析记录"
   readDomainName
   acl_contains $domainName
   readRr
-  log_warn "dns" "删除子域名的所有解析记录 domainName=$domainName rr=$rr"
+  log_warn "dns" "删除解析记录：domain=$domainName rr=$rr"
   dnsapi $domainName $rr "" "" "/deleteRecords"
-  echo $result | jq
+  print_api_response "删除解析记录"
 }
 
 # 删除并新增解析记录
@@ -245,33 +251,42 @@ function getDomainRecords() {
   local rrKw=$3
   local valueKw=$4
 
-  log_info "dns" "分页查询域名的解析记录"
-  log_info "dns" "domainName=$domainName pageNumber=$pageNum pageSize=$pageSz"
+  log_info "dns" "查询域名解析记录：domain=$domainName page=$pageNum pageSize=$pageSz"
   dnsapi $domainName "" "" "" "/getDomainRecords" $pageNum $pageSz $rrKw $valueKw
 
-  local code=$(echo $result | jq -r ".code")
+  local code=$(printf '%s\n' "$result" | jq -r '.code // empty')
 
   function clearAndList() {
-    clear
-    sleep 1
-    local data=$(echo $result | jq -r ".data")
-    local totalCount=$(echo $result | jq -r ".totalCount")
-    log_info "dns" "分页查询域名的解析记录"
-    log_info "dns" "domainName=$domainName pageNumber=$pageNum pageSize=$pageSz"
-    # echo $data | jq -c '.[]'
-    function fmt_echo() {
-      echo "$data" | jq -r '
-        .[] |
-        "\(.type) | \(if .rr=="@" then .domainName else (.rr + "." + .domainName) end) | \(.value) | \(.ttl) | \(.status)"
+    local totalCount=$(printf '%s\n' "$result" | jq -r '.totalCount // 0')
+    local currentPage=$(printf '%s\n' "$result" | jq -r '.pageNumber // 1')
+    local totalPage=$(printf '%s\n' "$result" | jq -r '.totalPage // 1')
+
+    [ -t 1 ] && clear
+    log_success "dns" "查询完成：第 $currentPage/$totalPage 页，共 $totalCount 条记录"
+
+    {
+      printf 'TYPE\tNAME\tVALUE\tTTL\tSTATUS\n'
+      printf '%s\n' "$result" | jq -r '
+        .data[]? |
+        [
+          .type,
+          (if .rr == "@" then .domainName else (.rr + "." + .domainName) end),
+          .value,
+          .ttl,
+          .status
+        ] | @tsv
       '
-    }
-    fmt_echo
+    } | if command -v column >/dev/null 2>&1; then
+      column -t -s $'\t'
+    else
+      sed 's/\t/ | /g'
+    fi
   }
 
   if [ "$code" == "200" ] || [ "$code" == "" ]; then
     clearAndList $pageNum $pageSz
-    local rtPageNumber=$(echo $result | jq -r ".pageNumber")
-    local totalPage=$(echo $result | jq -r ".totalPage")
+    local rtPageNumber=$(printf '%s\n' "$result" | jq -r '.pageNumber // 1')
+    local totalPage=$(printf '%s\n' "$result" | jq -r '.totalPage // 1')
 
     if [ $totalPage -le 1 ]; then
       quit
@@ -305,6 +320,7 @@ function getDomainRecords() {
     done
   else
     log_error "dns" "分页查询域名的解析记录失败"
+    printf '%s\n' "$result" | jq
   fi
 }
 
@@ -326,7 +342,6 @@ case $dns_operate in
     deleteThenAddRecord
     ;;
   5)
-    log_info "dns" "分页查询域名的解析记录"
     readDomainName
     readPageNumber
     readPageSize
