@@ -1,11 +1,23 @@
 #!/bin/bash
 # shellcheck disable=SC1090 disable=SC2086 disable=SC2155 disable=SC2128 disable=SC2028 disable=SC2164
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "This script must be run as root." >&2
+  exit 1
+fi
+
 SHELL_FOLDER=$(cd "$(dirname "$0")" && pwd) && cd "$SHELL_FOLDER"
 [ -z $ROOT_URI ] && source <(curl -sSL https://dev.kubectl.org/init)
 export ROOT_URI=$ROOT_URI
 # ROOT_URI=https://dev.kubectl.net
 
 source <(curl -sSL $ROOT_URI/func/log.sh)
+source <(curl -sSL $ROOT_URI/func/ostype.sh)
+
+if is_windows; then
+  log_warn "prepare" "Windows is not supported"
+  exit
+fi
 
 ensure_key() {
   local key_name=$1
@@ -29,11 +41,12 @@ if [ ! -d "$HOME/.ssh" ]; then
   mkdir -p "$HOME/.ssh"
 fi
 
-ssh_ed25519="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIODf32spVGqhfv1mKRU17TiI8pGVdZzK+W24OsZTS0Nu tech@intellij.io"
-ecdsa_sha2_nistp521="ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAGuoPeUH3nQVxZ+HMj4h4uHHuQclc7BnxUVxVm1wFfk/rYalMZxNkbG5MfNt0i8J/vs8G6BMqzTyCNp97SvrhTB9ADdCX53cMSdVKumUbHrLzJX14DRWz7gUmCqMW0DbWhbWzAR63Xv2Zc4E0fnuiA/j31AWppFf80aBFI4O0xV9MX9Pw== tech@intellij.io"
+email="${EMAIL:-dev@intellij.io}"
+ssh_ed25519="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIODf32spVGqhfv1mKRU17TiI8pGVdZzK+W24OsZTS0Nu $email"
+ecdsa_sha2_nistp521="ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAGuoPeUH3nQVxZ+HMj4h4uHHuQclc7BnxUVxVm1wFfk/rYalMZxNkbG5MfNt0i8J/vs8G6BMqzTyCNp97SvrhTB9ADdCX53cMSdVKumUbHrLzJX14DRWz7gUmCqMW0DbWhbWzAR63Xv2Zc4E0fnuiA/j31AWppFf80aBFI4O0xV9MX9Pw== $email"
 
 keys=$HOME/.ssh/authorized_keys
-if [ ! -f "keys" ]; then
+if [ ! -f "$keys" ]; then
   log_warn "prepare" "keys not found, create it"
   touch "$keys"
 fi
