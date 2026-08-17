@@ -1,136 +1,108 @@
 #!/bin/bash
-# shellcheck disable=SC1090 disable=SC2164 disable=SC2126  disable=SC2086 disable=SC2028
-[ -z $ROOT_URI ] && source <(curl -sSL https://dev.kubectl.org/init)
+# shellcheck disable=SC1090 disable=SC2028
+[ -z "${ROOT_URI:-}" ] && source <(curl -fsSL https://dev.kubectl.org/init)
 # ROOT_URI=https://dev.kubectl.net
 
-source <(curl -sSL $ROOT_URI/func/log.sh)
-source <(curl -sSL $ROOT_URI/func/command_exists.sh)
+source <(curl -fsSL "$ROOT_URI/func/log.sh")
+source <(curl -fsSL "$ROOT_URI/func/command_exists.sh")
 
 function verify_nginx_configuration() {
-  log_info "nginx" "Verify the nginx configuration file that docker-compose starts"
+  log_info "nginx" "Verify the nginx configuration used by Docker Compose"
 
-  local docker_in_docker="false"
-  if ! command_exists docker; then
-    log_error "nginx" "docker command does not exits"
+  local service_name="${1:-}"
+  local compose_file="${2:-}"
+
+  if [ -z "$service_name" ]; then
+    log_error "nginx" "service_name is empty, [compose_file=$compose_file,service_name=$service_name]"
     return 1
-  elif docker compose 2>&1 | grep -q "^docker: 'compose' is not a docker command."; then
-    log_warn "nginx" "docker: 'compose' is not a docker command."
-    log_warn "nginx" "use docker in docker"
-    docker_in_docker="true"
   fi
 
-  local compose_file=$2
-  local service_name=$1
-
   if [ -z "$compose_file" ]; then
-    log_info "nginx" "compose file is empty, try use docker-compose.yml or docker-compose.yaml"
-    if [ -f "docker-compose.yml" ]; then
-      compose_file="docker-compose.yml"
-    elif [ -f "docker-compose.yaml" ]; then
-      compose_file="docker-compose.yaml"
-    else
-      log_error "nginx" "cannot find docker-compose.yml or docker-compose.yaml in current directory"
+    log_info "nginx" "compose file is empty, try the default Compose file names"
+    local candidate
+    for candidate in compose.yaml compose.yml docker-compose.yaml docker-compose.yml; do
+      if [ -f "$candidate" ]; then
+        compose_file="$candidate"
+        break
+      fi
+    done
+
+    if [ -z "$compose_file" ]; then
+      log_error "nginx" "cannot find a Compose file in the current directory"
       return 1
     fi
   elif [ ! -f "$compose_file" ]; then
-    log_error "nginx" "compose file does not exits, [compose_file=$compose_file,service_name=$service_name] then return 1"
+    log_error "nginx" "compose file does not exist, [compose_file=$compose_file,service_name=$service_name]"
     return 1
   fi
 
-  local COMPOSE_FILE_FOLDER
-  COMPOSE_FILE_FOLDER=$(cd "$(dirname "$compose_file")" && pwd)
-  log_info "nginx" "compose file dir is $COMPOSE_FILE_FOLDER"
-  local COMPOSE_FILE_NAME
-  COMPOSE_FILE_NAME=$(basename "$compose_file")
+  local compose_file_folder
+  if compose_file_folder=$(cd -- "$(dirname -- "$compose_file")" && pwd -P); then
+    log_info "nginx" "compose file dir is $compose_file_folder"
+  else
+    log_error "nginx" "cannot resolve compose file directory: $compose_file"
+    return 1
+  fi
 
-  if [ -z "$service_name" ]; then
-    log_error "nginx" "service_name is empty,[compose_file=$compose_file,service_name=$service_name] then return 1"
+  local compose_file_name
+  compose_file_name=$(basename -- "$compose_file")
+
+  local -a compose_command
+  if command_exists docker && docker compose version >/dev/null 2>&1; then
+    log_info "nginx" "use docker compose plugin"
+    compose_command=(docker compose)
+  elif command_exists docker-compose && docker-compose version >/dev/null 2>&1; then
+    log_info "nginx" "use docker-compose"
+    compose_command=(docker-compose)
+  elif command_exists docker; then
+    case "${OSTYPE:-}" in
+      msys* | cygwin*)
+        log_error "nginx" "Docker Compose is unavailable in Windows Git Bash; enable the Docker Desktop Compose plugin"
+        return 1
+        ;;
+    esac
+
+    log_warn "nginx" "Compose plugin is unavailable, use the Docker CLI image"
+    compose_file="$compose_file_folder/$compose_file_name"
+    compose_command=(
+      docker run --rm
+      -v "/var/run/docker.sock:/var/run/docker.sock"
+      -v "$compose_file_folder:$compose_file_folder"
+      -w "$compose_file_folder"
+      docker
+      docker compose
+    )
+  else
+    log_error "nginx" "neither docker nor docker-compose is available"
     return 1
   fi
 
   local output
-  if command_exists docker-compose; then
-    log_info "nginx" "use docker-compose"
-    log_info "nginx" "$(docker-compose -f "$compose_file" run --rm -i "$service_name" nginx -v 2>&1 | tail -n 1)"
-    log_info "nginx" "docker-compose -f $compose_file run --rm -i $service_name nginx -t 2>&1 | grep 'nginx:'"
-    # 2>&1 重定向到标准输出
-    output=$(docker-compose -f "$compose_file" run --rm -i "$service_name" nginx -t 2>&1 | grep 'nginx:')
-  elif [ "true" == "$docker_in_docker" ]; then
-    log_info "nginx" "use docker compose plugin (docker in docker)"
-
-    log_info "nginx" "$(
-      docker run --rm -i -v "/var/run/docker.sock:/var/run/docker.sock" \
-        -v "$COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER" \
-        --privileged \
-        docker \
-        docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -i "$service_name" nginx -v 2>&1 | tail -n 1
-    )"
-    local compose_command="docker compose -f $COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME run --rm -i $service_name nginx -t 2>&1 | grep 'nginx:'"
-    log_info "nginx" "\n  docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock -v $COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER --privileged docker $compose_command"
-
-    output=$(
-      docker run --rm -i --privileged \
-        -v "/var/run/docker.sock:/var/run/docker.sock" \
-        -v "$COMPOSE_FILE_FOLDER:$COMPOSE_FILE_FOLDER" \
-        docker \
-        docker compose -f "$COMPOSE_FILE_FOLDER/$COMPOSE_FILE_NAME" run --rm -i "$service_name" nginx -t 2>&1 | grep 'nginx:'
-    )
-
+  local exit_code
+  if output=$("${compose_command[@]}" -f "$compose_file" config -q 2>&1); then
+    log_info "nginx" "Docker Compose configuration is valid"
   else
-    log_info "nginx" "use docker compose plugin"
-    log_info "nginx" "docker compose -f $compose_file run --rm -i $service_name nginx -t 2>&1 | grep 'nginx:'"
-    output=$(docker compose -f "$compose_file" run --rm -i "$service_name" nginx -t 2>&1 | grep 'nginx:')
+    exit_code=$?
+    log_error "nginx" "Docker Compose configuration is invalid (exit_code=$exit_code)\n$output"
+    return "$exit_code"
+  fi
+
+  log_info "nginx" "run nginx configuration validation"
+  if output=$("${compose_command[@]}" -f "$compose_file" run --rm -T "$service_name" nginx -t 2>&1); then
+    log_info "nginx" ">>> output <<<\n\n$output\n"
+    return 0
+  else
+    exit_code=$?
+  fi
+
+  if grep -Fq "host not found in upstream" <<<"$output"; then
+    log_warn "skip" "skip validate: host not found in upstream\n$output"
+    return 0
   fi
 
   if [ -z "$output" ]; then
-    log_error "nginx" "output is empty. Unknown Configuration, [compose_file=$compose_file,service_name=$service_name] then return 1"
-    return 1
-  else
-    log_info "nginx" ">>> output <<<\n\n$output\n"
-    log_info "nginx" ">>> output <<<"
+    output="nginx validation failed without output"
   fi
-
-  # template
-
-  #nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-  #nginx: configuration file /etc/nginx/nginx.conf test is successful
-
-  #nginx: [emerg] unknown directive "xworker_processes" in /etc/nginx/nginx.conf:1
-  #nginx: configuration file /etc/nginx/nginx.conf test failed
-
-  #  nginx: [warn] conflicting server name "。。。" on 0.0.0.0:443, ignored
-  #  nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-  #  nginx: configuration file /etc/nginx/nginx.conf test is successful
-
-  # 获取 $output 除了最后一行的所有行
-  local line_count
-  local reason
-  line_count=$(echo "$output" | wc -l)
-  reason=$(echo "$output" | head -n $((line_count - 1)))
-
-  # 获取 $output 的最后一行
-  local status
-  status=$(echo "$output" | tail -n -1)
-
-  if echo "$status" | grep -q "successful"; then
-    log_info "nginx" "$status"
-    return 0
-  elif echo "$status" | grep -q "failed"; then
-    # skip dns validate
-    if echo "$reason" | grep -q "host not found in upstream"; then
-      log_warn "skip" "skip validate: host not found in upstream"
-      return 0
-    fi
-
-    log_error "nginx" "$reason"
-    return 1
-  else
-    log_error "nginx" "Unknown Configuration, [compose_file=$compose_file,service_name=$service_name] then return 1"
-    return 1
-  fi
-
+  log_error "nginx" "nginx configuration validation failed (exit_code=$exit_code)\n$output"
+  return "$exit_code"
 }
-
-# docker run --rm -it => docker run --rm -i
-# the input device is not a TTY
-# https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty
