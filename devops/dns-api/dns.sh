@@ -19,20 +19,65 @@ check_required_vars() {
 
 check_required_vars
 
+# 仅在交互终端启用颜色，避免污染管道或重定向输出
+if [ -t 1 ] && [ "${TERM:-dumb}" != "dumb" ]; then
+  STYLE_RESET=$'\033[0m'
+  STYLE_BOLD=$'\033[1m'
+  STYLE_CYAN=$'\033[36m'
+  STYLE_YELLOW=$'\033[33m'
+  STYLE_RED=$'\033[31m'
+else
+  STYLE_RESET=""
+  STYLE_BOLD=""
+  STYLE_CYAN=""
+  STYLE_YELLOW=""
+  STYLE_RED=""
+fi
+
+build_prompt() {
+  local label=$1
+  local default_value=${2:-}
+
+  if [ -n "$default_value" ]; then
+    printf '%s›%s %s %s[默认: %s]%s: ' \
+      "$STYLE_CYAN" "$STYLE_RESET" "$label" \
+      "$STYLE_YELLOW" "$default_value" "$STYLE_RESET"
+  else
+    printf '%s›%s %s: ' "$STYLE_CYAN" "$STYLE_RESET" "$label"
+  fi
+}
+
+confirm_action() {
+  local message=$1
+  local answer
+
+  read -r -p "$(build_prompt "$message [y/N]")" answer
+  [[ $answer =~ ^[Yy]$ ]]
+}
+
 # 显示操作菜单
 show_menu() {
-  printf '\n%s\n' "========== DNS 操作 =========="
+  printf '\n%s%s┌─ DNS 解析管理 ─────────────────────────────┐%s\n' \
+    "$STYLE_BOLD" "$STYLE_CYAN" "$STYLE_RESET"
+  printf '%s│ 查询%s\n' "$STYLE_BOLD" "$STYLE_RESET"
   printf '%s\n' \
-    "  0) 获取支持的域名列表" \
-    "  1) 新增一条解析记录" \
-    "  2) 查询子域名的所有解析记录" \
-    "  3) 删除子域名的所有解析记录" \
-    "  4) 删除子域名的所有解析记录，然后新增解析记录" \
-    "  5) 分页查询域名的解析记录" \
-    "  *) 退出"
-  printf '%s\n\n' "================================"
+    "│   [0] 支持的域名" \
+    "│   [2] 查询子域名记录" \
+    "│   [5] 分页查询域名记录" \
+    "│"
+  printf '%s│ 变更%s\n' "$STYLE_BOLD" "$STYLE_RESET"
+  printf '%s\n' \
+    "│   [1] 新增解析记录" \
+    "│   [4] 替换子域名的全部记录" \
+    "│"
+  printf '%s%s│ 危险操作%s\n' "$STYLE_BOLD" "$STYLE_RED" "$STYLE_RESET"
+  printf '%s%s│   [3] 删除子域名的全部记录%s\n' \
+    "$STYLE_RED" "$STYLE_BOLD" "$STYLE_RESET"
+  printf '%s\n' "│" "│   [q] 退出"
+  printf '%s%s└─────────────────────────────────────────────┘%s\n\n' \
+    "$STYLE_CYAN" "$STYLE_BOLD" "$STYLE_RESET"
 
-  read -r -p "> 请输入你的选择: " dns_operate
+  read -r -p "$(build_prompt "请选择操作" "q")" dns_operate
 }
 
 show_menu
@@ -99,89 +144,78 @@ function readDomainName() {
     return
   fi
 
-  read -r -p "请输入域名: " domainName
-
-  if [ -z "$domainName" ]; then
+  while [ -z "$domainName" ]; do
+    read -r -p "$(build_prompt "域名")" domainName
+    [ -n "$domainName" ] && break
     log_error "dns" "域名不能为空"
-    readDomainName
-  fi
+  done
 }
 
 function readRr() {
   if [ -n "$rr" ]; then
     return
   fi
-  read -r -p "请输入主机记录(Resource Record): " rr
 
-  if [ -z "$rr" ]; then # 修复了变量引用
+  while [ -z "$rr" ]; do
+    read -r -p "$(build_prompt "主机记录 (Resource Record)")" rr
+    [ -n "$rr" ] && break
     log_error "dns" "主机记录不能为空"
-    readRr
-  fi
+  done
 }
 
 function readType() {
-  read -r -p "请输入记录类型(默认为A): " type
+  read -r -p "$(build_prompt "记录类型" "A")" type
 
-  if [ -z "$type" ]; then # 修复了变量引用
+  if [ -z "$type" ]; then
     type="A"
   fi
 }
 
 function readValue() {
-  read -r -p "请输入记录值: " value
-
-  if [ -z "$value" ]; then # 修复了变量引用
+  while [ -z "$value" ]; do
+    read -r -p "$(build_prompt "记录值")" value
+    [ -n "$value" ] && break
     log_error "dns" "记录值不能为空"
-    readValue
-  fi
+  done
 }
 
 function readPageNumber() {
-  read -r -p "请输入 pageNumber(默认为1): " pageNumber
-
-  if [ -z "$pageNumber" ]; then # 修复了变量引用
-    pageNumber=1
-  fi
-
-  # 验证输入为数字
-  if ! [[ $pageNumber =~ ^[0-9]+$ ]]; then
+  while true; do
+    read -r -p "$(build_prompt "页码" "1")" pageNumber
+    pageNumber=${pageNumber:-1}
+    [[ $pageNumber =~ ^[0-9]+$ ]] && return
     log_error "dns" "页码必须为数字"
-    readPageNumber
-    return
-  fi
+  done
 }
 
 function readPageSize() {
-  read -r -p "请输入 pageSize(默认为20): " pageSize
-
-  if [ -z "$pageSize" ]; then # 修复了变量引用
-    pageSize=20
-  fi
-
-  # 验证输入为数字
-  if ! [[ $pageSize =~ ^[0-9]+$ ]]; then
+  while true; do
+    read -r -p "$(build_prompt "每页数量" "20")" pageSize
+    pageSize=${pageSize:-20}
+    [[ $pageSize =~ ^[0-9]+$ ]] && return
     log_error "dns" "每页数量必须为数字"
-    readPageSize
-    return
-  fi
+  done
 }
 
 function readRrKeyWord() {
-  read -r -p "请输入主机记录(RR)关键字: " rrKeyWord
+  read -r -p "$(build_prompt "主机记录 (RR) 关键字，可留空")" rrKeyWord
 }
 
 function readValueKeyWord() {
-  read -r -p "请输入记录值(value)关键字: " valueKeyWord
+  read -r -p "$(build_prompt "记录值 (value) 关键字，可留空")" valueKeyWord
 }
 
 function quit() {
-  read -r -p "是否退出(q|Enter): " q
-  if [ "$q" == "q" ] || [ -z "$q" ]; then # 修复了变量引用
-    log_warn "dns" "退出分页查询域名的解析记录"
-    exit 0
-  else
-    quit
-  fi
+  while true; do
+    read -r -p "$(build_prompt "按 Enter 或 q 退出")" q
+    case "$q" in
+      q | Q | "")
+        log_warn "dns" "退出分页查询域名的解析记录"
+        exit 0
+        ;;
+      *) log_warn "dns" "无效的输入，请重新选择" ;;
+    esac
+  done
 }
 
 # 获取支持的域名列表
@@ -228,9 +262,21 @@ function getRecords() {
 
 # 删除子域名的所有解析记录
 function deleteRecords() {
+  delete_records_cancelled=0
   readDomainName
   acl_contains $domainName
   readRr
+
+  printf '\n%s%s⚠ 删除确认%s\n' "$STYLE_BOLD" "$STYLE_RED" "$STYLE_RESET"
+  printf '  域名：%s\n' "$domainName"
+  printf '  主机记录：%s\n\n' "$rr"
+
+  if ! confirm_action "确认删除以上主机记录的全部解析"; then
+    delete_records_cancelled=1
+    log_warn "dns" "已取消删除操作"
+    return
+  fi
+
   log_warn "dns" "删除解析记录：domain=$domainName rr=$rr"
   dnsapi $domainName $rr "" "" "/deleteRecords"
   print_api_response "删除解析记录"
@@ -240,6 +286,7 @@ function deleteRecords() {
 function deleteThenAddRecord() {
   log_info "dns" "删除子域名的所有解析记录，然后新增解析记录"
   deleteRecords
+  [ "$delete_records_cancelled" -eq 1 ] && return
   addRecord
 }
 
@@ -293,20 +340,20 @@ function getDomainRecords() {
     fi
 
     while true; do
-      read -r -p "查询上一页(p) 查询下一页(n|Enter) 退出(q): " pn
+      read -r -p "$(build_prompt "[P] 上一页  [N/Enter] 下一页  [Q] 退出")" pn
       case "$pn" in
-        q)
+        q | Q)
           log_warn "dns" "退出分页查询域名的解析记录"
           exit 0
           ;;
-        n | "")
+        n | N | "")
           if [ $rtPageNumber -ge $totalPage ]; then
             getDomainRecords 1 $pageSz $rrKw $valueKw
           else
             getDomainRecords $((rtPageNumber + 1)) $pageSz $rrKw $valueKw
           fi
           ;;
-        p)
+        p | P)
           if [ $rtPageNumber -eq 1 ]; then
             getDomainRecords $totalPage $pageSz $rrKw $valueKw
           else
@@ -349,7 +396,8 @@ case $dns_operate in
     readValueKeyWord
     getDomainRecords $pageNumber $pageSize $rrKeyWord $valueKeyWord
     ;;
-  *)
+  q | Q | "")
     log_info "dns" "没有选择任何操作，退出"
     ;;
+  *) log_warn "dns" "无效的操作：$dns_operate" ;;
 esac

@@ -1,0 +1,11 @@
+[
+  {
+    "domain_name": "example.com",
+    "rr_list": [
+      "www",
+      "sample"
+    ],
+    "type": "A",
+    "value": "127.0.0.1"
+  }
+]
