@@ -59,21 +59,17 @@ confirm_action() {
 show_menu() {
   printf '\n%s%s┌─ DNS 解析管理 ─────────────────────────────┐%s\n' \
     "$STYLE_BOLD" "$STYLE_CYAN" "$STYLE_RESET"
-  printf '%s│ 查询%s\n' "$STYLE_BOLD" "$STYLE_RESET"
   printf '%s\n' \
     "│   [0] 支持的域名" \
-    "│   [2] 查询子域名记录" \
-    "│   [5] 分页查询域名记录" \
-    "│"
-  printf '%s│ 变更%s\n' "$STYLE_BOLD" "$STYLE_RESET"
-  printf '%s\n' \
     "│   [1] 新增解析记录" \
-    "│   [4] 替换子域名的全部记录" \
-    "│"
-  printf '%s%s│ 危险操作%s\n' "$STYLE_BOLD" "$STYLE_RED" "$STYLE_RESET"
+    "│   [2] 查询子域名记录"
   printf '%s%s│   [3] 删除子域名的全部记录%s\n' \
     "$STYLE_RED" "$STYLE_BOLD" "$STYLE_RESET"
-  printf '%s\n' "│" "│   [q] 退出"
+  printf '%s\n' \
+    "│   [4] 设置唯一记录" \
+    "│   [5] 分页查询域名记录" \
+    "│" \
+    "│   [q] 退出"
   printf '%s%s└─────────────────────────────────────────────┘%s\n\n' \
     "$STYLE_CYAN" "$STYLE_BOLD" "$STYLE_RESET"
 
@@ -282,12 +278,16 @@ function deleteRecords() {
   print_api_response "删除解析记录"
 }
 
-# 删除并新增解析记录
-function deleteThenAddRecord() {
-  log_info "dns" "删除子域名的所有解析记录，然后新增解析记录"
-  deleteRecords
-  [ "$delete_records_cancelled" -eq 1 ] && return
-  addRecord
+# 设置唯一解析记录
+function setSingleRecord() {
+  readDomainName
+  acl_contains "$domainName"
+  readRr
+  readType
+  readValue
+  log_info "dns" "设置唯一记录：domain=$domainName rr=$rr type=$type value=$value"
+  dnsapi "$domainName" "$rr" "$type" "$value" "/setSingleRecord"
+  print_api_response "设置唯一记录"
 }
 
 # 分页查询域名解析记录
@@ -386,7 +386,7 @@ case $dns_operate in
     deleteRecords
     ;;
   4)
-    deleteThenAddRecord
+    setSingleRecord
     ;;
   5)
     readDomainName
