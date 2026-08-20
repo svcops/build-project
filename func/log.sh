@@ -35,6 +35,7 @@ log() { _log "INFO " "\033[0;34m" "$@"; }          # 蓝色
 log_info() { _log "INFO " "\033[0;34m" "$@"; }     # 蓝色
 log_success() { _log "OK   " "\033[0;32m" "$@"; }  # 绿色
 log_warn() { _log "WARN " "\033[38;5;208m" "$@"; } # 橙色
+log_err() { _log "ERROR" "\033[0;31m" "$@"; }      # 红色
 log_error() { _log "ERROR" "\033[0;31m" "$@"; }    # 红色
 log_fatal() { _log "FATAL" "\033[1;41;97m" "$@"; } # 白字红底
 log_notice() { _log "NOTE " "\033[0;35m" "$@"; }   # 紫色
