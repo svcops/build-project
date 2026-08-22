@@ -20,8 +20,33 @@ if [[ ! -f "${SYSCTL_CONF}" ]]; then
   exit 1
 fi
 
+validate_network_config() {
+  if ! awk -v start="${BLOCK_START}" -v end="${BLOCK_END}" '
+    $0 == start {
+      if (in_block) {
+        invalid = 1
+      }
+      in_block = 1
+      next
+    }
+    $0 == end {
+      if (!in_block) {
+        invalid = 1
+      }
+      in_block = 0
+    }
+    END {
+      exit invalid || in_block
+    }
+  ' "${SYSCTL_CONF}"; then
+    log_error "optimize" "invalid network config markers"
+    return 1
+  fi
+}
+
 clear_old_network_config() {
   log_info "optimize" "clear old network config"
+  validate_network_config || return 1
   sed -i "/^${BLOCK_START}$/,/^${BLOCK_END}$/d" "${SYSCTL_CONF}"
 }
 
@@ -35,17 +60,12 @@ net.ipv4.ip_forward = 1
 
 # Increase the size of the receive buffer
 net.core.rmem_max = 16777216
-net.core.rmem_default = 16777216
 
 # Increase the size of the send buffer
 net.core.wmem_max = 16777216
-net.core.wmem_default = 16777216
 
 # Increase the maximum number of packets allowed to queue
 net.core.netdev_max_backlog = 5000
-
-# Increase the maximum number of connections
-net.core.somaxconn = 1024
 
 # Enable TCP window scaling
 net.ipv4.tcp_window_scaling = 1
@@ -56,17 +76,8 @@ net.ipv4.tcp_rmem = 4096 87380 16777216
 # Increase the TCP write buffer space
 net.ipv4.tcp_wmem = 4096 65536 16777216
 
-# Increase the maximum number of open files
-fs.file-max = 100000
-
 # Enable TCP SYN cookies
 net.ipv4.tcp_syncookies = 1
-
-# Enable reuse of TIME-WAIT sockets for new connections
-net.ipv4.tcp_tw_reuse = 1
-
-# Increase the number of allowed local ports
-net.ipv4.ip_local_port_range = 1024 65535
 
 # Enable TCP keepalive
 net.ipv4.tcp_keepalive_time = 600

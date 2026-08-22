@@ -25,8 +25,33 @@ if [[ ! -f "${SYSCTL_CONF}" ]]; then
   exit 1
 fi
 
+validate_bbr_config() {
+  if ! awk -v start="${BBR_START}" -v end="${BBR_END}" '
+    $0 == start {
+      if (in_block) {
+        invalid = 1
+      }
+      in_block = 1
+      next
+    }
+    $0 == end {
+      if (!in_block) {
+        invalid = 1
+      }
+      in_block = 0
+    }
+    END {
+      exit invalid || in_block
+    }
+  ' "${SYSCTL_CONF}"; then
+    log_error "optimize" "invalid BBR config markers"
+    return 1
+  fi
+}
+
 clear_old_bbr_config() {
   log_info "optimize" "clear old bbr config"
+  validate_bbr_config || return 1
   sed -i "/^${BBR_START}$/,/^${BBR_END}$/d" "${SYSCTL_CONF}"
 }
 
@@ -36,7 +61,6 @@ write_bbr_config() {
 ${BBR_START}
 net.core.default_qdisc=fq
 net.ipv4.tcp_congestion_control=bbr
-net.ipv4.tcp_slow_start_after_idle=0
 ${BBR_END}
 EOF
 }
